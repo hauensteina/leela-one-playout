@@ -39,15 +39,15 @@ app.config['DEBUG'] = os.getenv("DEBUG", False)
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 
-@app.after_request
-#---------------------
-def add_header(r):
-    # No caching
-    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    r.headers["Pragma"] = "no-cache"
-    r.headers["Expires"] = "0"
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
+# @app.after_request
+# #---------------------
+# def add_header(r):
+#     # No caching
+#     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+#     r.headers["Pragma"] = "no-cache"
+#     r.headers["Expires"] = "0"
+#     r.headers['Cache-Control'] = 'public, max-age=0'
+#     return r
 
 #--------------
 # Endpoints
