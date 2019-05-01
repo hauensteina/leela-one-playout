@@ -32,7 +32,7 @@ function main( JGO, axutil) {
   var g_last_x = -1
   var g_last_y = -1
   var g_last_hover = false
-  var g_cur_btn = 'btn_next'
+  var g_cur_btn = '#btn_prev'
 
   resetGame()
   set_btn_handlers()
@@ -355,11 +355,11 @@ function main( JGO, axutil) {
   //-------------------------------------
   function set_again( id) {
     g_cur_btn = '#btn_next'
-    $('#btn_again').html('NEXT')
+    $('#btn_again').html('Next')
 
     if (id == '#btn_prev') {
       g_cur_btn = '#btn_prev'
-      $('#btn_again').html('PREV')
+      $('#btn_again').html('Prev')
     }
   } // set_again()
 
