@@ -30,7 +30,7 @@
      }
     </style>
   </head>
-  <body style="background-color:#AAAAAA">
+  <body style="background-color:#CCCCCC">
     <br>
     <div style='font-size:24pt;text-align:center;'>Leela Zero on One Playout</div>
     <div id='game_info' style='font-size:22pt;text-align:center'> &nbsp; </div>
@@ -43,32 +43,33 @@
     </div>
     <br>
     <div>
-      <a id='btn_move' class='btn btn-outline-light text-dark' style='font-size:40pt'>Leela</a>
+      <label id='btn_move' class='btn btn-outline-dark' style='font-size:40pt'>Leela</label>
       &nbsp;&nbsp;
       <!-- A huge button to repeat last nav action -->
-      <a id='btn_again' class='btn btn-outline-light text-dark' style='font-size:40pt;touch-action:manipulation;'>Prev</a>
+      <label id='btn_again' class='btn btn-outline-dark' style='font-size:40pt;;touch-action:manipulation;'>Prev</label>
     </div>
     <br>
     <!-- Nav Buttons -->
     <div>
-      <a id='btn_first' class='btn btn-outline-light text-dark' style='font-size:22pt'>First</a>
-      <a id='btn_back10' class='btn btn-outline-light text-dark' style='font-size:22pt'>Back 10</a>
-      <a id='btn_prev' class='btn btn-outline-light text-dark' style='font-size:22pt'>Prev</a>
-      <a id='btn_next' class='btn btn-outline-light text-dark' style='font-size:22pt'>Next</a>
-      <a id='btn_fwd10' class='btn btn-outline-light text-dark' style='font-size:22pt'>Fwd 10</a>
-      <a id='btn_last' class='btn btn-outline-light text-dark' style='font-size:22pt'>Last</a>
+      <label id='btn_first' class='btn btn-outline-dark' style='font-size:22pt'>First</label>
+      <!-- <a id='btn_first' class='btn btn-outline-dark btn-file' style='font-size:22pt'>First</a> -->
+      <label id='btn_back10' class='btn btn-outline-dark' style='font-size:22pt'>Back 10</label>
+      <label id='btn_prev' class='btn btn-outline-dark' style='font-size:22pt'>Prev</label>
+      <label id='btn_next' class='btn btn-outline-dark' style='font-size:22pt'>Next</label>
+      <label id='btn_fwd10' class='btn btn-outline-dark' style='font-size:22pt'>Fwd 10</label>
+      <label id='btn_last' class='btn btn-outline-dark' style='font-size:22pt'>Last</label>
     </div>
     <br>
     <div>
-      <a id='btn_pass' class='btn btn-outline-light text-dark' style='font-size:22pt'>Pass</a>
-      <a id='btn_nnscore' class='btn btn-outline-light text-dark' style='font-size:22pt'>Score</a>
-      <a id='btn_save' class='btn btn-outline-light text-dark' style='font-size:22pt'>Save sgf</a>
+      <label id='btn_pass' class='btn btn-outline-dark' style='font-size:22pt'>Pass</label>
+      <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:22pt'>Score</label>
+      <label id='btn_save' class='btn btn-outline-dark' style='font-size:22pt'>Save sgf</label>
     </div>
     <!-- Input form for sgf file upload -->
     <br>
     <div>
       <form id='upload-file' method='post' enctype='multipart/form-data'>
-        <label class='btn btn-outline-light btn-file text-dark' style='font-size:22pt'>
+        <label class='btn btn-outline-dark btn-file' style='font-size:22pt'>
           Load sgf  <input type='file' id='sgf-file' style='display:none'>
         </label>
       </form>
