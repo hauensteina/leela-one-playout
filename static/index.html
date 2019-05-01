@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
+<script type='text/javascript'>
+ /* Filename: leela-one-playou/index.html
+  * Author: AHN
+  * Creation Date: Mar, 2019
+  * Web interface to play against a remote bot.
+  */
+</script>
+
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <title>Board</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+
+    <!--  CSS  -->
+    <style>
+     body {
+       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+       text-align: center;
+     }
+     .center {
+       margin-left:auto;
+       margin-right:auto;
+     }
+    </style>
+  </head>
+  <body style="background-color:#AAAAAA">
+    <br>
+    <div style='font-size:24pt;text-align:center;'>Leela Zero on One Playout</div>
+    <div id='game_info' style='font-size:22pt;text-align:center'> &nbsp; </div>
+    <div id='fname' style='font-size:22pt;text-align:center'> &nbsp; </div>
+    <!-- <div id='board' style='width:150px'></div> -->
+    <br>
+    <div id='board'></div>
+    <div>
+      <div id='status' style='font-size:22pt'> &nbsp; </div>
+    </div>
+    <br>
+    <div>
+      <!-- A huge button to repeat last nav action -->
+      <a id='btn_again' class='btn btn-outline-light text-dark' style='font-size:40pt;touch-action:manipulation;'>NEXT</a>
+    </div>
+    <br>
+    <!-- Nav Buttons -->
+    <div>
+      <a id='btn_first' class='btn btn-outline-light text-dark' style='font-size:22pt'>First</a>
+      <a id='btn_back10' class='btn btn-outline-light text-dark' style='font-size:22pt'>Back 10</a>
+      <a id='btn_prev' class='btn btn-outline-light text-dark' style='font-size:22pt'>Prev</a>
+      <a id='btn_next' class='btn btn-outline-light text-dark' style='font-size:22pt'>Next</a>
+      <a id='btn_fwd10' class='btn btn-outline-light text-dark' style='font-size:22pt'>Fwd 10</a>
+      <a id='btn_last' class='btn btn-outline-light text-dark' style='font-size:22pt'>Last</a>
+    </div>
+    <br>
+    <div>
+      <a id='btn_move' class='btn btn-outline-light text-dark' style='font-size:22pt'>Bot Move</a>
+      <a id='btn_pass' class='btn btn-outline-light text-dark' style='font-size:22pt'>Pass</a>
+      <a id='btn_nnscore' class='btn btn-outline-light text-dark' style='font-size:22pt'>Score</a>
+      <a id='btn_save' class='btn btn-outline-light text-dark' style='font-size:22pt'>Save sgf</a>
+    </div>
+    <!-- Input form for sgf file upload -->
+    <br>
+    <div>
+      <form id='upload-file' method='post' enctype='multipart/form-data'>
+        <label class='btn btn-outline-light btn-file text-dark' style='font-size:22pt'>
+          Load sgf  <input type='file' id='sgf-file' style='display:none'>
+        </label>
+      </form>
+    </div>
+    <br>
+
+    <!-- Line chart for histo -->
+
+    <!-- <div id='histo' class='center' style='width:500px;height:300px; border-style:solid; border-color:red; '> -->
+    <div id='histo' class='center' style='width:750px;height:450px'>
+    </div>
+
+    <!-- Line chart with score confidence histo -->
+
+    <br><br>
+
+    <!-- ---------- -->
+    <!-- Javascript -->
+    <!-- ---------- -->
+
+    <!-- Standard frameworks -->
+    <script src='https://code.jquery.com/jquery-3.4.0.min.js' </script>
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js'></script>
+    <script src='https://d3js.org/d3.v5.min.js'></script>
+
+    <!-- Our own stuff -->
+    <script type='text/javascript' src='static/ahaux_utils.js'></script>
+    <script type='text/javascript' src='static/jgoboard-latest.js'></script>
+    <script type='text/javascript' src='static/large/board.js'></script>
+
+    <!-- Entry Point -->
+    <script type='text/javascript' src='static/main.js'></script>
+    <script type='text/javascript'> main( JGO, new AhauxUtils( d3, $) ) </script>
+
+  </body>
+</html>
