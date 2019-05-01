@@ -1,11 +1,9 @@
 <!DOCTYPE HTML>
 
-<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-
 <script type='text/javascript'>
- /* Filename: leela-one-playou/index.html
+ /* Filename: leela-one-playout/index.html
   * Author: AHN
-  * Creation Date: Mar, 2019
+  * Creation Date: Apr, 2019
   * Web interface to play against a remote bot.
   */
 </script>
@@ -13,7 +11,7 @@
 <html lang='en'>
   <head>
     <meta charset='utf-8'>
-    <title>Board</title>
+    <title>Leela One Playout</title>
 
     <!-- Bootstrap CSS -->
     <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
@@ -28,63 +26,74 @@
        margin-left:auto;
        margin-right:auto;
      }
+     .red-border { border-style:solid; border-color:red; }
+     .green-border { border-style:solid; border-color:green; }
+     .blue-border { border-style:solid; border-color:blue; }
+     .yellow-border { border-style:solid; border-color:yellow; }
+     .magenta-border { border-style:solid; border-color:magenta; }
+     .cyan-border { border-style:solid; border-color:cyan; }
+
     </style>
   </head>
-  <body style="background-color:#CCCCCC">
-    <br>
-    <div style='font-size:24pt;text-align:center;'>Leela Zero on One Playout</div>
-    <div id='game_info' style='font-size:22pt;text-align:center'> &nbsp; </div>
-    <div id='fname' style='font-size:22pt;text-align:center'> &nbsp; </div>
-    <!-- <div id='board' style='width:150px'></div> -->
-    <br>
-    <div id='board'></div>
-    <div>
-      <div id='status' style='font-size:22pt'> &nbsp; </div>
-    </div>
-    <br>
-    <div>
-      <label id='btn_move' class='btn btn-outline-dark' style='font-size:40pt'>Leela</label>
-      &nbsp;&nbsp;
-      <!-- A huge button to repeat last nav action -->
-      <label id='btn_again' class='btn btn-outline-dark' style='font-size:40pt;;touch-action:manipulation;'>Prev</label>
-    </div>
-    <br>
-    <!-- Nav Buttons -->
-    <div>
-      <label id='btn_first' class='btn btn-outline-dark' style='font-size:22pt'>First</label>
-      <!-- <a id='btn_first' class='btn btn-outline-dark btn-file' style='font-size:22pt'>First</a> -->
-      <label id='btn_back10' class='btn btn-outline-dark' style='font-size:22pt'>Back 10</label>
-      <label id='btn_prev' class='btn btn-outline-dark' style='font-size:22pt'>Prev</label>
-      <label id='btn_next' class='btn btn-outline-dark' style='font-size:22pt'>Next</label>
-      <label id='btn_fwd10' class='btn btn-outline-dark' style='font-size:22pt'>Fwd 10</label>
-      <label id='btn_last' class='btn btn-outline-dark' style='font-size:22pt'>Last</label>
-    </div>
-    <br>
-    <div>
-      <label id='btn_pass' class='btn btn-outline-dark' style='font-size:22pt'>Pass</label>
-      <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:22pt'>Score</label>
-      <label id='btn_save' class='btn btn-outline-dark' style='font-size:22pt'>Save sgf</label>
-    </div>
-    <!-- Input form for sgf file upload -->
-    <br>
-    <div>
-      <form id='upload-file' method='post' enctype='multipart/form-data'>
-        <label class='btn btn-outline-dark btn-file' style='font-size:22pt'>
-          Load sgf  <input type='file' id='sgf-file' style='display:none'>
-        </label>
-      </form>
-    </div>
-    <br>
+  <body style='background-color:#CCCCCC'>
 
-    <!-- Line chart for histo -->
+    <div class='container'>
+      <br>
+      <div class='row'>
+        <div class='col-11'><a class='float-right text-info' style='font-size:18pt' href='static/about.html'> About </a> </div>
+        <!-- <div class='col-6 blue-border'><span class='float-right'>right</span></div> -->
+      </div>
+      <!-- <a href='static/about.html'> About </a> -->
+      <div style='font-size:24pt;text-align:center;'>Leela Zero on One Playout</div>
+      <div id='game_info' style='font-size:22pt;text-align:center'> &nbsp; </div>
+      <div id='fname' style='font-size:22pt;text-align:center'> &nbsp; </div>
+      <!-- <div id='board' style='width:150px'></div> -->
+      <br>
+      <div id='board'></div>
+      <div>
+        <div id='status' style='font-size:22pt'> &nbsp; </div>
+      </div>
+      <br>
+      <div>
+        <label id='btn_move' class='btn btn-outline-dark' style='font-size:40pt'>Leela</label>
+        &nbsp;&nbsp;
+        <!-- A huge button to repeat last nav action -->
+        <label id='btn_again' class='btn btn-outline-dark' style='font-size:40pt;;touch-action:manipulation;'>Prev</label>
+      </div>
+      <br>
+      <!-- Nav Buttons -->
+      <div>
+        <label id='btn_first' class='btn btn-outline-dark' style='font-size:22pt'>First</label>
+        <!-- <a id='btn_first' class='btn btn-outline-dark btn-file' style='font-size:22pt'>First</a> -->
+        <label id='btn_back10' class='btn btn-outline-dark' style='font-size:22pt'>Back 10</label>
+        <label id='btn_prev' class='btn btn-outline-dark' style='font-size:22pt'>Prev</label>
+        <label id='btn_next' class='btn btn-outline-dark' style='font-size:22pt'>Next</label>
+        <label id='btn_fwd10' class='btn btn-outline-dark' style='font-size:22pt'>Fwd 10</label>
+        <label id='btn_last' class='btn btn-outline-dark' style='font-size:22pt'>Last</label>
+      </div>
+      <br>
+      <div>
+        <label id='btn_pass' class='btn btn-outline-dark' style='font-size:22pt'>Pass</label>
+        <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:22pt'>Score</label>
+        <label id='btn_save' class='btn btn-outline-dark' style='font-size:22pt'>Save sgf</label>
+      </div>
+      <!-- Input form for sgf file upload -->
+      <br>
+      <div>
+        <form id='upload-file' method='post' enctype='multipart/form-data'>
+          <label class='btn btn-outline-dark btn-file' style='font-size:22pt'>
+            Load sgf  <input type='file' id='sgf-file' style='display:none'>
+          </label>
+        </form>
+      </div>
+      <br>
 
-    <!-- <div id='histo' class='center' style='width:500px;height:300px; border-style:solid; border-color:red; '> -->
-    <div id='histo' class='center' style='width:750px;height:450px'>
+      <!-- Line chart for histo -->
+
+      <!-- <div id='histo' class='center' style='width:500px;height:300px; border-style:solid; border-color:red; '> -->
+      <div id='histo' class='center' style='width:750px;height:450px'>
+      </div>
     </div>
-
-    <!-- Line chart with score confidence histo -->
-
-    <br><br>
 
     <!-- ---------- -->
     <!-- Javascript -->
