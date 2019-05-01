@@ -60,39 +60,6 @@ def entry_point():
     # html = open('static/index.html').read()
     # return html
 
-
-
-# @app.route('/select-move/<bot_name>', methods=['POST'])
-# # Ask the named bot for the next move
-# #--------------------------------------
-# def select_move( bot_name):
-#     content = request.json
-#     board_size = content['board_size']
-#     game_state = goboard.GameState.new_game( board_size)
-#     # Replay the game up to this point.
-#     for move in content['moves']:
-#         if move == 'pass':
-#             next_move = goboard.Move.pass_turn()
-#         elif move == 'resign':
-#             next_move = goboard.Move.resign()
-#         else:
-#             next_move = goboard.Move.play( point_from_coords(move))
-#         game_state = game_state.apply_move( next_move)
-#         #print_board( game_state.board)
-#     bot_agent = bot_map[bot_name]
-#     bot_move = bot_agent.select_move( game_state, content['moves'])
-#     if bot_move is None or bot_move.is_pass:
-#         bot_move_str = 'pass'
-#     elif bot_move.is_resign:
-#         bot_move_str = 'resign'
-#     else:
-#         bot_move_str = coords_from_point( bot_move.point)
-#     diag =  bot_agent.diagnostics()
-#     return jsonify({
-#         'bot_move': bot_move_str,
-#         'diagnostics': diag
-#     })
-
 @app.route('/histo', methods=['POST'])
 # Take a bunch of numbers, number of bins, min, max and return a histo.
 #------------------------------------------------------------------------

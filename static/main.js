@@ -6,6 +6,8 @@
 
 'use strict'
 
+var LEELA_SERVER = 'http://ahaux.hopto.org:2718/'
+
 //==============================
 function main( JGO, axutil) {
   $ = axutil.$
@@ -210,7 +212,7 @@ function main( JGO, axutil) {
       return
     }
     g_waiting_for_bot = true
-    axutil.hit_endpoint( '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record},
+    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record},
       (data) => {
         if ($('#status').html().startsWith( 'thinking')) {
 
@@ -251,47 +253,32 @@ function main( JGO, axutil) {
       console.log( 'still waiting')
       return
     }
-    fetch( 'http://ahaux.hopto.org:2718/' + endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify( {'board_size': BOARD_SIZE, 'moves': g_record}),
-    }).then(
-      function(response) {
-        response.json().then(
-          function(data) {
-            plot_histo(data)
-            var black_points = data.result[0]
-            var white_points = data.result[1]
-            var diff = Math.abs( black_points - white_points)
-            var rstr = `W+${diff} (before komi and handicap)`
-            if (black_points >= white_points) { rstr = `B+${diff}  (before komi and handicap)` }
-            $('#status').html( `Black:${black_points} &emsp; White:${white_points} &emsp; ${rstr}`)
-            var node = g_jrecord.createNode( true)
-            for (var bpoint of data.territory.black_points) {
-              var coord = rc2Jgo( bpoint[0], bpoint[1])
-              if (node.jboard.stones [coord.i] [coord.j] != 1) {
-                node.setMark( rc2Jgo( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
-              }
-            }
-            for (var wpoint of data.territory.white_points) {
-              var coord = rc2Jgo( wpoint[0], wpoint[1])
-              if (node.jboard.stones [coord.i] [coord.j] != 2) {
-                node.setMark( rc2Jgo( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
-              }
-            }
-            for (var dpoint of data.territory.dame_points) {
-              node.setMark( rc2Jgo( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
-            }
+    axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': g_record},
+      (data) => {
+        plot_histo(data)
+        var black_points = data.result[0]
+        var white_points = data.result[1]
+        var diff = Math.abs( black_points - white_points)
+        var rstr = `W+${diff} (before komi and handicap)`
+        if (black_points >= white_points) { rstr = `B+${diff}  (before komi and handicap)` }
+        $('#status').html( `Black:${black_points} &emsp; White:${white_points} &emsp; ${rstr}`)
+        var node = g_jrecord.createNode( true)
+        for (var bpoint of data.territory.black_points) {
+          var coord = rc2Jgo( bpoint[0], bpoint[1])
+          if (node.jboard.stones [coord.i] [coord.j] != 1) {
+            node.setMark( rc2Jgo( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
           }
-        )
-      }
-    ).catch(
-      function(error) {
-        console.log( error)
-      }
-    )
+        }
+        for (var wpoint of data.territory.white_points) {
+          var coord = rc2Jgo( wpoint[0], wpoint[1])
+          if (node.jboard.stones [coord.i] [coord.j] != 2) {
+            node.setMark( rc2Jgo( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
+          }
+        }
+        for (var dpoint of data.territory.dame_points) {
+          node.setMark( rc2Jgo( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
+        }
+      })
   } // scorePosition()
 
   //------------------------
