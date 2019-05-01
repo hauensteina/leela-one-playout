@@ -251,7 +251,7 @@ function main( JGO, axutil) {
       console.log( 'still waiting')
       return
     }
-    fetch( '/' + endpoint, {
+    fetch( 'http://ahaux.hopto.org:2718/' + endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

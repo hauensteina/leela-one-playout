@@ -25,8 +25,6 @@ from sgf import Sgf_game
 from go_utils import coords_from_point, point_from_coords
 import goboard_fast as goboard
 
-API_SERVER = 'http://ahaux.hopto.org:2718'
-
 here = os.path.dirname( __file__)
 static_path = os.path.join( here, 'static')
 app = Flask( __name__, static_folder=static_path, static_url_path='/static')
@@ -106,31 +104,6 @@ def histo():
     centers = [ (borders[i] + borders[i+1]) / 2.0 for i in range(len(borders)-1) ]
     res = list(zip( centers, counts))
     return jsonify( res)
-
-# @app.route('/nnscore', methods=['POST'])
-# # Score the current position using our convolutional network
-# #-------------------------------------------------------------
-# def nnscore():
-#     content = request.json
-#     board_size = content['board_size']
-#     game_state = goboard.GameState.new_game( board_size)
-#     # Replay the game up to this point.
-#     for move in content['moves']:
-#         if move == 'pass':
-#             next_move = goboard.Move.pass_turn()
-#         elif move == 'resign':
-#             next_move = goboard.Move.resign()
-#         else:
-#             next_move = goboard.Move.play( point_from_coords(move))
-#         game_state = game_state.apply_move( next_move)
-
-#     enc  = get_encoder_by_name( 'score_threeplane_encoder', board_size)
-#     feat = np.array( [ enc.encode( game_state) ] )
-#     lab  = SCOREMODEL.predict( [feat], batch_size=1)
-
-#     territory, res = compute_nn_game_result( lab, game_state.next_player)
-#     white_probs = lab[0].tolist()
-#     return jsonify( {'result':res, 'territory':territory.__dict__ , 'white_probs':white_probs} )
 
 @app.route('/sgf2list', methods=['POST'])
 # Convert sgf main var to coordinate list of moves
