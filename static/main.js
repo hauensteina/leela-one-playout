@@ -6,7 +6,8 @@
 
 'use strict'
 
-var LEELA_SERVER = 'http://ahaux.hopto.org:2718/'
+//var LEELA_SERVER = 'http://ahaux.hopto.org:2718/'
+var LEELA_SERVER = 'https://ahaux.com/leela_server'
 
 //==============================
 function main( JGO, axutil) {
