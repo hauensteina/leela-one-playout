@@ -236,8 +236,8 @@ function main( JGO, axutil) {
           g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
           g_complete_record = g_record.slice()
           g_record_pos = g_complete_record.length
-          g_waiting_for_bot = false
         }
+        g_waiting_for_bot = false
       })
   } // getBotMove()
 
