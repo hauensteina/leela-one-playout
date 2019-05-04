@@ -6,8 +6,8 @@
 
 'use strict'
 
-//var LEELA_SERVER = 'http://ahaux.hopto.org:2718/'
-var LEELA_SERVER = 'https://ahaux.com/leela_server/'
+//var LEELA_SERVER = 'http://ahaux.com:2718/' // test
+var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
 
 //==============================
 function main( JGO, axutil) {
@@ -206,7 +206,7 @@ function main( JGO, axutil) {
 
   // Get next move from the bot and show on board
   //-----------------------------------------------
-  function getBotMove() {
+  function getBotMove( prob_only_flag) {
     //console.log( g_record)
     if (g_waiting_for_bot) {
       console.log( 'still waiting')
@@ -216,27 +216,28 @@ function main( JGO, axutil) {
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record},
       (data) => {
         if ($('#status').html().startsWith( 'thinking')) {
-
           $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(2))
         }
-        if (data.bot_move == 'pass') {
-          addMove( data.bot_move)
-          g_ko = false
-          alert( 'The bot passes. Click on the Score button.')
+        if (!prob_only_flag) {
+          if (data.bot_move == 'pass') {
+            addMove( data.bot_move)
+            g_ko = false
+            alert( 'The bot passes. Click on the Score button.')
+          }
+          else if (data.bot_move == 'resign') {
+            addMove( data.bot_move)
+            g_ko = false
+            alert( 'The bot resigns. You beat the bot!')
+          }
+          else {
+            var botCoord = stringToCoords( data.bot_move)
+            applyMove( g_player, botCoord)
+          }
+          g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
+          g_complete_record = g_record.slice()
+          g_record_pos = g_complete_record.length
+          g_waiting_for_bot = false
         }
-        else if (data.bot_move == 'resign') {
-          addMove( data.bot_move)
-          g_ko = false
-          alert( 'The bot resigns. You beat the bot!')
-        }
-        else {
-          var botCoord = stringToCoords( data.bot_move)
-          applyMove( g_player, botCoord)
-        }
-        g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
-        g_complete_record = g_record.slice()
-        g_record_pos = g_complete_record.length
-        g_waiting_for_bot = false
       })
   } // getBotMove()
 
@@ -385,6 +386,14 @@ function main( JGO, axutil) {
       hilite_move_btn(true)
       $('#status').html( 'thinking...')
       getBotMove()
+      return false
+    })
+
+    $('#btn_prob').click( () => {
+      $('#histo').hide()
+      $('#status').html( 'thinking...')
+      var prob_only_flag = true
+      getBotMove( prob_only_flag)
       return false
     })
 
