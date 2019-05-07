@@ -228,7 +228,7 @@ function main( JGO, axutil) {
         }
         if (g_last_hover) { // the board thinks the hover stone is actually there. Ouch.
           g_jrecord.jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR)
-          g_last_hove = false
+          g_last_hover = false
         }
 
         if (!prob_only_flag) {
