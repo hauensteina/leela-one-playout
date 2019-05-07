@@ -226,6 +226,10 @@ function main( JGO, axutil) {
         if ($('#status').html().includes( 'thinking')) {
           $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(2))
         }
+        if (g_last_hover) { // the board thinks the hover stone is actually there. Ouch.
+          jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR)
+        }
+
         if (!prob_only_flag) {
           if (data.bot_move == 'pass') {
             addMove( data.bot_move)
