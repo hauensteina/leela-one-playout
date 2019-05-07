@@ -217,6 +217,7 @@ function main( JGO, axutil) {
     g_waiting_for_bot = true
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record, 'config':{'randomness': kroker_randomness} },
       (data) => {
+        if (!g_waiting_for_bot) { return }
         if ($('#status').html().includes( 'thinking')) {
           $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(2))
         }
@@ -363,18 +364,32 @@ function main( JGO, axutil) {
 
     if (id == '#btn_prev') {
       g_cur_btn = '#btn_prev'
-      $('#btn_again').html('Prev')
+      $('#btn_again').html('Undo')
     }
   } // set_again()
 
   //--------------------------------
   function activate_bot( botname) {
     activate_bot.botname = botname
+    if (botname == 'leela') {
+      $('#btn_kroker').css('background-color', '#CCCCCC')
+      $('#btn_leela').css('background-color', '#EEEEEE')
+    }
+    else if (botname == 'kroker') {
+      $('#btn_kroker').css('background-color', '#EEEEEE')
+      $('#btn_leela').css('background-color', '#CCCCCC')
+    }
+    else {
+      g_waiting_for_bot = false
+      $('#btn_leela').css('background-color', '#CCCCCC')
+      $('#btn_kroker').css('background-color', '#CCCCCC')
+    }
   } // activate_bot()
   activate_bot.botname = ''
 
   //--------------------------------
   function botmove_if_active() {
+    if (g_waiting_for_bot) { return }
     if (activate_bot.botname == 'leela') {
       $('#status').html( 'Leela is thinking...')
       getBotMove( false, 0.0)
@@ -388,9 +403,10 @@ function main( JGO, axutil) {
   // Set button callbacks
   //------------------------------
   function set_btn_handlers() {
-    $('#btn_move').click( () => {
+    $('#btn_leela').click( () => {
       $('#histo').hide()
       activate_bot( 'leela')
+      set_again( '#btn_prev')
       $('#status').html( 'Leela is thinking...')
       getBotMove( false, 0.0)
       return false
@@ -399,6 +415,7 @@ function main( JGO, axutil) {
     $('#btn_kroker').click( () => {
       $('#histo').hide()
       activate_bot( 'kroker')
+      set_again( '#btn_prev')
       $('#status').html( 'Kroker is thinking...')
       getBotMove( false, KROKER_RANDOMNESS)
       return false
