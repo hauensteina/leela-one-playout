@@ -461,12 +461,12 @@ function main( JGO, axutil) {
     })
 
     $('#btn_prev').click( () => { $('#histo').hide(); gotoMove( g_record_pos - 1); set_again( '#btn_prev'); activate_bot('') })
-    $('#btn_next').click( () => { $('#histo').hide(); gotoMove( g_record_pos + 1); set_again( '#btn_next') })
+    $('#btn_next').click( () => { $('#histo').hide(); gotoMove( g_record_pos + 1); set_again( '#btn_next'); activate_bot('') })
     $('#btn_back10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record_pos - 10); activate_bot('') })
-    $('#btn_fwd10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record_pos + 10) })
+    $('#btn_fwd10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record_pos + 10); activate_bot('') })
     $('#btn_first').click( () => { $('#histo').hide(); set_again( '#btn_next'); resetGame(); activate_bot(''); $('#status').html( '&nbsp;') })
-    $('#btn_last').click( () => { $('#histo').hide(); set_again( '#btn_prev'); gotoMove( g_complete_record.length) })
-    $('#btn_again').click( () => { if (g_cur_btn) { $('#histo').hide(); $(g_cur_btn).click() } })
+    $('#btn_last').click( () => { $('#histo').hide(); set_again( '#btn_prev'); gotoMove( g_complete_record.length); activate_bot('') })
+    $('#btn_again').click( () => { if (g_cur_btn) { $('#histo').hide(); $(g_cur_btn).click(); activate_bot('') } })
   } // set_btn_handlers()
 
   // Arrow key actions
@@ -478,9 +478,11 @@ function main( JGO, axutil) {
     else if (e.keyCode == '40') { // down arrow
     }
     else if (e.keyCode == '37') { // left arrow
+      activate_bot('')
       gotoMove( g_record_pos - 1)
     }
     else if (e.keyCode == '39') { // right arrow
+      activate_bot('')
       gotoMove( g_record_pos + 1)
     }
   } // checkKey()
