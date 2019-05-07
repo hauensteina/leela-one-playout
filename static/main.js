@@ -32,6 +32,7 @@ function main( JGO, axutil) {
   var g_record_pos = 0
   var g_timer = null
   var g_waiting_for_bot = null
+  var g_request_id = ''
   var g_last_x = -1
   var g_last_y = -1
   var g_last_hover = false
@@ -215,9 +216,13 @@ function main( JGO, axutil) {
       return
     }
     g_waiting_for_bot = true
-    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record, 'config':{'randomness': kroker_randomness} },
+    g_request_id = Math.random() + ''
+    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record,
+      'config':{'randomness': kroker_randomness, 'request_id': g_request_id } },
       (data) => {
         if (!g_waiting_for_bot) { return }
+        console.log( 'req id: ' + data.request_id + ' ' + g_request_id)
+        if (data.request_id != g_request_id) { return }
         if ($('#status').html().includes( 'thinking')) {
           $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(2))
         }
