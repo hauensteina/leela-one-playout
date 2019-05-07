@@ -224,7 +224,8 @@ function main( JGO, axutil) {
         console.log( 'req id: ' + data.request_id + ' ' + g_request_id)
         if (data.request_id != g_request_id) { return }
         if ($('#status').html().includes( 'thinking')) {
-          $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(2))
+          //$('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(2))
+          $('#status').html( 'P(B wins): ' + data.diagnostics.winprob)
         }
         if (g_last_hover) { // the board thinks the hover stone is actually there. Ouch.
           g_jrecord.jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR)
@@ -237,7 +238,7 @@ function main( JGO, axutil) {
             g_ko = false
             alert( 'The bot passes. Click on the Score button.')
           }
-          else if (data.bot_move == 'resign') {
+          else if (data.bot_move == 'resign' || data.diagnostics.winprob > 0.996) {
             addMove( data.bot_move)
             g_ko = false
             alert( 'The bot resigns. You beat the bot!')
