@@ -260,30 +260,36 @@ function main( JGO, axutil) {
     }
     axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': g_record},
       (data) => {
-        plot_histo(data)
-        var black_points = data.result[0]
-        var white_points = data.result[1]
-        var diff = Math.abs( black_points - white_points)
-        var rstr = `W+${diff} (before komi and handicap)`
-        if (black_points >= white_points) { rstr = `B+${diff}  (before komi and handicap)` }
-        $('#status').html( `Black:${black_points} &emsp; White:${white_points} &emsp; ${rstr}`)
-        var node = g_jrecord.createNode( true)
-        for (var bpoint of data.territory.black_points) {
-          var coord = rc2Jgo( bpoint[0], bpoint[1])
-          if (node.jboard.stones [coord.i] [coord.j] != 1) {
-            node.setMark( rc2Jgo( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
+        plot_histo(data, (surepoints) => {
+          if (surepoints < 120) {
+            alert( 'Too early to score. Sorry.')
+            return
           }
-        }
-        for (var wpoint of data.territory.white_points) {
-          var coord = rc2Jgo( wpoint[0], wpoint[1])
-          if (node.jboard.stones [coord.i] [coord.j] != 2) {
-            node.setMark( rc2Jgo( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
+          var black_points = data.result[0]
+          var white_points = data.result[1]
+          var diff = Math.abs( black_points - white_points)
+          var rstr = `W+${diff} (before komi and handicap)`
+          if (black_points >= white_points) { rstr = `B+${diff}  (before komi and handicap)` }
+          $('#status').html( `Black:${black_points} &emsp; White:${white_points} &emsp; ${rstr}`)
+          var node = g_jrecord.createNode( true)
+          for (var bpoint of data.territory.black_points) {
+            var coord = rc2Jgo( bpoint[0], bpoint[1])
+            if (node.jboard.stones [coord.i] [coord.j] != 1) {
+              node.setMark( rc2Jgo( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
+            }
           }
-        }
-        for (var dpoint of data.territory.dame_points) {
-          node.setMark( rc2Jgo( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
-        }
-      })
+          for (var wpoint of data.territory.white_points) {
+            var coord = rc2Jgo( wpoint[0], wpoint[1])
+            if (node.jboard.stones [coord.i] [coord.j] != 2) {
+              node.setMark( rc2Jgo( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
+            }
+          }
+          for (var dpoint of data.territory.dame_points) {
+            node.setMark( rc2Jgo( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
+          }
+        } // (surepoints) =>
+        )}
+      ) // hit_endpoint()
   } // scorePosition()
 
   //------------------------
@@ -481,10 +487,12 @@ function main( JGO, axutil) {
 
   // Plot histogram of territory probabilities
   //---------------------------------------------
-  function plot_histo( data) {
+  function plot_histo( data, completion) {
     var wp = data.white_probs
     axutil.hit_endpoint( '/histo', [wp,20,0,1], (res) => {
+      var surepoints = res[0][1] + res[res.length-1][1]
       axutil.barchart( '#histo', res, 240)
+      completion( surepoints)
     })
   } // plot_histo()
 
