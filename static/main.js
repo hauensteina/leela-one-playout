@@ -6,8 +6,10 @@
 
 'use strict'
 
-//var LEELA_SERVER = 'http://ahaux.com:2718/' // test
-var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
+var LEELA_SERVER = 'http://ahaux.com:2718/' // test
+//var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
+var KROKER_RANDOMNESS = 0.5
+
 
 //==============================
 function main( JGO, axutil) {
@@ -62,10 +64,7 @@ function main( JGO, axutil) {
             g_complete_record = g_record.slice()
             g_complete_record.push( mstr)
             gotoMove( g_complete_record.length)
-            if (hilite_move_btn.v) {
-              $('#status').html( 'thinking...')
-              getBotMove()
-            }
+            botmove_if_active()
           }
         ) // click
 
@@ -205,17 +204,20 @@ function main( JGO, axutil) {
   } // applyMove()
 
   // Get next move from the bot and show on board
-  //-----------------------------------------------
-  function getBotMove( prob_only_flag) {
+  //---------------------------------------------------------
+  function getBotMove( prob_only_flag, kroker_randomness) {
+    if (!kroker_randomness) {
+      kroker_randomness = 0.0;
+    }
     //console.log( g_record)
     if (g_waiting_for_bot) {
       console.log( 'still waiting')
       return
     }
     g_waiting_for_bot = true
-    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record},
+    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record, 'config':{'randomness': kroker_randomness} },
       (data) => {
-        if ($('#status').html().startsWith( 'thinking')) {
+        if ($('#status').html().includes( 'thinking')) {
           $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(2))
         }
         if (!prob_only_flag) {
@@ -366,26 +368,39 @@ function main( JGO, axutil) {
   } // set_again()
 
   //--------------------------------
-  function hilite_move_btn( on) {
-    if (on) {
-      //$('#btn_move').css('background-color','#EEEEEE')
-      hilite_move_btn.v = true
+  function activate_bot( botname) {
+    activate_bot.botname = botname
+  } // activate_bot()
+  activate_bot.botname = ''
+
+  //--------------------------------
+  function botmove_if_active() {
+    if (activate_bot.botname == 'leela') {
+      $('#status').html( 'Leela is thinking...')
+      getBotMove( false, 0.0)
     }
-    else {
-      $('#btn_move').css('background-color','')
-      hilite_move_btn.v = false
+    else if (activate_bot.botname == 'kroker') {
+      $('#status').html( 'Kroker is thinking...')
+      getBotMove( false, KROKER_RANDOMNESS)
     }
-  } // hilite_move_btn()
-  hilite_move_btn.v = false
+  } // botmove_if_active()
 
   // Set button callbacks
   //------------------------------
   function set_btn_handlers() {
     $('#btn_move').click( () => {
       $('#histo').hide()
-      hilite_move_btn(true)
-      $('#status').html( 'thinking...')
-      getBotMove()
+      activate_bot( 'leela')
+      $('#status').html( 'Leela is thinking...')
+      getBotMove( false, 0.0)
+      return false
+    })
+
+    $('#btn_kroker').click( () => {
+      $('#histo').hide()
+      activate_bot( 'kroker')
+      $('#status').html( 'Kroker is thinking...')
+      getBotMove( false, KROKER_RANDOMNESS)
       return false
     })
 
@@ -419,17 +434,14 @@ function main( JGO, axutil) {
       g_complete_record = g_record.slice()
       g_complete_record.push( 'pass')
       gotoMove( g_complete_record.length)
-      if (hilite_move_btn.v) {
-        $('#status').html( 'thinking...')
-        getBotMove()
-      }
+      botmove_if_active()
     })
 
-    $('#btn_prev').click( () => { $('#histo').hide(); gotoMove( g_record_pos - 1); set_again( '#btn_prev'); hilite_move_btn(false) })
+    $('#btn_prev').click( () => { $('#histo').hide(); gotoMove( g_record_pos - 1); set_again( '#btn_prev'); activate_bot('') })
     $('#btn_next').click( () => { $('#histo').hide(); gotoMove( g_record_pos + 1); set_again( '#btn_next') })
-    $('#btn_back10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record_pos - 10); hilite_move_btn(false) })
+    $('#btn_back10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record_pos - 10); activate_bot('') })
     $('#btn_fwd10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record_pos + 10) })
-    $('#btn_first').click( () => { $('#histo').hide(); set_again( '#btn_next'); resetGame(); hilite_move_btn(false); $('#status').html( '&nbsp;') })
+    $('#btn_first').click( () => { $('#histo').hide(); set_again( '#btn_next'); resetGame(); activate_bot(''); $('#status').html( '&nbsp;') })
     $('#btn_last').click( () => { $('#histo').hide(); set_again( '#btn_prev'); gotoMove( g_complete_record.length) })
     $('#btn_again').click( () => { if (g_cur_btn) { $('#histo').hide(); $(g_cur_btn).click() } })
   } // set_btn_handlers()
