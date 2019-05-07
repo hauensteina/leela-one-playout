@@ -57,6 +57,11 @@ function main( JGO, axutil) {
             if (g_waiting_for_bot) {
               return
             }
+            if (scorePosition.active) {
+              gotoMove( g_record.length)
+              scorePosition.active = false
+              return
+            }
             var jboard = g_jrecord.jboard
             // clear hover away
             if (g_last_hover) { jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR) }
@@ -224,8 +229,7 @@ function main( JGO, axutil) {
         console.log( 'req id: ' + data.request_id + ' ' + g_request_id)
         if (data.request_id != g_request_id) { return }
         if ($('#status').html().includes( 'thinking')) {
-          //$('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(2))
-          $('#status').html( 'P(B wins): ' + data.diagnostics.winprob)
+          $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(4))
         }
         if (g_last_hover) { // the board thinks the hover stone is actually there. Ouch.
           g_jrecord.jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR)
@@ -276,6 +280,7 @@ function main( JGO, axutil) {
             alert( 'Too early to score. Sorry.')
             return
           }
+          scorePosition.active = true
           var black_points = data.result[0]
           var white_points = data.result[1]
           var diff = Math.abs( black_points - white_points)
@@ -302,6 +307,7 @@ function main( JGO, axutil) {
         )}
       ) // hit_endpoint()
   } // scorePosition()
+  scorePosition.active = false
 
   //------------------------
   function isGameOver() {
