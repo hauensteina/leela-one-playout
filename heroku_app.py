@@ -168,7 +168,7 @@ def save_sgf():
             m += c
     if m: movearr.append(m)
     result = moves2sgf( movearr)
-    fname = uuid.uuid4().hex + '.sgf'
+    fname = uuid.uuid4().hex[:7] + '.sgf'
     fh = BytesIO( result.encode('utf8'))
     resp = send_file( fh, as_attachment=True, attachment_filename=fname)
     return resp

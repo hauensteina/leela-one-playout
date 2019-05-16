@@ -54,6 +54,8 @@ function main( JGO, axutil) {
         //----------------------------
         canvas.addListener('click',
           function(coord, ev) {
+            var jboard = g_jrecord.jboard
+            if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
             if (g_waiting_for_bot) {
               return
             }
@@ -62,7 +64,6 @@ function main( JGO, axutil) {
               scorePosition.active = false
               return
             }
-            var jboard = g_jrecord.jboard
             // clear hover away
             if (g_last_hover) { jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR) }
             g_last_hover = false
@@ -213,7 +214,7 @@ function main( JGO, axutil) {
   //---------------------------------------------------------
   function getBotMove( prob_only_flag, kroker_randomness) {
     if (!kroker_randomness) {
-      kroker_randomness = 0.0;
+      kroker_randomness = 0.0
     }
     //console.log( g_record)
     if (g_waiting_for_bot) {
@@ -226,11 +227,9 @@ function main( JGO, axutil) {
       'config':{'randomness': kroker_randomness, 'request_id': g_request_id } },
       (data) => {
         if (!g_waiting_for_bot) { return }
-        console.log( 'req id: ' + data.request_id + ' ' + g_request_id)
+        //console.log( 'req id: ' + data.request_id + ' ' + g_request_id)
         if (data.request_id != g_request_id) { return }
-        if ($('#status').html().includes( 'thinking')) {
-          $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(4))
-        }
+        $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(4))
         if (g_last_hover) { // the board thinks the hover stone is actually there. Ouch.
           g_jrecord.jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR)
           g_last_hover = false
@@ -254,8 +253,13 @@ function main( JGO, axutil) {
           g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
           g_complete_record = g_record.slice()
           g_record_pos = g_complete_record.length
+          g_waiting_for_bot = false
+          var prob_only = true
+          getBotMove( prob_only)
         }
-        g_waiting_for_bot = false
+        else { // if prob_only_flag
+          g_waiting_for_bot = false
+        }
       })
   } // getBotMove()
 
@@ -281,20 +285,18 @@ function main( JGO, axutil) {
             return
           }
           scorePosition.active = true
-          var black_points = data.result[0]
-          var white_points = data.result[1]
-          var diff = Math.abs( black_points - white_points)
-          var rstr = `W+${diff} (before komi and handicap)`
-          if (black_points >= white_points) { rstr = `B+${diff}  (before komi and handicap)` }
-          $('#status').html( `Black:${black_points} &emsp; White:${white_points} &emsp; ${rstr}`)
+          var black_points = 0
+          var white_points = 0
           var node = g_jrecord.createNode( true)
           for (var bpoint of data.territory.black_points) {
+            black_points += 1
             var coord = rc2Jgo( bpoint[0], bpoint[1])
             if (node.jboard.stones [coord.i] [coord.j] != 1) {
               node.setMark( rc2Jgo( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
             }
           }
           for (var wpoint of data.territory.white_points) {
+            white_points += 1
             var coord = rc2Jgo( wpoint[0], wpoint[1])
             if (node.jboard.stones [coord.i] [coord.j] != 2) {
               node.setMark( rc2Jgo( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
@@ -303,9 +305,15 @@ function main( JGO, axutil) {
           for (var dpoint of data.territory.dame_points) {
             node.setMark( rc2Jgo( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
           }
-        } // (surepoints) =>
-        )}
-      ) // hit_endpoint()
+          /* black_points = data.result[0]
+           * white_points = data.result[1]*/
+          var diff = Math.abs( black_points - white_points)
+          var rstr = `W+${diff} (before komi and handicap)`
+          if (black_points >= white_points) { rstr = `B+${diff}  (before komi and handicap)` }
+          $('#status').html( `Black:${black_points} &emsp; White:${white_points} &emsp; ${rstr}`)
+        }) // (surepoints) =>
+      } // (data)
+    ) // hit_endpoint()
   } // scorePosition()
   scorePosition.active = false
 
