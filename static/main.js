@@ -576,6 +576,24 @@ function main( JGO, axutil) {
     $('#btn_first').click( () => { $('#histo').hide(); set_again( '#btn_next'); resetGame(); activate_bot(''); $('#status').html( '&nbsp;') })
     $('#btn_last').click( () => { $('#histo').hide(); set_again( '#btn_prev'); gotoMove( g_complete_record.length); activate_bot('') })
     $('#btn_again').click( () => { if (g_cur_btn) { $('#histo').hide(); $(g_cur_btn).click(); activate_bot('') } })
+
+    // Prevent zoom on double tap
+    $('#btn_clear_var').on('touchstart', prevent_zoom)
+    $('#btn_accept_var').on('touchstart', prevent_zoom)
+    $('#btn_leela').on('touchstart', prevent_zoom)
+    $('#btn_kroker').on('touchstart', prevent_zoom)
+    $('#btn_prob').on('touchstart', prevent_zoom)
+    $('#btn_save').on('touchstart', prevent_zoom)
+    $('#btn_nnscore').on('touchstart', prevent_zoom)
+    $('#btn_pass').on('touchstart', prevent_zoom)
+    $('#btn_undo').on('touchstart', prevent_zoom)
+    $('#btn_prev').on('touchstart', prevent_zoom)
+    $('#btn_next').on('touchstart', prevent_zoom)
+    $('#btn_back10').on('touchstart', prevent_zoom)
+    $('#btn_fwd10').on('touchstart', prevent_zoom)
+    $('#btn_first').on('touchstart', prevent_zoom)
+    $('#btn_last').on('touchstart', prevent_zoom)
+    $('#btn_again').on('touchstart', prevent_zoom)
   } // set_btn_handlers()
 
   // Arrow key actions
@@ -606,5 +624,19 @@ function main( JGO, axutil) {
       completion( surepoints)
     })
   } // plot_histo()
+
+  // Use like btn.addEventListener('touchstart', prevent_zoom)
+  //------------------------------------------------------------
+  function prevent_zoom(e) {
+    var t2 = e.timeStamp
+    var t1 = e.currentTarget.dataset.lastTouch || t2
+    var dt = t2 - t1
+    var fingers = e.touches.length
+    e.currentTarget.dataset.lastTouch = t2
+
+    if (!dt || dt > 500 || fingers > 1) return
+    e.preventDefault()
+    e.target.click()
+  } // prevent_zoom()
 
 } // function main()
