@@ -157,13 +157,13 @@ function main( JGO, axutil) {
         gotoMove( g_record.length)
         handle_variation.var_backup = null
         var_button_state('off')
-        $('#status').html( 'Variation discarded')
+        $('#status').html( 'Variation rejected')
       }
     }
     else if (action == 'accept') { // Forget saved game record and replace it with the variation
       handle_variation.var_backup = null
       var_button_state( 'off')
-      $('#status').html( 'Variation is now the main line')
+      $('#status').html( 'Variation accepted')
     }
   } // handle_variation()
   handle_variation.var_backup = null
@@ -491,8 +491,8 @@ function main( JGO, axutil) {
     if (state == 'on') {
       $('#btn_clear_var').removeClass('disabled')
       $('#btn_accept_var').removeClass('disabled')
-      $('#btn_clear_var').css('color', 'green');
-      $('#btn_accept_var').css('color', 'red');
+      $('#btn_clear_var').css('color', 'red');
+      $('#btn_accept_var').css('color', 'green');
     }
     else {
       $('#btn_clear_var').addClass('disabled')
