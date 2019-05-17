@@ -150,8 +150,7 @@ function main( JGO, axutil) {
     if (action == 'save') { // Save record and start a variation
       handle_variation.var_backup = g_complete_record
       handle_variation.var_pos = g_record.length
-      $('#btn_clear_var').removeClass('disabled')
-      $('#btn_accept_var').removeClass('disabled')
+      var_button_state('on')
     }
     else if (action == 'clear') { // Restore game record and forget the variation
       if (handle_variation.var_backup) {
@@ -159,15 +158,13 @@ function main( JGO, axutil) {
         g_record = g_complete_record.slice( 0, handle_variation.var_pos)
         gotoMove( g_record.length)
         handle_variation.var_backup = null
-        $('#btn_clear_var').addClass('disabled')
-        $('#btn_accept_var').addClass('disabled')
+        var_button_state('off')
         alert( 'Variation discarded')
       }
     }
     else if (action == 'accept') { // Forget saved game record and replace it with the variation
       handle_variation.var_backup = null
-      $('#btn_clear_var').addClass('disabled')
-      $('#btn_accept_var').addClass('disabled')
+      var_button_state( 'off')
       alert( 'Variation is now the main line')
     }
   } // handle_variation()
@@ -433,7 +430,7 @@ function main( JGO, axutil) {
 
     if (id == '#btn_prev') {
       g_cur_btn = '#btn_prev'
-      $('#btn_again').html('Undo')
+      $('#btn_again').html('Prev')
     }
   } // set_again()
 
@@ -469,12 +466,34 @@ function main( JGO, axutil) {
     }
   } // botmove_if_active()
 
+  //-------------------------------------------
+  function var_button_state( state) {
+    if (!state) {
+      if ($('#btn_clear_var').hasClass('disabled')) {
+        return 'off'
+      }
+      else {
+        return 'on'
+      }
+    }
+    if (state == 'on') {
+      $('#btn_clear_var').removeClass('disabled')
+      $('#btn_accept_var').removeClass('disabled')
+      $('#btn_clear_var').css('color', 'green');
+      $('#btn_accept_var').css('color', 'red');
+    }
+    else {
+      $('#btn_clear_var').addClass('disabled')
+      $('#btn_accept_var').addClass('disabled')
+      $('#btn_clear_var').css('color', 'gray');
+      $('#btn_accept_var').css('color', 'gray');
+    }
+  } // var_button_state()
+
   // Set button callbacks
   //------------------------------
   function set_btn_handlers() {
-
-    $('#btn_clear_var').addClass('disabled')
-    $('#btn_accept_var').addClass('disabled')
+    var_button_state( 'off')
 
     $('#btn_clear_var').click( () => {
       if ($('#btn_clear_var').hasClass('disabled')) { return }
@@ -537,6 +556,7 @@ function main( JGO, axutil) {
       botmove_if_active()
     })
 
+    $('#btn_undo').click( () => { $('#histo').hide(); gotoMove( g_record.length - 1); g_complete_record = g_record; activate_bot('') })
     $('#btn_prev').click( () => { $('#histo').hide(); gotoMove( g_record.length - 1); set_again( '#btn_prev'); activate_bot('') })
     $('#btn_next').click( () => { $('#histo').hide(); gotoMove( g_record.length + 1); set_again( '#btn_next'); activate_bot('') })
     $('#btn_back10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record.length - 10); activate_bot('') })
