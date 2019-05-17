@@ -70,7 +70,7 @@ function main( JGO, axutil) {
 
             // Add the new move
             var mstr = coordsToString( coord)
-            if (g_record.length < g_complete_record.length) { // we are not at the end
+            if (g_complete_record && g_record.length < g_complete_record.length) { // we are not at the end
               if (!handle_variation.var_backup) { // we are not in a variation, make one
                 handle_variation( 'save')
               }
