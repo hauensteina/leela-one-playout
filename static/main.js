@@ -69,17 +69,15 @@ function main( JGO, axutil) {
             g_last_hover = false
 
             // Add the new move
+            maybe_start_var()
             var mstr = coordsToString( coord)
-            if (g_complete_record && g_record.length < g_complete_record.length) { // we are not at the end
-              if (!handle_variation.var_backup) { // we are not in a variation, make one
-                handle_variation( 'save')
-              }
-            }
-
             g_complete_record = g_record.slice()
             g_complete_record.push( mstr)
             gotoMove( g_complete_record.length)
-            botmove_if_active()
+            var prob_only = true
+            if (!botmove_if_active()) {
+              getBotMove( prob_only)
+            }
           }
         ) // click
 
@@ -149,7 +147,7 @@ function main( JGO, axutil) {
   function handle_variation( action) {
     if (action == 'save') { // Save record and start a variation
       handle_variation.var_backup = g_complete_record
-      handle_variation.var_pos = g_record.length
+      handle_variation.var_pos = g_record.length + 1
       var_button_state('on')
     }
     else if (action == 'clear') { // Restore game record and forget the variation
@@ -159,13 +157,13 @@ function main( JGO, axutil) {
         gotoMove( g_record.length)
         handle_variation.var_backup = null
         var_button_state('off')
-        alert( 'Variation discarded')
+        $('#status').html( 'Variation discarded')
       }
     }
     else if (action == 'accept') { // Forget saved game record and replace it with the variation
       handle_variation.var_backup = null
       var_button_state( 'off')
-      alert( 'Variation is now the main line')
+      $('#status').html( 'Variation is now the main line')
     }
   } // handle_variation()
   handle_variation.var_backup = null
@@ -245,6 +243,16 @@ function main( JGO, axutil) {
     }
   } // applyMove()
 
+  // Start a variation if we're not at the end
+  //---------------------------------------------
+  function maybe_start_var() {
+    if (g_complete_record && g_record.length < g_complete_record.length) {
+      if (!handle_variation.var_backup) { // we are not in a variation, make one
+        handle_variation( 'save')
+      }
+    }
+  } // maybe_start_var()
+
   // Get next move from the bot and show on board
   //---------------------------------------------------------
   function getBotMove( prob_only_flag, kroker_randomness) {
@@ -282,6 +290,7 @@ function main( JGO, axutil) {
             alert( 'The bot resigns. You beat the bot!')
           }
           else {
+            maybe_start_var()
             var botCoord = stringToCoords( data.bot_move)
             applyMove( g_player, botCoord)
           }
@@ -455,15 +464,18 @@ function main( JGO, axutil) {
 
   //--------------------------------
   function botmove_if_active() {
-    if (g_waiting_for_bot) { return }
+    if (g_waiting_for_bot) { return true }
     if (activate_bot.botname == 'leela') {
       $('#status').html( 'Leela is thinking...')
       getBotMove( false, 0.0)
+      return true
     }
     else if (activate_bot.botname == 'kroker') {
       $('#status').html( 'Kroker is thinking...')
       getBotMove( false, KROKER_RANDOMNESS)
+      return true
     }
+    return false
   } // botmove_if_active()
 
   //-------------------------------------------
