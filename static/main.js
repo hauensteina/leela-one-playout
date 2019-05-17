@@ -29,7 +29,7 @@ function main( JGO, axutil) {
   var g_lastMove = null // last move coordinate
   var g_record = null
   var g_complete_record = null
-  var g_record_pos = 0
+  //var g_record_pos = 0
   var g_timer = null
   var g_waiting_for_bot = null
   var g_request_id = ''
@@ -67,7 +67,15 @@ function main( JGO, axutil) {
             // clear hover away
             if (g_last_hover) { jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR) }
             g_last_hover = false
+
+            // Add the new move
             var mstr = coordsToString( coord)
+            if (g_record.length < g_complete_record.length) { // we are not at the end
+              if (!handle_variation.var_backup) { // we are not in a variation, make one
+                handle_variation( 'save')
+              }
+            }
+
             g_complete_record = g_record.slice()
             g_complete_record.push( mstr)
             gotoMove( g_complete_record.length)
@@ -125,7 +133,7 @@ function main( JGO, axutil) {
         var moves = res.moves
         replayMoveList( moves)
         g_complete_record = g_record.slice()
-        g_record_pos = g_complete_record.length
+        //g_record_pos = g_complete_record.length
         var winner = res.winner.toUpperCase()
         var komi = res.komi
         // Game Info
@@ -136,6 +144,36 @@ function main( JGO, axutil) {
     }) // $('sgf-file')
   } // set_upload_sgf_handler()
 
+  // Make a variation, or restore from var, or forget var
+  //--------------------------------------------------------
+  function handle_variation( action) {
+    if (action == 'save') { // Save record and start a variation
+      handle_variation.var_backup = g_complete_record
+      handle_variation.var_pos = g_record.length
+      $('#btn_clear_var').removeClass('disabled')
+      $('#btn_accept_var').removeClass('disabled')
+    }
+    else if (action == 'clear') { // Restore game record and forget the variation
+      if (handle_variation.var_backup) {
+        g_complete_record = handle_variation.var_backup
+        g_record = g_complete_record.slice( 0, handle_variation.var_pos)
+        gotoMove( g_record.length)
+        handle_variation.var_backup = null
+        $('#btn_clear_var').addClass('disabled')
+        $('#btn_accept_var').addClass('disabled')
+        alert( 'Variation discarded')
+      }
+    }
+    else if (action == 'accept') { // Forget saved game record and replace it with the variation
+      handle_variation.var_backup = null
+      $('#btn_clear_var').addClass('disabled')
+      $('#btn_accept_var').addClass('disabled')
+      alert( 'Variation is now the main line')
+    }
+  } // handle_variation()
+  handle_variation.var_backup = null
+  handle_variation.var_pos = 0
+
   //------------------------
   function resetGame() {
     // Instantiate globals
@@ -143,7 +181,7 @@ function main( JGO, axutil) {
     g_ko = false
     g_lastMove = false
     g_record = []
-    g_record_pos = 0
+    //g_record_pos = 0
     g_timer = null
     g_waiting_for_bot = false
 
@@ -172,7 +210,7 @@ function main( JGO, axutil) {
   //----------------------------------
   function addMove( movestr) {
     g_record.push( movestr)
-    g_record_pos = g_record.length
+    //g_record_pos = g_record.length
   }
 
   //-----------------------------------
@@ -252,7 +290,7 @@ function main( JGO, axutil) {
           }
           g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
           g_complete_record = g_record.slice()
-          g_record_pos = g_complete_record.length
+          //g_record_pos = g_complete_record.length
           g_waiting_for_bot = false
           var prob_only = true
           getBotMove( prob_only)
@@ -384,7 +422,7 @@ function main( JGO, axutil) {
     var record = g_complete_record.slice( 0, n)
     replayMoveList( record)
     $('#status').html( `${n} / ${totmoves}`)
-    g_record_pos = n
+    //g_record_pos = n
   } // gotoMove()
 
   // Set the big button to next or prev
@@ -434,6 +472,20 @@ function main( JGO, axutil) {
   // Set button callbacks
   //------------------------------
   function set_btn_handlers() {
+
+    $('#btn_clear_var').addClass('disabled')
+    $('#btn_accept_var').addClass('disabled')
+
+    $('#btn_clear_var').click( () => {
+      if ($('#btn_clear_var').hasClass('disabled')) { return }
+      handle_variation( 'clear')
+    })
+
+    $('#btn_accept_var').click( () => {
+      if ($('#btn_accept_var').hasClass('disabled')) { return }
+      handle_variation( 'accept')
+    })
+
     $('#btn_leela').click( () => {
       $('#histo').hide()
       activate_bot( 'leela')
@@ -485,10 +537,10 @@ function main( JGO, axutil) {
       botmove_if_active()
     })
 
-    $('#btn_prev').click( () => { $('#histo').hide(); gotoMove( g_record_pos - 1); set_again( '#btn_prev'); activate_bot('') })
-    $('#btn_next').click( () => { $('#histo').hide(); gotoMove( g_record_pos + 1); set_again( '#btn_next'); activate_bot('') })
-    $('#btn_back10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record_pos - 10); activate_bot('') })
-    $('#btn_fwd10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record_pos + 10); activate_bot('') })
+    $('#btn_prev').click( () => { $('#histo').hide(); gotoMove( g_record.length - 1); set_again( '#btn_prev'); activate_bot('') })
+    $('#btn_next').click( () => { $('#histo').hide(); gotoMove( g_record.length + 1); set_again( '#btn_next'); activate_bot('') })
+    $('#btn_back10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record.length - 10); activate_bot('') })
+    $('#btn_fwd10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record.length + 10); activate_bot('') })
     $('#btn_first').click( () => { $('#histo').hide(); set_again( '#btn_next'); resetGame(); activate_bot(''); $('#status').html( '&nbsp;') })
     $('#btn_last').click( () => { $('#histo').hide(); set_again( '#btn_prev'); gotoMove( g_complete_record.length); activate_bot('') })
     $('#btn_again').click( () => { if (g_cur_btn) { $('#histo').hide(); $(g_cur_btn).click(); activate_bot('') } })
@@ -504,11 +556,11 @@ function main( JGO, axutil) {
     }
     else if (e.keyCode == '37') { // left arrow
       activate_bot('')
-      gotoMove( g_record_pos - 1)
+      gotoMove( g_record.length - 1)
     }
     else if (e.keyCode == '39') { // right arrow
       activate_bot('')
-      gotoMove( g_record_pos + 1)
+      gotoMove( g_record.length + 1)
     }
   } // checkKey()
 
