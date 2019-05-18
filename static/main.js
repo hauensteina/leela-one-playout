@@ -157,7 +157,7 @@ function main( JGO, axutil) {
         gotoMove( g_record.length)
         handle_variation.var_backup = null
         var_button_state('off')
-        $('#status').html( 'Variation rejected')
+        $('#status').html( 'Variation deleted')
       }
     }
     else if (action == 'accept') { // Forget saved game record and replace it with the variation
@@ -490,15 +490,19 @@ function main( JGO, axutil) {
     }
     if (state == 'on') {
       $('#btn_clear_var').removeClass('disabled')
+      $('#btn_clear_var').addClass('btn-danger')
       $('#btn_accept_var').removeClass('disabled')
-      $('#btn_clear_var').css('color', 'red');
-      $('#btn_accept_var').css('color', 'green');
+      $('#btn_accept_var').addClass('btn-success')
+      $('#btn_clear_var').css('color', 'black');
+      $('#btn_accept_var').css('color', 'black');
     }
     else {
       $('#btn_clear_var').addClass('disabled')
+      $('#btn_clear_var').removeClass('btn-danger')
       $('#btn_accept_var').addClass('disabled')
-      $('#btn_clear_var').css('color', 'gray');
-      $('#btn_accept_var').css('color', 'gray');
+      $('#btn_accept_var').removeClass('btn-success')
+      $('#btn_clear_var').css('color', 'black');
+      $('#btn_accept_var').css('color', 'black');
     }
   } // var_button_state()
 
@@ -631,10 +635,10 @@ function main( JGO, axutil) {
     var t2 = e.timeStamp
     var t1 = e.currentTarget.dataset.lastTouch || t2
     var dt = t2 - t1
-    var fingers = e.touches.length
+    //var fingers = e.touches.length
     e.currentTarget.dataset.lastTouch = t2
 
-    if (!dt || dt > 500 || fingers > 1) return
+    //if (!dt || dt > 500 || fingers > 1) return
     e.preventDefault()
     e.target.click()
   } // prevent_zoom()
