@@ -132,10 +132,10 @@ function main( JGO, axutil) {
         replayMoveList( moves)
         g_complete_record = g_record.slice()
         //g_record_pos = g_complete_record.length
-        var winner = res.winner.toUpperCase()
+        //var winner = res.winner.toUpperCase()
         var komi = res.komi
         // Game Info
-        $('#game_info').html( `B:${res.pb} &nbsp;&nbsp; W:${res.pw} &nbsp;&nbsp; Winner:${winner} &nbsp;&nbsp; Komi:${komi}`)
+        $('#game_info').html( `B:${res.pb} &nbsp;&nbsp; W:${res.pw} &nbsp;&nbsp; Result:${res.RE} &nbsp;&nbsp; Komi:${komi}`)
         $('#fname').html( res.fname)
         set_again( '#btn_prev')
       })

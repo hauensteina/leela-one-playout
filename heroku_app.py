@@ -78,6 +78,7 @@ def histo():
 def sgf2list():
     f = request.files['file']
     sgfstr = f.read()
+    RE = re.sub(r'.*RE\[([^\[]*)\].*', r'\1', sgfstr.decode('utf8'),flags=re.DOTALL)
     sgf = Sgf_game.from_string( sgfstr)
     player_white = sgf.get_player_name('w')
     player_black = sgf.get_player_name('b')
@@ -118,7 +119,7 @@ def sgf2list():
             moves.append( move2coords( move))
 
     return jsonify( {'result': {'moves':moves, 'pb':player_black, 'pw':player_white,
-                                'winner':winner, 'komi':komi, 'fname':fname} } )
+                                'winner':winner, 'komi':komi, 'fname':fname, 'RE':RE} } )
 
 # Convert a list of moves like ['Q16',...] to sgf
 #---------------------------------------------------
