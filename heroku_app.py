@@ -79,6 +79,8 @@ def sgf2list():
     f = request.files['file']
     sgfstr = f.read()
     RE = re.sub(r'.*RE\[([^\[]*)\].*', r'\1', sgfstr.decode('utf8'),flags=re.DOTALL)
+    if len(RE) > 10:
+        RE = ''
     sgf = Sgf_game.from_string( sgfstr)
     player_white = sgf.get_player_name('w')
     player_black = sgf.get_player_name('b')
