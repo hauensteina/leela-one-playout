@@ -6,8 +6,8 @@
 
 'use strict'
 
-//var LEELA_SERVER = 'http://ahaux.com:2718/' // test
-var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
+var LEELA_SERVER = 'http://ahaux.com:2718/' // test
+//var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
 var KROKER_RANDOMNESS = 0.5
 
 
@@ -74,9 +74,8 @@ function main( JGO, axutil) {
             g_complete_record = g_record.slice()
             g_complete_record.push( mstr)
             gotoMove( g_complete_record.length)
-            var prob_only = true
             if (!botmove_if_active()) {
-              getBotMove( prob_only)
+              getProb()
             }
           }
         ) // click
@@ -253,9 +252,23 @@ function main( JGO, axutil) {
     }
   } // maybe_start_var()
 
+  // Get current winning probability
+  //------------------------------------
+  function getProb() {
+    if (g_waiting_for_bot) { return }
+    //console.log( 'getprob ' + getProb.count)
+    getProb.count += 1
+    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record,
+      'config':{'randomness': 0, 'request_id': 0 } },
+      (data) => {
+        $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(4))
+      })
+  } // getProb()
+  getProb.count = 0
+
   // Get next move from the bot and show on board
-  //---------------------------------------------------------
-  function getBotMove( prob_only_flag, kroker_randomness) {
+  //-------------------------------------------------
+  function getBotMove( kroker_randomness) {
     if (!kroker_randomness) {
       kroker_randomness = 0.0
     }
@@ -278,32 +291,26 @@ function main( JGO, axutil) {
           g_last_hover = false
         }
 
-        if (!prob_only_flag) {
-          if (data.bot_move == 'pass') {
-            addMove( data.bot_move)
-            g_ko = false
-            alert( 'The bot passes. Click on the Score button.')
-          }
-          else if (data.bot_move == 'resign' || data.diagnostics.winprob > 0.996) {
-            addMove( data.bot_move)
-            g_ko = false
-            alert( 'The bot resigns. You beat the bot!')
-          }
-          else {
-            maybe_start_var()
-            var botCoord = stringToCoords( data.bot_move)
-            applyMove( g_player, botCoord)
-          }
-          g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
-          g_complete_record = g_record.slice()
-          //g_record_pos = g_complete_record.length
-          g_waiting_for_bot = false
-          var prob_only = true
-          getBotMove( prob_only)
+        if (data.bot_move == 'pass') {
+          addMove( data.bot_move)
+          g_ko = false
+          alert( 'The bot passes. Click on the Score button.')
         }
-        else { // if prob_only_flag
-          g_waiting_for_bot = false
+        else if (data.bot_move == 'resign' || data.diagnostics.winprob > 0.996) {
+          addMove( data.bot_move)
+          g_ko = false
+          alert( 'The bot resigns. You beat the bot!')
         }
+        else {
+          maybe_start_var()
+          var botCoord = stringToCoords( data.bot_move)
+          applyMove( g_player, botCoord)
+        }
+        g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
+        g_complete_record = g_record.slice()
+        //g_record_pos = g_complete_record.length
+        g_waiting_for_bot = false
+        getProb()
       })
   } // getBotMove()
 
@@ -467,12 +474,12 @@ function main( JGO, axutil) {
     if (g_waiting_for_bot) { return true }
     if (activate_bot.botname == 'leela') {
       $('#status').html( 'Leela is thinking...')
-      getBotMove( false, 0.0)
+      getBotMove( 0.0)
       return true
     }
     else if (activate_bot.botname == 'kroker') {
       $('#status').html( 'Kroker is thinking...')
-      getBotMove( false, KROKER_RANDOMNESS)
+      getBotMove( KROKER_RANDOMNESS)
       return true
     }
     return false
@@ -526,7 +533,7 @@ function main( JGO, axutil) {
       activate_bot( 'leela')
       set_again( '#btn_prev')
       $('#status').html( 'Leela is thinking...')
-      getBotMove( false, 0.0)
+      getBotMove( 0.0)
       return false
     })
 
@@ -535,15 +542,14 @@ function main( JGO, axutil) {
       activate_bot( 'kroker')
       set_again( '#btn_prev')
       $('#status').html( 'Kroker is thinking...')
-      getBotMove( false, KROKER_RANDOMNESS)
+      getBotMove( KROKER_RANDOMNESS)
       return false
     })
 
     $('#btn_prob').click( () => {
       $('#histo').hide()
       $('#status').html( 'thinking...')
-      var prob_only_flag = true
-      getBotMove( prob_only_flag)
+      getProb()
       return false
     })
 
