@@ -6,8 +6,8 @@
 
 'use strict'
 
-//var LEELA_SERVER = 'http://ahaux.com:2718/' // test
-var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
+var LEELA_SERVER = 'http://ahaux.com:2718/' // test
+//var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
 var KROKER_RANDOMNESS = 0.5
 
 
@@ -259,7 +259,7 @@ function main( JGO, axutil) {
     //console.log( 'getprob ' + getProb.count)
     getProb.count += 1
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record,
-      'config':{'randomness': 0, 'request_id': 0 } },
+      'config':{'randomness': -1, 'request_id': 0 } },
       (data) => {
         $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(4))
       })
