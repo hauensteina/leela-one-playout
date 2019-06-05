@@ -256,15 +256,12 @@ function main( JGO, axutil) {
   //------------------------------------
   function getProb() {
     if (g_waiting_for_bot) { return }
-    //console.log( 'getprob ' + getProb.count)
-    getProb.count += 1
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record,
-      'config':{'randomness': -1, 'request_id': 0 } },
+      'config':{'randomness': 0.0, 'request_id': 0 } },
       (data) => {
         $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(4))
       })
   } // getProb()
-  getProb.count = 0
 
   // Get next move from the bot and show on board
   //-------------------------------------------------
