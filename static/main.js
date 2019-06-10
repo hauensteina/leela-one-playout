@@ -68,6 +68,11 @@ function main( JGO, axutil) {
             if (g_last_hover) { jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR) }
             g_last_hover = false
 
+            // Click on empty board resets everything
+            if (g_record.length == 0) {
+              resetGame()
+            }
+
             // Add the new move
             maybe_start_var()
             var mstr = coordsToString( coord)
@@ -125,7 +130,7 @@ function main( JGO, axutil) {
       var numFiles = input.get(0).files ? input.get(0).files.length : 1
       var label = input.val().replace(/\\/g, '/').replace(/.*\//, '')
       // Call API to get the moves, then replay on the board
-      axutil.hit_endpoint( '/sgf2list', myfile, (response) => {
+      axutil.hit_endpoint( '/sgf2list' + '?tt=' + Math.random(), myfile, (response) => {
         var res = response.result
         var moves = res.moves
         replayMoveList( moves)
@@ -169,7 +174,7 @@ function main( JGO, axutil) {
   handle_variation.var_pos = 0
 
   //------------------------
-  function resetGame() {
+  function gotoFirstMove() {
     // Instantiate globals
     g_player = JGO.BLACK // next player
     g_ko = false
@@ -183,6 +188,13 @@ function main( JGO, axutil) {
     g_jrecord.jboard.clear()
     g_jrecord.root = g_jrecord.current = null
     //g_jrecord.info = {}
+  } // gotoFirstMove()
+
+  //-----------------------
+  function resetGame() {
+    gotoFirstMove()
+    g_complete_record = []
+    handle_variation( 'clear')
   } // resetGame()
 
   //--------------------------------
@@ -256,7 +268,7 @@ function main( JGO, axutil) {
   //------------------------------------
   function getProb() {
     if (g_waiting_for_bot) { return }
-    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record,
+    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT + '?tt=' + Math.random(), {'board_size': BOARD_SIZE, 'moves': g_record,
       'config':{'randomness': 0.0, 'request_id': 0 } },
       (data) => {
         $('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(4))
@@ -276,7 +288,7 @@ function main( JGO, axutil) {
     }
     g_waiting_for_bot = true
     g_request_id = Math.random() + ''
-    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': g_record,
+    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT + '?tt=' + Math.random(), {'board_size': BOARD_SIZE, 'moves': g_record,
       'config':{'randomness': kroker_randomness, 'request_id': g_request_id } },
       (data) => {
         if (!g_waiting_for_bot) { return }
@@ -325,7 +337,7 @@ function main( JGO, axutil) {
       console.log( 'still waiting')
       return
     }
-    axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': g_record},
+    axutil.hit_endpoint( LEELA_SERVER + endpoint + '?tt=' + Math.random(), {'board_size': BOARD_SIZE, 'moves': g_record},
       (data) => {
         plot_histo(data, (surepoints) => {
           if (surepoints < 120) {
@@ -406,10 +418,10 @@ function main( JGO, axutil) {
     return false
   } // newGame()
 
-  // Init new game and replay the moves
+  // Replay game from empty board.
   //------------------------------------
   function replayMoveList( mlist) {
-    resetGame()
+    gotoFirstMove()
     for (var move_string of mlist) {
       if (move_string == 'pass' || move_string == 'resign') {
         g_ko = false
@@ -428,7 +440,7 @@ function main( JGO, axutil) {
   function gotoMove( n) {
     var totmoves = g_complete_record.length
     if (n > totmoves) { n = totmoves }
-    if (n < 1) { resetGame(); return }
+    if (n < 1) { gotoFirstMove(); return }
     var record = g_complete_record.slice( 0, n)
     replayMoveList( record)
     $('#status').html( `${n} / ${totmoves}`)
@@ -526,6 +538,9 @@ function main( JGO, axutil) {
     })
 
     $('#btn_leela').click( () => {
+      if (g_record.length == 0) {
+        resetGame()
+      }
       $('#histo').hide()
       activate_bot( 'leela')
       set_again( '#btn_prev')
@@ -535,6 +550,9 @@ function main( JGO, axutil) {
     })
 
     $('#btn_kroker').click( () => {
+      if (g_record.length == 0) {
+        resetGame()
+      }
       $('#histo').hide()
       activate_bot( 'kroker')
       set_again( '#btn_prev')
@@ -580,7 +598,7 @@ function main( JGO, axutil) {
     $('#btn_next').click( () => { $('#histo').hide(); gotoMove( g_record.length + 1); set_again( '#btn_next'); activate_bot('') })
     $('#btn_back10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record.length - 10); activate_bot('') })
     $('#btn_fwd10').click( () => { $('#histo').hide(); set_again(''); gotoMove( g_record.length + 10); activate_bot('') })
-    $('#btn_first').click( () => { $('#histo').hide(); set_again( '#btn_next'); resetGame(); activate_bot(''); $('#status').html( '&nbsp;') })
+    $('#btn_first').click( () => { $('#histo').hide(); set_again( '#btn_next'); gotoFirstMove(); activate_bot(''); $('#status').html( '&nbsp;') })
     $('#btn_last').click( () => { $('#histo').hide(); set_again( '#btn_prev'); gotoMove( g_complete_record.length); activate_bot('') })
     $('#btn_again').click( () => { if (g_cur_btn) { $('#histo').hide(); $(g_cur_btn).click(); activate_bot('') } })
 
@@ -625,7 +643,7 @@ function main( JGO, axutil) {
   //---------------------------------------------
   function plot_histo( data, completion) {
     var wp = data.white_probs
-    axutil.hit_endpoint( '/histo', [wp,20,0,1], (res) => {
+    axutil.hit_endpoint( '/histo'  + '?tt=' + Math.random() , [wp,20,0,1], (res) => {
       var surepoints = res[0][1] + res[res.length-1][1]
       axutil.barchart( '#histo', res, 240)
       completion( surepoints)
