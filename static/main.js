@@ -192,9 +192,9 @@ function main( JGO, axutil) {
 
   //-----------------------
   function resetGame() {
+    handle_variation( 'clear')
     gotoFirstMove()
     g_complete_record = []
-    handle_variation( 'clear')
   } // resetGame()
 
   //--------------------------------
