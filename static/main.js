@@ -6,8 +6,8 @@
 
 'use strict'
 
-//var LEELA_SERVER = 'http://ahaux.com:2718/' // test
-var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
+var LEELA_SERVER = 'http://ahaux.com:2718/' // test
+//var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
 var KROKER_RANDOMNESS = 0.5
 
 
@@ -345,18 +345,14 @@ function main( JGO, axutil) {
             return
           }
           scorePosition.active = true
-          var black_points = 0
-          var white_points = 0
           var node = g_jrecord.createNode( true)
           for (var bpoint of data.territory.black_points) {
-            black_points += 1
             var coord = rc2Jgo( bpoint[0], bpoint[1])
             if (node.jboard.stones [coord.i] [coord.j] != 1) {
               node.setMark( rc2Jgo( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
             }
           }
           for (var wpoint of data.territory.white_points) {
-            white_points += 1
             var coord = rc2Jgo( wpoint[0], wpoint[1])
             if (node.jboard.stones [coord.i] [coord.j] != 2) {
               node.setMark( rc2Jgo( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
@@ -365,8 +361,8 @@ function main( JGO, axutil) {
           for (var dpoint of data.territory.dame_points) {
             node.setMark( rc2Jgo( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
           }
-          /* black_points = data.result[0]
-           * white_points = data.result[1]*/
+          var black_points = data.result[0]
+          var white_points = data.result[1]
           var diff = Math.abs( black_points - white_points)
           var rstr = `W+${diff} (before komi and handicap)`
           if (black_points >= white_points) { rstr = `B+${diff}  (before komi and handicap)` }
