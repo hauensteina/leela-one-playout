@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+
+sed -i '' "s/^[^/]*http:\/\/ahaux.com:2718/var LEELA_SERVER = 'https:\/\/ahaux.com\/leela-server/" static/main.js

@@ -6,7 +6,7 @@
 
 'use strict'
 
-var LEELA_SERVER = 'http://ahaux.com:2718/' // test
+var LEELA_SERVER = 'https://ahaux.com/leela-server/'
 //var LEELA_SERVER = http://ahaux.com:2718/' // test
 //var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
 var KROKER_RANDOMNESS = 0.5
