@@ -7,9 +7,9 @@
 'use strict'
 
 //var LEELA_SERVER = 'http://ahaux.com:2718/' // test
-var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
+//var LEELA_SERVER = 'https://ahaux.com/leela_server/' // prod
+var LEELA_SERVER = '@SERVER'
 var KROKER_RANDOMNESS = 0.5
-
 
 //==============================
 function main( JGO, axutil) {
