@@ -2,3 +2,4 @@
 #
 
 sed -i '' "s/^[^/]*http:\/\/ahaux.com:2718/var LEELA_SERVER = 'https:\/\/ahaux.com\/leela_server/" static/main.js
+git add static/main.js
