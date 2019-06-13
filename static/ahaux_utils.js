@@ -154,7 +154,6 @@ class AhauxUtils
   hit_endpoint( url, args, completion) {
     if (args.constructor.name == 'File') { // uploading a file
       var myfile = args
-      //debugger
       var data = new FormData()
       data.append( 'file',myfile)
       fetch( url,

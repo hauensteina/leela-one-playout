@@ -19,6 +19,7 @@ from io import BytesIO
 
 import flask
 from flask import jsonify,request,Response,send_file,Flask
+import requests
 
 from gotypes import Point
 from sgf import Sgf_game
@@ -38,6 +39,7 @@ app.config.update(
 app.config['DEBUG'] = os.getenv("DEBUG", False)
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
+LEELA_SERVER = 'https://ahaux.com/leela_server/'
 
 # @app.after_request
 # #---------------------
@@ -59,6 +61,24 @@ def entry_point():
     return app.send_static_file('index.html')
     # html = open('static/index.html').read()
     # return html
+
+@app.route('/select-move/<bot_name>', methods=['POST'])
+# Forward select-move to the leela server
+#------------------------------------------
+def select_move( bot_name):
+    endpoint = 'select-move/' + bot_name
+    args = request.json
+    res = fwd_to_leela( endpoint, args)
+    return jsonify( res)
+
+@app.route('/nnscore', methods=['POST'])
+# Forward nnscore the leela server
+#------------------------------------------
+def nnscore():
+    endpoint = 'nnscore'
+    args = request.json
+    res = fwd_to_leela( endpoint, args)
+    return jsonify( res)
 
 @app.route('/histo', methods=['POST'])
 # Take a bunch of numbers, number of bins, min, max and return a histo.
@@ -123,6 +143,40 @@ def sgf2list():
     return jsonify( {'result': {'moves':moves, 'pb':player_black, 'pw':player_white,
                                 'winner':winner, 'komi':komi, 'fname':fname, 'RE':RE} } )
 
+@app.route('/save-sgf', methods=['GET'])
+# Convert moves to sgf and return as file attachment.
+# Moves come like 'Q16D4...' to shorten URL.
+#-------------------------------------------------------------
+def save_sgf():
+    moves = request.args.get( 'moves')
+    movearr = []
+    m = ''
+    for c in moves:
+        if c > '9': # a letter
+            if m: movearr.append(m)
+            m = c
+        else:
+            m += c
+    if m: movearr.append(m)
+    result = moves2sgf( movearr)
+    fname = uuid.uuid4().hex[:7] + '.sgf'
+    fh = BytesIO( result.encode('utf8'))
+    resp = send_file( fh, as_attachment=True, attachment_filename=fname)
+    return resp
+
+
+#----------
+# Helpers
+#-----------
+
+# Forward request to leela server
+#----------------------------------------
+def fwd_to_leela( endpoint, args):
+    url = LEELA_SERVER + endpoint
+    resp = requests.post( url, json=args)
+    res = resp.json()
+    return res
+
 # Convert a list of moves like ['Q16',...] to sgf
 #---------------------------------------------------
 def moves2sgf( moves):
@@ -154,27 +208,6 @@ def moves2sgf( moves):
     sgf += movestr
     sgf += ')'
     return sgf
-
-@app.route('/save-sgf', methods=['GET'])
-# Convert moves to sgf and return as file attachment.
-# Moves come like 'Q16D4...' to shorten URL.
-#-------------------------------------------------------------
-def save_sgf():
-    moves = request.args.get( 'moves')
-    movearr = []
-    m = ''
-    for c in moves:
-        if c > '9': # a letter
-            if m: movearr.append(m)
-            m = c
-        else:
-            m += c
-    if m: movearr.append(m)
-    result = moves2sgf( movearr)
-    fname = uuid.uuid4().hex[:7] + '.sgf'
-    fh = BytesIO( result.encode('utf8'))
-    resp = send_file( fh, as_attachment=True, attachment_filename=fname)
-    return resp
 
 
 
