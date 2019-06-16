@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 
 <script type='text/javascript'>
- /* Filename: leela-one-playou/about.html
+ /* Filename: leela-one-playout/about.html
   * Author: AHN
   * Creation Date: Apr, 2019
   */
@@ -25,14 +25,33 @@
        margin-left:auto;
        margin-right:auto;
      }
+
     </style>
   </head>
-  <body style="background-color:#CCCCCC">
-    <pre>
+  <body style='background-color:#CCCCCC;'>
+    <div id='container'>
+      <!-- <div style="border-style:solid;border-color:red;">
+           xx
+           </div> -->
+      <br>
+      <table class='center'>
+        <tr>
+          <td> <img src='leela.png' id='leela'> </td>
+          <td id='spacer'> &nbsp; </td>
+          <td> <img src='kroker.png' id='kroker'> </td>
+        </tr>
+        <tr>
+          <td style='font-size:2em'> &nbsp;&nbsp;&nbsp;&nbsp; Turanga Leela </td>
+          <td></td>
+          <td style='font-size:2em'> Kif Kroker </td>
+        </tr>
+      </table>
+
+      <pre style='font-size:1.8vw'>
 
     This is Leela Zero on 256 playouts, with some randomness
-    in the first 25 moves. It is definitely pro strength, but
-    also amusing, because it plays 3-4 or 3-3 on occasion.
+    in the first 25 moves. She is definitely pro strength, but
+    also amusing, because she plays 3-4 or 3-3 on occasion.
 
     If this gets you down, play Kroker.
     Let Leela help you in a pinch.
@@ -56,7 +75,6 @@
     Andreas Hauenstein
     hauensteina@gmail.com
 
-
     Notes:
     ---------
 
@@ -71,8 +89,19 @@
 
     Komi is always 7.5, even in handicap games.
 
-    </pre>
+      </pre>
+    </div>
 
-
+    <script src='https://code.jquery.com/jquery-3.4.0.min.js'> </script>
+    <script type='text/javascript'>
+     $( function() {
+       var g_width = $(window).width()
+       var g_height = $(window).height()
+       $('#container').css('width',g_width)
+       $('#leela').css('height',g_height * 0.1)
+       $('#kroker').css('height',g_height * 0.1)
+       $('#spacer').css('width',g_width * 0.3)
+     })
+    </script>
   </body>
 </html>
