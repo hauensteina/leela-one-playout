@@ -36,6 +36,7 @@
        margin-left:auto;
        margin-right:auto;
      }
+
      .red-border { border-style:solid; border-color:red; }
      .green-border { border-style:solid; border-color:green; }
      .blue-border { border-style:solid; border-color:blue; }
@@ -48,71 +49,89 @@
   <body style='background-color:#CCCCCC'>
 
     <br>
-    <div> <table class='center'>
-      <tr><td style='text-align:right;'>  <a href='static/about.html' style='font-size:18pt;text-align:right;color:green'> About</a>  &nbsp;&nbsp; </td></tr>
+    <div>
+      <table class='center'>
+        <tr><td style='text-align:right;'>  <a href='static/about.html' style='font-size:18pt;text-align:right;color:green'> About</a>  &nbsp;&nbsp; </td></tr>
         <tr><td style='font-size:24pt;text-align:center;'>Leela Zero on 256 Playouts</td></tr>
         <tr><td id='game_info' style='font-size:22pt;text-align:center'> &nbsp; </td></tr>
         <tr><td id='fname' style='font-size:22pt;text-align:center'> &nbsp; </td></tr>
         <tr><td> &nbsp; </td></tr>
         <tr><td id='board'> </td></tr>
-    </table></div>
-    <div>
-      <div id='status' style='font-size:22pt'> &nbsp; </div>
-    </div>
-    <br>
-    <div>
-      <label id='btn_leela' class='btn btn-outline-dark' style='font-size:40pt;'>Leela</label>
-      &nbsp;&nbsp;
-      <label id='btn_kroker' class='btn btn-outline-dark' style='font-size:40pt;'>Kroker</label>
-      &nbsp;&nbsp;
-      <label id='btn_undo' class='btn btn-outline-dark' style='font-size:40pt;'>Undo</label>
-      &nbsp;&nbsp;
-      <label id='btn_prob' class='btn btn-outline-dark' style='font-size:40pt;'>Prob</label>
-    </div>
-    <br>
-    <div>
-      <!-- A huge button to repeat last nav action -->
-      <label id='btn_pass' class='btn btn-outline-dark' style='font-size:40pt;'>Pass</label>
-      &nbsp;&nbsp;
-      <label id='btn_prev' class='btn btn-outline-dark' style='font-size:40pt;'>Prev</label>
-      &nbsp;&nbsp;
-      <label id='btn_next' class='btn btn-outline-dark' style='font-size:40pt;'>Next</label>
-      &nbsp;&nbsp; &nbsp;&nbsp;
-      <label id='btn_clear_var' class='btn btn-danger' style='color:green;font-size:40pt'>V-&nbsp;</label>
-      &nbsp;&nbsp;
-      <label id='btn_accept_var' class='btn btn-success' style='color:red;font-size:40pt'>V+</label>
-    </div>
-    <br>
-
-
-    <!-- Nav Buttons -->
-    <div>
-      <label id='btn_first' class='btn btn-outline-dark' style='font-size:22pt;'>First</label>
-      <!-- <a id='btn_first' class='btn btn-outline-dark btn-file' style='font-size:22pt'>First</a> -->
-      <label id='btn_back10' class='btn btn-outline-dark' style='font-size:22pt;'>Back 10</label>
-      <label id='btn_fwd10' class='btn btn-outline-dark' style='font-size:22pt;'>Fwd 10</label>
-      <label id='btn_last' class='btn btn-outline-dark' style='font-size:22pt;'>Last</label>
-    </div>
-    <br>
-    <div>
-      <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:22pt;'>Score</label>
-      <label id='btn_save' class='btn btn-outline-dark' style='font-size:22pt;'>Save sgf</label>
-    </div>
-    <!-- Input form for sgf file upload -->
-    <br>
-    <div>
-      <form id='upload-file' method='post' enctype='multipart/form-data'>
-        <label class='btn btn-outline-dark btn-file' style='font-size:22pt;'>
-          Load sgf  <input type='file' id='sgf-file' style='display:none'>
-        </label>
-      </form>
-    </div>
-    <br>
-
-    <!-- Line chart for histo -->
-
-    <!-- <div id='histo' class='center' style='width:500px;height:300px; border-style:solid; border-color:red; '> -->
-    <div id='histo' class='center' style='width:750px;height:450px'>
+        <!-- Status and Emoji -->
+        <tr><td> &nbsp; </td></tr>
+        <tr><td>
+          <div class='container'>
+            <div class='row center'>
+              <div id='movenum' class='col-2' style='font-size:22pt;margin:auto'> &nbsp; </div>
+              <div id='status' class='col-8' style='font-size:22pt;margin:auto'> &nbsp; </div>
+              <div id='emo' class='col-2' style='font-size:40pt;margin:auto'> &nbsp; </div>
+            </div>
+          </div>
+        </td></tr>
+        <!-- Leela and Kroker -->
+        <tr><td> &nbsp; </td></tr>
+        <tr><td>
+          <div>
+            <label id='btn_leela' class='btn btn-outline-dark' style='font-size:40pt;'>Leela</label>
+            &nbsp;&nbsp;
+            <label id='btn_kroker' class='btn btn-outline-dark' style='font-size:40pt;'>Kroker</label>
+            &nbsp;&nbsp;
+            <label id='btn_undo' class='btn btn-outline-dark' style='font-size:40pt;'>Undo</label>
+            &nbsp;&nbsp;
+            <label id='btn_prob' class='btn btn-outline-dark' style='font-size:40pt;'>Prob</label>
+          </div>
+        </td></tr>
+        <!-- Nav Buttons -->
+        <tr><td> &nbsp; </td></tr>
+        <tr><td>
+          <div>
+            <label id='btn_pass' class='btn btn-outline-dark' style='font-size:40pt;'>Pass</label>
+            &nbsp;&nbsp;
+            <label id='btn_prev' class='btn btn-outline-dark' style='font-size:40pt;'>Prev</label>
+            &nbsp;&nbsp;
+            <label id='btn_next' class='btn btn-outline-dark' style='font-size:40pt;'>Next</label>
+            &nbsp;&nbsp; &nbsp;&nbsp;
+            <label id='btn_clear_var' class='btn btn-danger' style='color:green;font-size:40pt'>V-&nbsp;</label>
+            &nbsp;&nbsp;
+            <label id='btn_accept_var' class='btn btn-success' style='color:red;font-size:40pt'>V+</label>
+          </div>
+        </td></tr>
+        <!-- More Nav Buttons -->
+        <tr><td> &nbsp; </td></tr>
+        <tr><td>
+          <div>
+            <label id='btn_first' class='btn btn-outline-dark' style='font-size:22pt;'>First</label>
+            <label id='btn_back10' class='btn btn-outline-dark' style='font-size:22pt;'>Back 10</label>
+            <label id='btn_fwd10' class='btn btn-outline-dark' style='font-size:22pt;'>Fwd 10</label>
+            <label id='btn_last' class='btn btn-outline-dark' style='font-size:22pt;'>Last</label>
+          </div>
+        </td></tr>
+        <!-- Score and Save -->
+        <tr><td> &nbsp; </td></tr>
+        <tr><td>
+          <div>
+            <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:22pt;'>Score</label>
+            <label id='btn_save' class='btn btn-outline-dark' style='font-size:22pt;'>Save sgf</label>
+          </div>
+        </td></tr>
+        <!-- Input form for load sgf -->
+        <tr><td> &nbsp; </td></tr>
+        <tr><td>
+          <div>
+            <form method='post' enctype='multipart/form-data'>
+              <label class='btn btn-outline-dark btn-file' style='font-size:22pt;'>
+                Load sgf  <input type='file' id='sgf-file' style='display:none'>
+              </label>
+            </form>
+          </div>
+        </td></tr>
+        <!-- Score Histogram -->
+        <tr><td> &nbsp; </td></tr>
+        <tr><td>
+          <div id='histo' class='center' style='width:750px;height:450px'>
+          </div>
+        </td></tr>
+      </table>
     </div>
 
     <!-- ---------- -->
@@ -130,7 +149,7 @@
     <script type='text/javascript' src='static/large/board.js'></script>
 
     <!-- Entry Point -->
-    <script type='text/javascript' src='static/main.js'></script>
+    <script type='text/javascript' src='static/main.js?v=1.0'></script>
     <script type='text/javascript'> main( JGO, new AhauxUtils( d3, $) ) </script>
 
   </body>
