@@ -444,6 +444,7 @@ function main( JGO, axutil) {
     replay_move_list( record)
     show_movenum()
     show_prob()
+    update_emoji()
   } // goto_move()
 
   //----------------------------
@@ -553,17 +554,26 @@ function main( JGO, axutil) {
     }
     $('#status').html( 'P(B wins): ' + p.toFixed(4))
     // Show emoji
-    if (update_emo) {
-      if (n > 0) {
-        var pp = g_record[n-1].p
-        if (pp == 0) { set_emoji(); return }
-        if (n % 2) { // we are white
-          p = 1.0 - p; pp = 1.0 - pp
-        }
-        set_emoji( pp - p)
-      }
-    }
+    if (update_emo) { update_emoji() }
   } // show_prob()
+
+  //--------------------------
+  function update_emoji() {
+    var n = g_record.length - 1
+    var p = g_record[n].p
+    if (p == 0) { set_emoji(); return }
+    if (p < 0.05) { set_emoji(1.0); return } // angry
+    if (n > 0) {
+      if (g_record[n].mv == 'pass') {  set_emoji(); return }
+      if (g_record[n-1].mv == 'pass') {  set_emoji(); return }
+      var pp = g_record[n-1].p
+      if (pp == 0) { set_emoji(); return }
+      if (n % 2) { // we are white
+        p = 1.0 - p; pp = 1.0 - pp
+      }
+      set_emoji( pp - p)
+    }
+  } // update_emoji()
 
   //----------------------------------
   function set_emoji( delta_prob) {
