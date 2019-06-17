@@ -583,7 +583,7 @@ function main( JGO, axutil) {
       $(emo_id).html( '&nbsp;')
       return
     }
-    const MOVE_EMOJI = ['🙂','😐','😒','😡']
+    const MOVE_EMOJI = ['😍','😐','😓','😡']
     const PROB_BINS = [0.02, 0.05, 0.1]
     var emo = MOVE_EMOJI[3]
     for (var i=0; i < PROB_BINS.length; i++) {
@@ -635,7 +635,7 @@ function main( JGO, axutil) {
           var diff = Math.abs( black_points - white_points)
           var rstr = `W+${diff} <br>(before komi and handicap)`
           if (black_points >= white_points) { rstr = `B+${diff}  <br>(before komi and handicap)` }
-          $('#status').html( `Black:${black_points} &emsp; White:${white_points} &emsp; ${rstr}`)
+          $('#status').html( `B:${black_points} &nbsp; W:${white_points} &nbsp; ${rstr}`)
         }) // plot_histo()
       } // (data) =>
     ) // hit_endpoint()
