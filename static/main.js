@@ -320,11 +320,15 @@ function main( JGO, axutil) {
           g_last_hover = false
         }
 
+        var botprob = data.diagnostics.winprob; var botcol = 'Black'
+        if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
+
         if (data.bot_move == 'pass') {
           alert( 'The bot passes. Click on the Score button.')
         }
-        else if (data.bot_move == 'resign' || data.diagnostics.winprob > 0.996) {
+        else if (data.bot_move == 'resign' || (g_record.length > 100 && botprob < 0.01)) {
           alert( 'The bot resigns. You beat the bot!')
+          $('#status').html( botcol + ' resigned')
         }
         else {
           maybe_start_var()
