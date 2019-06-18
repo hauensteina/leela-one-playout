@@ -1,4 +1,4 @@
 
-web: gunicorn heroku_app:app -w 1
+web: gunicorn heroku_app:app -w 2
 
 
