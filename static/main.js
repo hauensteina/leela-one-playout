@@ -595,7 +595,8 @@ function main( JGO, axutil) {
         emo = MOVE_EMOJI[i]; break;
       }
     }
-    $(emo_id).html( '&nbsp;' + emo)
+    //$(emo_id).html( '&nbsp;' + emo)
+    $(emo_id).html( emo)
   } // set_emoji()
 
   //==========
