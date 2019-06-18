@@ -467,13 +467,14 @@ function main( JGO, axutil) {
   //--------------------------------------------------------
   function handle_variation( action) {
     if (action == 'save') { // Save record and start a variation
-      handle_variation.var_backup = g_complete_record
+      handle_variation.var_backup = JSON.parse( JSON.stringify( g_complete_record))
       handle_variation.var_pos = g_record.length + 1
       var_button_state('on')
     }
     else if (action == 'clear') { // Restore game record and forget the variation
       if (handle_variation.var_backup) {
-        g_complete_record = handle_variation.var_backup
+        g_complete_record = JSON.parse( JSON.stringify( handle_variation.var_backup))
+        //g_complete_record = handle_variation.var_backup
         g_record = g_complete_record.slice( 0, handle_variation.var_pos)
         goto_move( g_record.length)
         handle_variation.var_backup = null
