@@ -588,7 +588,7 @@ function main( JGO, axutil) {
       return
     }
     const MOVE_EMOJI = ['😍','😐','😓','😡']
-    const PROB_BINS = [0.02, 0.05, 0.1]
+    const PROB_BINS = [0.03, 0.06, 0.1]
     var emo = MOVE_EMOJI[3]
     for (var i=0; i < PROB_BINS.length; i++) {
       if (delta_prob < PROB_BINS[i]) {
