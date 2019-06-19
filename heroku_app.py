@@ -39,7 +39,7 @@ app.config.update(
 app.config['DEBUG'] = os.getenv("DEBUG", False)
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
-LEELA_SERVER = 'https://ahaux.com/leela_server/'
+LEELA_SERVER = 'https://ahaux.com/leela_server_test/'
 
 # @app.after_request
 # #---------------------

@@ -160,7 +160,14 @@ function main( JGO, axutil) {
     $('#btn_prob').click( () => {
       $('#histo').hide()
       $('#status').html( 'thinking...')
-      get_prob()
+      get_prob( (data) => {
+        var botCoord = string2jcoord( data.bot_move)
+        var jboard = g_jrecord.jboard
+        if (botCoord != 'pass' && botCoord != 'resign') {
+          jboard.setType( botCoord, g_player == JGO.WHITE ? JGO.DIM_WHITE : JGO.DIM_BLACK)
+          setTimeout( () => { jboard.setType( botCoord, JGO.CLEAR) }, 1000)
+        }
+      })
       return false
     })
 
@@ -186,7 +193,6 @@ function main( JGO, axutil) {
       g_complete_record = g_record.slice()
       g_complete_record.push( {'mv':'pass', 'p':0.0} )
       goto_move( g_complete_record.length)
-      //get_prob()
       botmove_if_active()
     })
 
@@ -538,28 +544,34 @@ function main( JGO, axutil) {
   function get_prob( completion, update_emo) {
     g_waiting_for_bot = true
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT + '?tt=' + Math.random(),
-      {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'config':{'randomness': 0.0, 'request_id': 0 } },
+      {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'config':{'randomness': -1.0, 'request_id': 0 } },
       (data) => {
         g_waiting_for_bot = false
-        var p = parseFloat(data.diagnostics.winprob)
-        g_record[ g_record.length - 1].p = p // Remember win prob of position
-        g_complete_record[ g_record.length - 1].p = p
+        if (g_record.length) {
+          var p = parseFloat(data.diagnostics.winprob)
+          g_record[ g_record.length - 1].p = p // Remember win prob of position
+          g_complete_record[ g_record.length - 1].p = p
+        }
         show_prob( update_emo)
-        if (completion) { completion(); }
+        if (completion) { completion(data) }
       })
   } // get_prob()
 
   //---------------------------------
   function show_prob( update_emo) {
     var n = g_record.length - 1
-    var p = g_record[n].p
-    if (p == 0) {
-      set_emoji(); $('#status').html('')
-      return
+    if (n >= 0) {
+      var p = g_record[n].p
+      if (p == 0) {
+        set_emoji(); $('#status').html('')
+        return
+      }
+      $('#status').html( 'P(B wins): ' + p.toFixed(4))
+      // Show emoji
+      if (update_emo) { update_emoji() }
+    } else {
+      $('#status').html('')
     }
-    $('#status').html( 'P(B wins): ' + p.toFixed(4))
-    // Show emoji
-    if (update_emo) { update_emoji() }
   } // show_prob()
 
   //--------------------------
