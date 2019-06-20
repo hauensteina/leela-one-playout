@@ -87,12 +87,14 @@ function main( JGO, axutil) {
             if(coord.i == -1 || coord.j == -1 || (coord.i == g_last_x && coord.j == g_last_y))
               return
 
-            if (g_last_hover) // clear previous hover if there was one
+            if (g_last_hover) { // clear previous hover if there was one
               jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR)
+            }
 
             g_last_x = coord.i
             g_last_y = coord.j
 
+            replay_move_list( g_record) // clears ugly artifacts
             if (jboard.getType( coord) == JGO.CLEAR && jboard.getMark( coord) == JGO.MARK.NONE) {
               jboard.setType( coord, g_player == JGO.WHITE ? JGO.DIM_WHITE : JGO.DIM_BLACK)
               g_last_hover = true
@@ -165,7 +167,7 @@ function main( JGO, axutil) {
         var jboard = g_jrecord.jboard
         if (botCoord != 'pass' && botCoord != 'resign') {
           jboard.setType( botCoord, g_player == JGO.WHITE ? JGO.DIM_WHITE : JGO.DIM_BLACK)
-          setTimeout( () => { jboard.setType( botCoord, JGO.CLEAR) }, 1000)
+          setTimeout( () => { jboard.setType( botCoord, JGO.CLEAR); replay_move_list( g_record) }, 1000)
         }
       })
       return false
@@ -201,7 +203,7 @@ function main( JGO, axutil) {
     $('#btn_next').click( () => { $('#histo').hide(); goto_move( g_record.length + 1); activate_bot('') })
     $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); activate_bot('') })
     $('#btn_fwd10').click( () => { $('#histo').hide(); goto_move( g_record.length + 10); activate_bot('') })
-    $('#btn_first').click( () => { $('#histo').hide(); goto_first_move(); activate_bot(''); $('#status').html( '&nbsp;') })
+    $('#btn_first').click( () => { $('#histo').hide(); goto_first_move(); set_emoji(); activate_bot(''); $('#status').html( '&nbsp;') })
     $('#btn_last').click( () => { $('#histo').hide(); goto_move( g_complete_record.length); activate_bot('') })
 
     // Prevent zoom on double tap
@@ -342,6 +344,7 @@ function main( JGO, axutil) {
         }
         show_move( g_player, botCoord, 0.0)
         g_complete_record = g_record.slice()
+        replay_move_list( g_record)
         show_movenum()
         g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
         g_waiting_for_bot = false
@@ -419,13 +422,14 @@ function main( JGO, axutil) {
     g_jrecord.jboard.clear()
     g_jrecord.root = g_jrecord.current = null
     show_movenum()
-    set_emoji()
+    //set_emoji()
   } // goto_first_move()
 
   //-----------------------
   function reset_game() {
     handle_variation( 'clear')
     goto_first_move()
+    set_emoji()
     g_complete_record = []
   } // reset_game()
 
@@ -442,6 +446,7 @@ function main( JGO, axutil) {
       show_move( g_player, coord, move_prob.p)
       g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
     } // for
+    show_movenum()
   } // replay_move_list()
 
   // Replay and show game up to move n
@@ -449,7 +454,7 @@ function main( JGO, axutil) {
   function goto_move( n) {
     var totmoves = g_complete_record.length
     if (n > totmoves) { n = totmoves }
-    if (n < 1) { goto_first_move(); return }
+    if (n < 1) { goto_first_move(); set_emoji(); return }
     var record = g_complete_record.slice( 0, n)
     replay_move_list( record)
     show_movenum()

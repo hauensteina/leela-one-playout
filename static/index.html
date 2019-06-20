@@ -8,6 +8,13 @@
   */
 </script>
 
+<script type="text/javascript" src="static/redirection-mobile.js"></script>
+<script type="text/javascript">
+ SA.redirection_mobile ({
+   mobile_url : '/index_mobile',
+ })
+</script>
+
 <html lang='en'>
   <head>
     <meta charset='utf-8'>
@@ -36,6 +43,9 @@
        margin-left:auto;
        margin-right:auto;
      }
+     .text-center {
+       text-align:center;
+     }
 
      .red-border { border-style:solid; border-color:red; }
      .green-border { border-style:solid; border-color:green; }
@@ -49,90 +59,103 @@
   <body style='background-color:#CCCCCC'>
 
     <br>
-    <div>
-      <table class='center'>
-        <tr><td style='text-align:right;'>  <a href='static/about.html' style='font-size:18pt;text-align:right;color:green'> About</a>  &nbsp;&nbsp; </td></tr>
-        <tr><td style='font-size:24pt;text-align:center;'>Leela Zero on 256 Playouts</td></tr>
-        <tr><td id='game_info' style='font-size:22pt;text-align:center'> &nbsp; </td></tr>
-        <tr><td id='fname' style='font-size:22pt;text-align:center'> &nbsp; </td></tr>
-        <tr><td> &nbsp; </td></tr>
-        <tr><td id='board'> </td></tr>
-        <!-- Status and Emoji -->
-        <!-- <tr><td> &nbsp; </td></tr> -->
-        <tr><td>
-          <div class='container-fluid'>
+    <table class='center'>
+      <tr>
+      <td>                      <!--left-->
+      <div class='container'>
+        <div class='row'>
+          <div class='col-12' >
+            <div class='row'>
+              <div class='col-12 text-right'> <a href='static/about.html' style='font-size:9pt;text-align:right;color:green'> About</a> </div>
+            </div>
+            <div class='row'>
+              <div class='col-12 text-center'> Leela Zero on 256 Playouts </div>
+            </div>
+            <div class='row'>
+              <div class='col-12'>
+                &nbsp;
+              </div>
+            </div>
+            <div class='row'>
+              <div id='board' class='col-12 text-center'> </div>
+            </div>
             <div class='row center'>
-              <div id='movenum' class='col-3' style='font-size:26pt;margin:auto'> &nbsp; </div>
-              <div id='status' class='col-6' style='font-size:26pt;margin:auto'> &nbsp; </div>
-              <div id='emo' class='col-3' style='font-size:60pt;margin:auto'> &nbsp; </div>
+              <div id='movenum' class='col-3' style='font-size:13pt;margin:auto'> &nbsp; </div>
+              <div id='status' class='col-6' style='font-size:13pt;margin:auto'> &nbsp; </div>
+              <div id='emo' class='col-3' style='font-size:30pt;margin:auto'> &nbsp; </div>
+            </div>
+          </div>                <!--col-12-->
+        </div>                  <!--row-->
+      </div>                    <!--container-->
+      </td>
+      <td>                      <!--right-->
+        <div class='container'>
+          <div class='row'>
+            <div class='col-12'>
+              <label id='btn_leela' class='btn btn-outline-dark' style='font-size:11pt;'>Leela</label>
+              <label id='btn_kroker' class='btn btn-outline-dark' style='font-size:11pt;'>Kroker</label>
+              <label id='btn_prob' class='btn btn-outline-dark' style='font-size:11pt;'>Best</label>
             </div>
           </div>
-        </td></tr>
-        <!-- Leela and Kroker -->
-        <!-- <tr><td> &nbsp; </td></tr> -->
-        <tr><td>
-          <div>
-            <label id='btn_leela' class='btn btn-outline-dark' style='font-size:40pt;'>Leela</label>
-            &nbsp;&nbsp;
-            <label id='btn_kroker' class='btn btn-outline-dark' style='font-size:40pt;'>Kroker</label>
-            &nbsp;&nbsp;
-            <label id='btn_undo' class='btn btn-outline-dark' style='font-size:40pt;'>Undo</label>
-            &nbsp;&nbsp;
-            <label id='btn_prob' class='btn btn-outline-dark' style='font-size:40pt;'>Best</label>
+          <div class='row'>
+            <div class='col-12'>
+              <label id='btn_undo' class='btn btn-outline-dark' style='font-size:11pt;'>Undo</label>
+              <label id='btn_pass' class='btn btn-outline-dark' style='font-size:11pt;'>Pass</label>
+              <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:11pt;'>Score</label>
+            </div>
           </div>
-        </td></tr>
-        <!-- Nav Buttons -->
-        <tr><td> &nbsp; </td></tr>
-        <tr><td>
-          <div>
-            <label id='btn_pass' class='btn btn-outline-dark' style='font-size:40pt;'>Pass</label>
-            &nbsp;&nbsp;
-            <label id='btn_prev' class='btn btn-outline-dark' style='font-size:40pt;'>Prev</label>
-            &nbsp;&nbsp;
-            <label id='btn_next' class='btn btn-outline-dark' style='font-size:40pt;'>Next</label>
-            &nbsp;&nbsp; &nbsp;&nbsp;
-            <label id='btn_clear_var' class='btn btn-danger' style='color:green;font-size:40pt'>V-&nbsp;</label>
-            &nbsp;&nbsp;
-            <label id='btn_accept_var' class='btn btn-success' style='color:red;font-size:40pt'>V+</label>
+          <div class='row'>
+            <div class='col-12'>
+              &nbsp;
+            </div>
           </div>
-        </td></tr>
-        <!-- More Nav Buttons -->
-        <tr><td> &nbsp; </td></tr>
-        <tr><td>
-          <div>
-            <label id='btn_first' class='btn btn-outline-dark' style='font-size:22pt;'>First</label>
-            <label id='btn_back10' class='btn btn-outline-dark' style='font-size:22pt;'>Back 10</label>
-            <label id='btn_fwd10' class='btn btn-outline-dark' style='font-size:22pt;'>Fwd 10</label>
-            <label id='btn_last' class='btn btn-outline-dark' style='font-size:22pt;'>Last</label>
+          <div class='row'>
+            <div class='col-12'>
+              <label id='btn_back10' class='btn btn-outline-dark' style='font-size:8pt;'>Back 10</label>
+              <label id='btn_prev' class='btn btn-outline-dark' style='font-size:8pt;'>Prev</label>
+              <label id='btn_next' class='btn btn-outline-dark' style='font-size:8pt;'>Next</label>
+              <label id='btn_fwd10' class='btn btn-outline-dark' style='font-size:8pt;'>Fwd 10</label>
+            </div>
           </div>
-        </td></tr>
-        <!-- Score and Save -->
-        <tr><td> &nbsp; </td></tr>
-        <tr><td>
-          <div>
-            <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:22pt;'>Score</label>
-            <label id='btn_save' class='btn btn-outline-dark' style='font-size:22pt;'>Save sgf</label>
+          <div class='row'>
+            <div class='col-12'>
+              <label id='btn_first' class='btn btn-outline-dark' style='font-size:8pt;'>First</label>
+              <label id='btn_last' class='btn btn-outline-dark' style='font-size:8pt;'>Last</label>
+            </div>
           </div>
-        </td></tr>
-        <!-- Input form for load sgf -->
-        <tr><td> &nbsp; </td></tr>
-        <tr><td>
-          <div>
-            <form method='post' enctype='multipart/form-data'>
-              <label class='btn btn-outline-dark btn-file' style='font-size:22pt;'>
-                Load sgf  <input type='file' id='sgf-file' style='display:none'>
-              </label>
-            </form>
+          <div class='row'>
+            <div class='col-12'>
+              &nbsp;
+            </div>
           </div>
-        </td></tr>
-        <!-- Score Histogram -->
-        <tr><td> &nbsp; </td></tr>
-        <tr><td>
-          <div id='histo' class='center' style='width:750px;height:450px'>
+          <div class='row'>
+            <div class='col-12'>
+              <label id='btn_save' class='btn btn-outline-dark' style='font-size:11pt;'>Save sgf</label>
+            </div>
           </div>
-        </td></tr>
-      </table>
-    </div>
+          <div class='row'>
+            <div class='col-12'>
+              <form method='post' enctype='multipart/form-data'>
+                <label class='btn btn-outline-dark btn-file' style='font-size:11pt;'>
+                  Load sgf  <input type='file' id='sgf-file' style='display:none'>
+                </label>
+              </form>
+            </div>
+          </div>
+          <div class='row'>
+            <div class='col-12'>
+              &nbsp;
+            </div>
+          </div>
+          <div class='row'>
+            <div class='col-12'>
+              <label id='btn_clear_var' class='btn btn-danger' style='color:green;font-size:11pt'>V-&nbsp;</label>
+              <label id='btn_accept_var' class='btn btn-success' style='color:red;font-size:11pt'>V+</label>
+            </div>
+          </div>
+        </div>                  <!--right container-->
+      </td>                     <!--right-->
+    </tr></table>
 
     <!-- ---------- -->
     <!-- Javascript -->
@@ -146,7 +169,7 @@
     <!-- Our own stuff -->
     <script type='text/javascript' src='static/ahaux_utils.js'></script>
     <script type='text/javascript' src='static/jgoboard-latest.js'></script>
-    <script type='text/javascript' src='static/large/board.js'></script>
+    <script type='text/javascript' src='static/small/board.js'></script>
 
     <!-- Entry Point -->
     <script type='text/javascript' src='static/main.js?v=1.9'></script>

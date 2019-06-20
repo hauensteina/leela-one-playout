@@ -861,8 +861,8 @@ Canvas.prototype.draw = function(jboard, i1, j1, i2, j2) {
   if(this.images.board) { // there is a board texture
     clearFunc = function(ox, oy) {
       this.ctx.drawImage(this.images.board,
-          ox - this.marginLeft - clearW / 2, oy - this.marginTop - clearH / 2, clearW, clearH,
-          ox - clearW / 2, oy - clearH / 2, clearW, clearH);
+        ox - this.marginLeft - clearW / 2, oy - this.marginTop - clearH / 2, clearW, clearH,
+        ox - clearW / 2, oy - clearH / 2, clearW, clearH);
     }.bind(this);
   } else { // no board texture
     this.ctx.fillStyle = this.opt.margin.color;
@@ -888,8 +888,8 @@ Canvas.prototype.draw = function(jboard, i1, j1, i2, j2) {
 
     if(type == C.BLACK || type == C.WHITE) {
       this.stones.drawShadow(this.ctx,
-          this.opt.shadow.xOff + ox,
-          this.opt.shadow.yOff + oy);
+        this.opt.shadow.xOff + ox,
+        this.opt.shadow.yOff + oy);
     }
   }.bind(this), i1, j1, i2, j2); // provide iteration limits
 
@@ -2062,7 +2062,10 @@ var Stones = function(options, images) {
 Stones.prototype.drawStone = function(ctx, type, ox, oy, scale) {
   if(!scale) scale = 1;
   var stone = (type == C.BLACK || type == C.DIM_BLACK) ? this.images.black : this.images.white;
-
+  /* var stone;
+   * if (type == C.BLACK) { stone = this.images.black }
+   * else if (type == C.WHITE) { stone = this.images.white }
+   */
   if(!stone) { // BW
     ctx.fillStyle = (type == C.WHITE || type == C.DIM_WHITE) ? '#DDDDCC' : '#000000';
     ctx.beginPath();

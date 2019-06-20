@@ -41,16 +41,6 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 LEELA_SERVER = 'https://ahaux.com/leela_server/'
 
-# @app.after_request
-# #---------------------
-# def add_header(r):
-#     # No caching
-#     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-#     r.headers["Pragma"] = "no-cache"
-#     r.headers["Expires"] = "0"
-#     r.headers['Cache-Control'] = 'public, max-age=0'
-#     return r
-
 #--------------
 # Endpoints
 #--------------
@@ -58,9 +48,12 @@ LEELA_SERVER = 'https://ahaux.com/leela_server/'
 @app.route('/')
 #-------------------------------
 def entry_point():
-    return app.send_static_file('index.html')
-    # html = open('static/index.html').read()
-    # return html
+    return app.send_static_file( 'index.html')
+
+@app.route('/index_mobile')
+#-------------------------------
+def entry_point_mobile():
+    return app.send_static_file( 'index_mobile.html')
 
 @app.route('/select-move/<bot_name>', methods=['POST'])
 # Forward select-move to the leela server
