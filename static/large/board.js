@@ -28,7 +28,7 @@ JGO.BOARD.large = {
     borderWidth: 1.5, lineWidth: 1.2},
 
   // Star point radius
-  stars: {radius: 3},
+  stars: {radius: 4},
 
   // Coordinate color and font
   coordinates: {color: '#808080', font: 'normal 18px sanf-serif'},
