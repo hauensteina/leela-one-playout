@@ -703,7 +703,7 @@ function main( JGO, axutil) {
   // Show a translucent hover stone
   //---------------------------------
   function hover( coord, col) {
-    var hcol = col ? col: hover.col
+    var hcol = col ? col: g_player
     var jboard = g_jrecord.jboard
     if (jboard.getType( coord) == JGO.WHITE || jboard.getType( coord) == JGO.BLACK) { return }
     if (coord) {
@@ -712,7 +712,6 @@ function main( JGO, axutil) {
       }
       jboard.setType( coord, hcol == JGO.WHITE ? JGO.DIM_WHITE : JGO.DIM_BLACK)
       hover.coord = coord
-      hover.col = hcol
       if (col) {
         replay_move_list( g_record) // remove artifacts
       }
@@ -724,6 +723,5 @@ function main( JGO, axutil) {
     }
   } // hover()
   hover.coord = null
-  hover.col = null
 
 } // function main()
