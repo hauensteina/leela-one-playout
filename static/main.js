@@ -8,6 +8,7 @@
 
 var LEELA_SERVER = ''
 var KROKER_RANDOMNESS = 0.5
+//var KROKER_RANDOMNESS = 0.1
 
 //==============================
 function main( JGO, axutil) {
@@ -27,9 +28,6 @@ function main( JGO, axutil) {
   var g_complete_record = null
   var g_waiting_for_bot = null
   var g_request_id = ''
-  var g_last_x = -1
-  var g_last_y = -1
-  var g_last_hover = false
 
   set_btn_handlers()
   reset_game()
@@ -61,8 +59,7 @@ function main( JGO, axutil) {
               return
             }
             // clear hover away
-            if (g_last_hover) { jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR) }
-            g_last_hover = false
+	          hover()
 
             // Click on empty board resets everything
             if (g_record.length == 0) {
@@ -84,35 +81,19 @@ function main( JGO, axutil) {
         canvas.addListener('mousemove',
           function(coord, ev) {
             var jboard = g_jrecord.jboard
-            if(coord.i == -1 || coord.j == -1 || (coord.i == g_last_x && coord.j == g_last_y))
+            if (coord.i == -1 || coord.j == -1)
+              return
+            if (coord == hover.coord)
               return
 
-            if (g_last_hover) { // clear previous hover if there was one
-              jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR)
-            }
-
-            g_last_x = coord.i
-            g_last_y = coord.j
-
-            replay_move_list( g_record) // clears ugly artifacts
-            if (jboard.getType( coord) == JGO.CLEAR && jboard.getMark( coord) == JGO.MARK.NONE) {
-              jboard.setType( coord, g_player == JGO.WHITE ? JGO.DIM_WHITE : JGO.DIM_BLACK)
-              g_last_hover = true
-            }
-            else {
-              g_last_hover = false
-            }
-          }
+	          hover( coord, g_player)
+	        }
         ) // mousemove
 
         //----------------------------
         canvas.addListener('mouseout',
           function(ev) {
-            var jboard = g_jrecord.jboard
-            if (g_last_hover)
-              jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR);
-
-            g_last_hover = false;
+	          hover()
           }
         ) // mouseout
       } // function(canvas)
@@ -159,15 +140,15 @@ function main( JGO, axutil) {
       return false
     })
 
-    $('#btn_prob').click( () => {
+    $('#btn_best').click( () => {
       $('#histo').hide()
       $('#status').html( 'thinking...')
       get_prob( (data) => {
         var botCoord = string2jcoord( data.bot_move)
         var jboard = g_jrecord.jboard
         if (botCoord != 'pass' && botCoord != 'resign') {
-          jboard.setType( botCoord, g_player == JGO.WHITE ? JGO.DIM_WHITE : JGO.DIM_BLACK)
-          setTimeout( () => { jboard.setType( botCoord, JGO.CLEAR); replay_move_list( g_record) }, 1000)
+          hover( botCoord, g_player)
+          setTimeout( () => { hover() }, 1000)
         }
       })
       return false
@@ -211,7 +192,7 @@ function main( JGO, axutil) {
     $('#btn_accept_var').on('touchstart', prevent_zoom)
     $('#btn_leela').on('touchstart', prevent_zoom)
     $('#btn_kroker').on('touchstart', prevent_zoom)
-    $('#btn_prob').on('touchstart', prevent_zoom)
+    $('#btn_best').on('touchstart', prevent_zoom)
     $('#btn_save').on('touchstart', prevent_zoom)
     $('#btn_nnscore').on('touchstart', prevent_zoom)
     $('#btn_pass').on('touchstart', prevent_zoom)
@@ -322,11 +303,7 @@ function main( JGO, axutil) {
         if (!g_waiting_for_bot) { return }
         //console.log( 'req id: ' + data.request_id + ' ' + g_request_id)
         if (data.request_id != g_request_id) { return }
-        //$('#status').html( 'P(B wins): ' + parseFloat(data.diagnostics.winprob).toFixed(4))
-        if (g_last_hover) { // the board thinks the hover stone is actually there. Ouch.
-          g_jrecord.jboard.setType(new JGO.Coordinate( g_last_x, g_last_y), JGO.CLEAR)
-          g_last_hover = false
-        }
+	      hover() // The board thinks the hover stone is actually there. Clear it.
 
         var botprob = data.diagnostics.winprob; var botcol = 'Black'
         if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
@@ -334,7 +311,7 @@ function main( JGO, axutil) {
         if (data.bot_move == 'pass') {
           alert( 'The bot passes. Click on the Score button.')
         }
-        else if (data.bot_move == 'resign' || (g_record.length > 100 && botprob < 0.01)) {
+        else if (data.bot_move == 'resign' || (g_record.length > 50 && botprob < 0.01) || botprob < 0.005 ) {
           alert( 'The bot resigns. You beat the bot!')
           $('#status').html( botcol + ' resigned')
         }
@@ -422,7 +399,6 @@ function main( JGO, axutil) {
     g_jrecord.jboard.clear()
     g_jrecord.root = g_jrecord.current = null
     show_movenum()
-    //set_emoji()
   } // goto_first_move()
 
   //-----------------------
@@ -436,6 +412,7 @@ function main( JGO, axutil) {
   // Replay game from empty board.
   //------------------------------------
   function replay_move_list( mlist) {
+    var jboard = g_jrecord.jboard
     goto_first_move()
     for (var move_prob of mlist) {
       if (typeof move_prob == 'string') {
@@ -445,7 +422,8 @@ function main( JGO, axutil) {
       var coord = string2jcoord( move_string)
       show_move( g_player, coord, move_prob.p)
       g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
-    } // for
+    }
+    hover( hover.coord) // restore hover
     show_movenum()
   } // replay_move_list()
 
@@ -721,5 +699,31 @@ function main( JGO, axutil) {
       completion( surepoints)
     })
   } // plot_histo()
+
+  // Show a translucent hover stone
+  //---------------------------------
+  function hover( coord, col) {
+    var hcol = col | hover.col
+    var jboard = g_jrecord.jboard
+    if (jboard.getType( coord) == JGO.WHITE || jboard.getType( coord) == JGO.BLACK) { return }
+    if (coord) {
+      if (hover.coord) {
+        jboard.setType( hover.coord, JGO.CLEAR)
+      }
+      jboard.setType( coord, hcol == JGO.WHITE ? JGO.DIM_WHITE : JGO.DIM_BLACK)
+      hover.coord = coord
+      hover.col = hcol
+      if (col) {
+        replay_move_list( g_record) // remove artifacts
+      }
+    }
+    else if (hover.coord) {
+	    jboard.setType( hover.coord, col == JGO.CLEAR)
+	    hover.coord = null
+      replay_move_list( g_record) // remove artifacts
+    }
+  } // hover()
+  hover.coord = null
+  hover.col = null
 
 } // function main()
