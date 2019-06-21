@@ -703,7 +703,7 @@ function main( JGO, axutil) {
   // Show a translucent hover stone
   //---------------------------------
   function hover( coord, col) {
-    var hcol = col | hover.col
+    var hcol = col ? col: hover.col
     var jboard = g_jrecord.jboard
     if (jboard.getType( coord) == JGO.WHITE || jboard.getType( coord) == JGO.BLACK) { return }
     if (coord) {
