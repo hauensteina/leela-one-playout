@@ -69,7 +69,7 @@ function main( JGO, axutil) {
             maybe_start_var()
             var mstr = jcoord2string( coord)
             g_complete_record = g_record.slice()
-            g_complete_record.push( {'mv':mstr, 'p':0.0} )
+            g_complete_record.push( {'mv':mstr, 'p':0.0, 'agent':'human'} )
             goto_move( g_complete_record.length)
             get_prob( function() { botmove_if_active() }, true )
           }
@@ -171,12 +171,22 @@ function main( JGO, axutil) {
 
     $('#btn_pass').click( () => {
       g_complete_record = g_record.slice()
-      g_complete_record.push( {'mv':'pass', 'p':0.0} )
+      g_complete_record.push( {'mv':'pass', 'p':0.0, 'agent':'human'} )
       goto_move( g_complete_record.length)
       botmove_if_active()
     })
 
-    $('#btn_undo').click( () => { $('#histo').hide(); goto_move( g_record.length - 2); g_complete_record = g_record })
+    $('#btn_undo').click( () => {
+      $('#histo').hide()
+      var len = g_record.length
+      if (len > 2 && g_record[len-1].agent == 'bot' && g_record[len-2].agent == 'human') {
+	goto_move( g_record.length - 2)
+      } else {
+	goto_move( g_record.length - 1)
+      }
+      g_complete_record = g_record
+    })
+
     $('#btn_prev').click( () => { $('#histo').hide(); goto_move( g_record.length - 1); activate_bot('') })
     $('#btn_next').click( () => { $('#histo').hide(); goto_move( g_record.length + 1); activate_bot('') })
     $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); activate_bot('') })
@@ -325,7 +335,7 @@ function main( JGO, axutil) {
               maybe_start_var()
               var botCoord = string2jcoord( data.bot_move)
             }
-            show_move( g_player, botCoord, 0.0)
+            show_move( g_player, botCoord, 0.0, 'bot')
             g_complete_record = g_record.slice()
             replay_move_list( g_record)
             show_movenum()
@@ -359,15 +369,15 @@ function main( JGO, axutil) {
 
   // Show a move on the board and append it to g_record
   //------------------------------------------------------
-  function show_move(player, coord, prob) {
+  function show_move(player, coord, prob, agent) {
     if (coord == 'pass' || coord == 'resign') {
       g_ko = false
-      g_record.push( { 'mv':coord, 'p':prob } )
+      g_record.push( { 'mv':coord, 'p':prob, 'agent':agent } )
       return
     }
     var play = g_jrecord.jboard.playMove( coord, player, g_ko)
     if (play.success) {
-      g_record.push( { 'mv':jcoord2string( coord), 'p':prob } )
+      g_record.push( { 'mv':jcoord2string( coord), 'p':prob, 'agent':agent } )
       var node = g_jrecord.createNode( true)
       node.info.captures[player] += play.captures.length // tally captures
       node.setType( coord, player) // play stone
@@ -419,12 +429,12 @@ function main( JGO, axutil) {
     var jboard = g_jrecord.jboard
     goto_first_move()
     for (var move_prob of mlist) {
-      if (typeof move_prob == 'string') {
-        move_prob = { 'mv':move_prob, 'p':0.0 }
+      if (typeof move_prob == 'string') { // pass or resign
+        move_prob = { 'mv':move_prob, 'p':0.0, 'agent':'' }
       }
       var move_string = move_prob.mv
       var coord = string2jcoord( move_string)
-      show_move( g_player, coord, move_prob.p)
+      show_move( g_player, coord, move_prob.p, move_prob.agent)
       g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
     }
     hover( hover.coord) // restore hover
@@ -647,8 +657,8 @@ function main( JGO, axutil) {
   // Converters
   //===============
 
-  // Record has pairs (mv,p). Turn into a list of mv.
-  //---------------------------------------------------
+  // Record has tuples (mv,p,agent). Turn into a list of mv.
+  //----------------------------------------------------------
   function moves_only( record) {
     var res = []
     for (var move_prob of record) {
