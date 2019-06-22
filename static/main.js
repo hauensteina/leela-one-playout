@@ -7,8 +7,9 @@
 'use strict'
 
 var LEELA_SERVER = ''
-var KROKER_RANDOMNESS = 0.5
-//var KROKER_RANDOMNESS = 0.1
+var OPENING_RANDOMNESS = 0.33
+var KROKER_RANDOMNESS = 0.33
+var FRY_RANDOMNESS = 0.125  // 0.10 plays nonsense 0.15 is strong
 
 //==============================
 function main( JGO, axutil) {
@@ -135,8 +136,7 @@ function main( JGO, axutil) {
       }
       $('#histo').hide()
       activate_bot( 'kroker')
-      $('#status').html( 'Kroker is thinking...')
-      get_bot_move( KROKER_RANDOMNESS)
+      get_kroker_move()
       return false
     })
 
@@ -179,7 +179,7 @@ function main( JGO, axutil) {
       botmove_if_active()
     })
 
-    $('#btn_undo').click( () => { $('#histo').hide(); goto_move( g_record.length - 1); g_complete_record = g_record; activate_bot('') })
+    $('#btn_undo').click( () => { $('#histo').hide(); goto_move( g_record.length - 2); g_complete_record = g_record })
     $('#btn_prev').click( () => { $('#histo').hide(); goto_move( g_record.length - 1); activate_bot('') })
     $('#btn_next').click( () => { $('#histo').hide(); goto_move( g_record.length + 1); activate_bot('') })
     $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); activate_bot('') })
@@ -268,6 +268,28 @@ function main( JGO, axutil) {
   // Bot Interaction
   //===================
 
+  //-----------------------------
+  function get_kroker_move() {
+    //get_fry_move(); return;
+    $('#status').html( 'Kroker is guessing...')
+    if (g_record.length < 15) {
+      get_bot_move( OPENING_RANDOMNESS)
+    } else {
+      get_bot_move( KROKER_RANDOMNESS)
+    }
+  } // get_kroker_move()
+
+  //-----------------------------
+  function get_fry_move() {
+    $('#status').html( 'Fry is trying...')
+    if (g_record.length < 15) {
+      $('#status').html( 'Opening')
+      get_bot_move( OPENING_RANDOMNESS)
+    } else {
+      get_bot_move( FRY_RANDOMNESS)
+    }
+  } // get_fry_move()
+
   //--------------------------------
   function botmove_if_active() {
     if (g_waiting_for_bot) { return true }
@@ -277,8 +299,7 @@ function main( JGO, axutil) {
       return true
     }
     else if (activate_bot.botname == 'kroker') {
-      $('#status').html( 'Kroker is thinking...')
-      get_bot_move( KROKER_RANDOMNESS)
+      get_kroker_move()
       return true
     }
     return false
@@ -292,15 +313,19 @@ function main( JGO, axutil) {
     }
     //console.log( g_record)
     if (g_waiting_for_bot) {
-      console.log( 'still waiting')
+      //console.log( 'still waiting')
       return
     }
     g_waiting_for_bot = true
     g_request_id = Math.random() + ''
+    //console.log( 'request ' + g_request_id)
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT + '?tt=' + Math.random(), {'board_size': BOARD_SIZE, 'moves': moves_only(g_record),
       'config':{'randomness': kroker_randomness, 'request_id': g_request_id } },
       (data) => {
-        if (!g_waiting_for_bot) { return }
+        if (!g_waiting_for_bot) {
+          //console.log('not waiting')
+          return
+        }
         //console.log( 'req id: ' + data.request_id + ' ' + g_request_id)
         if (data.request_id != g_request_id) { return }
 	      hover() // The board thinks the hover stone is actually there. Clear it.
@@ -326,6 +351,7 @@ function main( JGO, axutil) {
         g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
         g_waiting_for_bot = false
         get_prob()
+        //setTimeout( () => { update_emoji() }, 1500)
       })
   } // get_bot_move()
 
@@ -395,7 +421,7 @@ function main( JGO, axutil) {
     g_ko = false
     g_last_move = false
     g_record = []
-    g_waiting_for_bot = false
+    //g_waiting_for_bot = false
     g_jrecord.jboard.clear()
     g_jrecord.root = g_jrecord.current = null
     show_movenum()
@@ -608,7 +634,7 @@ function main( JGO, axutil) {
   function score_position( endpoint)
   {
     if (g_waiting_for_bot) {
-      console.log( 'still waiting')
+      //console.log( 'still waiting')
       return
     }
     axutil.hit_endpoint( LEELA_SERVER + endpoint + '?tt=' + Math.random(), {'board_size': BOARD_SIZE, 'moves': moves_only(g_record)},
