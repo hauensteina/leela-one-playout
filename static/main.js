@@ -478,6 +478,10 @@ function main( JGO, axutil) {
       if (handle_variation.var_backup) {
         g_complete_record = JSON.parse( JSON.stringify( handle_variation.var_backup))
         g_record = g_complete_record.slice( 0, handle_variation.var_pos)
+	// If there is only one more move, forget it.
+	if (g_record.length + 1 == g_complete_record.length) {
+	  g_complete_record.pop()
+	}
         goto_move( g_record.length)
         handle_variation.var_backup = null
         var_button_state('off')
