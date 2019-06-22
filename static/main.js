@@ -27,8 +27,6 @@ function main( JGO, axutil) {
   var g_last_move = null // last move coordinate
   var g_record = null
   var g_complete_record = null
-  var g_waiting_for_bot = null
-  var g_request_id = ''
 
   set_btn_handlers()
   reset_game()
@@ -51,7 +49,7 @@ function main( JGO, axutil) {
           function(coord, ev) {
             var jboard = g_jrecord.jboard
             if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
-            if (g_waiting_for_bot) {
+            if (axutil.hit_endpoint('waiting')) {
               return
             }
             if (score_position.active) {
@@ -74,7 +72,6 @@ function main( JGO, axutil) {
             g_complete_record.push( {'mv':mstr, 'p':0.0} )
             goto_move( g_complete_record.length)
             get_prob( function() { botmove_if_active() }, true )
-            //botmove_if_active()
           }
         ) // click
 
@@ -215,15 +212,13 @@ function main( JGO, axutil) {
       var numFiles = input.get(0).files ? input.get(0).files.length : 1
       var label = input.val().replace(/\\/g, '/').replace(/.*\//, '')
       // Call API to get the moves, then replay on the board
-      axutil.hit_endpoint( '/sgf2list' + '?tt=' + Math.random(), myfile, (response) => {
+      axutil.upload_file( '/sgf2list', myfile, (response) => {
         var res = response.result
         var moves = res.moves
         set_emoji()
         replay_move_list( moves)
         g_complete_record = g_record.slice()
         show_movenum()
-        //g_record_pos = g_complete_record.length
-        //var winner = res.winner.toUpperCase()
         var komi = res.komi
         // Game Info
         $('#game_info').html( `B:${res.pb} &nbsp;&nbsp; W:${res.pw} &nbsp;&nbsp; Result:${res.RE} &nbsp;&nbsp; Komi:${komi}`)
@@ -292,7 +287,7 @@ function main( JGO, axutil) {
 
   //--------------------------------
   function botmove_if_active() {
-    if (g_waiting_for_bot) { return true }
+    if (axutil.hit_endpoint('waiting')) { return true }
     if (activate_bot.botname == 'leela') {
       $('#status').html( 'Leela is thinking...')
       get_bot_move()
@@ -305,70 +300,54 @@ function main( JGO, axutil) {
     return false
   } // botmove_if_active()
 
-  // Get next move from the bot and show on board
-  //-------------------------------------------------
-  function get_bot_move( kroker_randomness) {
-    if (!kroker_randomness) {
-      kroker_randomness = 0.0
-    }
-    //console.log( g_record)
-    if (g_waiting_for_bot) {
-      //console.log( 'still waiting')
-      return
-    }
-    g_waiting_for_bot = true
-    g_request_id = Math.random() + ''
-    //console.log( 'request ' + g_request_id)
-    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT + '?tt=' + Math.random(), {'board_size': BOARD_SIZE, 'moves': moves_only(g_record),
-      'config':{'randomness': kroker_randomness, 'request_id': g_request_id } },
-      (data) => {
-        if (!g_waiting_for_bot) {
-          //console.log('not waiting')
-          return
+      // Get next move from the bot and show on board
+      //-------------------------------------------------
+      function get_bot_move( kroker_randomness) {
+        if (!kroker_randomness) {
+          kroker_randomness = 0.0
         }
-        //console.log( 'req id: ' + data.request_id + ' ' + g_request_id)
-        if (data.request_id != g_request_id) { return }
-	      hover() // The board thinks the hover stone is actually there. Clear it.
+        axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record),
+          'config':{'randomness': kroker_randomness } },
+          (data) => {
+	    hover() // The board thinks the hover stone is actually there. Clear it.
 
-        var botprob = data.diagnostics.winprob; var botcol = 'Black'
-        if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
+            var botprob = data.diagnostics.winprob; var botcol = 'Black'
+            if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
 
-        if (data.bot_move == 'pass') {
-          alert( 'The bot passes. Click on the Score button.')
+            if (data.bot_move == 'pass') {
+              alert( 'The bot passes. Click on the Score button.')
+            }
+            else if (data.bot_move == 'resign' || (g_record.length > 50 && botprob < 0.01) || botprob < 0.005 ) {
+              alert( 'The bot resigns. You beat the bot!')
+              $('#status').html( botcol + ' resigned')
+            }
+            else {
+              maybe_start_var()
+              var botCoord = string2jcoord( data.bot_move)
+            }
+            show_move( g_player, botCoord, 0.0)
+            g_complete_record = g_record.slice()
+            replay_move_list( g_record)
+            show_movenum()
+            g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
+            get_prob()
+          })
+      } // get_bot_move()
+
+      //--------------------------------
+      function activate_bot( botname) {
+        activate_bot.botname = botname
+        if (botname == 'leela') {
+          $('#btn_kroker').css('background-color', '#CCCCCC')
+          $('#btn_leela').css('background-color', '#EEEEEE')
         }
-        else if (data.bot_move == 'resign' || (g_record.length > 50 && botprob < 0.01) || botprob < 0.005 ) {
-          alert( 'The bot resigns. You beat the bot!')
-          $('#status').html( botcol + ' resigned')
+        else if (botname == 'kroker') {
+          $('#btn_kroker').css('background-color', '#EEEEEE')
+          $('#btn_leela').css('background-color', '#CCCCCC')
         }
         else {
-          maybe_start_var()
-          var botCoord = string2jcoord( data.bot_move)
-        }
-        show_move( g_player, botCoord, 0.0)
-        g_complete_record = g_record.slice()
-        replay_move_list( g_record)
-        show_movenum()
-        g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
-        g_waiting_for_bot = false
-        get_prob()
-        //setTimeout( () => { update_emoji() }, 1500)
-      })
-  } // get_bot_move()
-
-  //--------------------------------
-  function activate_bot( botname) {
-    activate_bot.botname = botname
-    if (botname == 'leela') {
-      $('#btn_kroker').css('background-color', '#CCCCCC')
-      $('#btn_leela').css('background-color', '#EEEEEE')
-    }
-    else if (botname == 'kroker') {
-      $('#btn_kroker').css('background-color', '#EEEEEE')
-      $('#btn_leela').css('background-color', '#CCCCCC')
-    }
-    else {
-      g_waiting_for_bot = false
-      $('#btn_leela').css('background-color', '#CCCCCC')
+          axutil.hit_endpoint('cancel')
+          $('#btn_leela').css('background-color', '#CCCCCC')
       $('#btn_kroker').css('background-color', '#CCCCCC')
     }
   } // activate_bot()
@@ -421,7 +400,6 @@ function main( JGO, axutil) {
     g_ko = false
     g_last_move = false
     g_record = []
-    //g_waiting_for_bot = false
     g_jrecord.jboard.clear()
     g_jrecord.root = g_jrecord.current = null
     show_movenum()
@@ -489,7 +467,6 @@ function main( JGO, axutil) {
     else if (action == 'clear') { // Restore game record and forget the variation
       if (handle_variation.var_backup) {
         g_complete_record = JSON.parse( JSON.stringify( handle_variation.var_backup))
-        //g_complete_record = handle_variation.var_backup
         g_record = g_complete_record.slice( 0, handle_variation.var_pos)
         goto_move( g_record.length)
         handle_variation.var_backup = null
@@ -551,11 +528,9 @@ function main( JGO, axutil) {
   // Get current winning probability.
   //--------------------------------------------
   function get_prob( completion, update_emo) {
-    g_waiting_for_bot = true
-    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT + '?tt=' + Math.random(),
-      {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'config':{'randomness': -1.0, 'request_id': 0 } },
+    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT,
+      {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'config':{'randomness': -1.0 } },
       (data) => {
-        g_waiting_for_bot = false
         if (g_record.length) {
           var p = parseFloat(data.diagnostics.winprob)
           g_record[ g_record.length - 1].p = p // Remember win prob of position
@@ -608,7 +583,6 @@ function main( JGO, axutil) {
   //----------------------------------
   function set_emoji( delta_prob) {
     var emo_id = '#emo'
-    //if (g_record.length % 2) { emo_id = '#w_emo' }
     if (typeof delta_prob == 'undefined') {
       $(emo_id).html( '&nbsp;')
       return
@@ -633,11 +607,7 @@ function main( JGO, axutil) {
   //----------------------------------------------------------------
   function score_position( endpoint)
   {
-    if (g_waiting_for_bot) {
-      //console.log( 'still waiting')
-      return
-    }
-    axutil.hit_endpoint( LEELA_SERVER + endpoint + '?tt=' + Math.random(), {'board_size': BOARD_SIZE, 'moves': moves_only(g_record)},
+    axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record)},
       (data) => {
         plot_histo(data, (surepoints) => {
           if (surepoints < 120) {
@@ -719,7 +689,7 @@ function main( JGO, axutil) {
   //---------------------------------------------
   function plot_histo( data, completion) {
     var wp = data.white_probs
-    axutil.hit_endpoint( '/histo'  + '?tt=' + Math.random() , [wp,20,0,1], (res) => {
+    axutil.hit_endpoint( '/histo', [wp,20,0,1], (res) => {
       var surepoints = res[0][1] + res[res.length-1][1]
       axutil.barchart( '#histo', res, 240)
       completion( surepoints)

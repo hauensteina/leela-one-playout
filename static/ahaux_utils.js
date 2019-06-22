@@ -19,6 +19,9 @@ class AhauxUtils
     }
     this.d3 = d3
     this.$ = $
+
+    this.hit_endpoint('init')
+
   } // constructor()
 
   //----------------------------
@@ -152,40 +155,69 @@ class AhauxUtils
   // Hit any endpoint and call completion with result
   //---------------------------------------------------
   hit_endpoint( url, args, completion) {
-    if (args.constructor.name == 'File') { // uploading a file
-      var myfile = args
-      var data = new FormData()
-      data.append( 'file',myfile)
-      fetch( url,
-        {
-          method: 'POST',
-          body: data
-        }).then( (resp) => {
-          resp.json().then( (resp) => { completion( resp) }) }
-        ).catch(
-          (error) => {
-            console.log( error)
-          }
-        )
-    } // if file
-    else { // Not a file upload, regular api call
-      fetch( url,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify( args)
+    if (url == 'init') {
+      this.hit_endpoint.waiting = false
+      this.hit_endpoint.request_id = ''
+      return
+    }
+    else if (url == 'waiting') { return this.hit_endpoint.waiting }
+    else if (url == 'cancel') { this.hit_endpoint.waiting = false; return }
+    else if (this.hit_endpoint.waiting) { return false; }
+
+    url += '?tt=' + Math.random() // prevent caching
+    if ('config' in args) {
+      this.hit_endpoint.request_id = Math.random() + ''
+      args.config.request_id = this.hit_endpoint.request_id
+    }
+    this.hit_endpoint.waiting = true
+    fetch( url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify( args)
+      }
+    ).then( (resp) => {
+      resp.json().then( (resp) => {
+        if (!this.hit_endpoint.waiting) {
+	  console.log( 'not waiting')
+          return
         }
-      ).then( (resp) => {
+        if ('request_id' in resp) {
+	  //console.log( 'req id: ' + resp.request_id + ' ' + this.hit_endpoint.request_id)
+          if (resp.request_id != this.hit_endpoint.request_id) {
+	    return
+	  }
+	}
+	this.hit_endpoint.waiting = false
+        completion( resp)
+      }) }
+    ).catch(
+      (error) => {
+        console.log( error)
+      }
+    )
+  } // hit_endpoint()
+
+  // Upload a file to the server
+  //--------------------------------------
+  upload_file( url, args, completion) {
+    var myfile = args
+    var data = new FormData()
+    data.append( 'file', myfile)
+    fetch( url,
+      {
+        method: 'POST',
+        body: data
+      }).then( (resp) => {
         resp.json().then( (resp) => { completion( resp) }) }
       ).catch(
         (error) => {
           console.log( error)
         }
       )
-    } // else
-  } // hit_endpoint()
+  } // upload_file
 
   // Download a file generated on the back end,
   // with a callback once it got here.
