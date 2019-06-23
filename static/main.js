@@ -9,7 +9,8 @@
 var LEELA_SERVER = ''
 var OPENING_RANDOMNESS = 0.33
 var KROKER_RANDOMNESS = 0.33
-var FRY_RANDOMNESS = 0.125  // 0.10 plays nonsense 0.15 is strong
+var BENDER_RANDOMNESS = 0.15
+var FRY_RANDOMNESS = 0.115 // 0.125  // 0.10 plays nonsense 0.15 is strong
 
 //==============================
 function main( JGO, axutil) {
@@ -180,9 +181,9 @@ function main( JGO, axutil) {
       $('#histo').hide()
       var len = g_record.length
       if (len > 2 && g_record[len-1].agent == 'bot' && g_record[len-2].agent == 'human') {
-	goto_move( g_record.length - 2)
+	      goto_move( g_record.length - 2)
       } else {
-	goto_move( g_record.length - 1)
+	      goto_move( g_record.length - 1)
       }
       g_complete_record = g_record
     })
@@ -274,90 +275,107 @@ function main( JGO, axutil) {
   //===================
 
   //-----------------------------
+  function get_leela_move() {
+    $('#status').html( 'Leela is thinking...')
+    get_bot_move()
+  }
+
+  //-----------------------------
   function get_kroker_move() {
-    //get_fry_move(); return;
     $('#status').html( 'Kroker is guessing...')
+    get_bot_move( KROKER_RANDOMNESS)
+  }
+
+  //-----------------------------
+  function get_bender_move() {
+    $('#status').html( 'Bender is trying...')
     if (g_record.length < 15) {
       get_bot_move( OPENING_RANDOMNESS)
     } else {
-      get_bot_move( KROKER_RANDOMNESS)
+      get_bot_move( BENDER_RANDOMNESS)
     }
-  } // get_kroker_move()
+  } // get_fry_move()
 
   //-----------------------------
   function get_fry_move() {
-    $('#status').html( 'Fry is trying...')
+    $('#status').html( 'Fry is struggling...')
     if (g_record.length < 15) {
-      $('#status').html( 'Opening')
       get_bot_move( OPENING_RANDOMNESS)
     } else {
       get_bot_move( FRY_RANDOMNESS)
     }
-  } // get_fry_move()
+  }
 
   //--------------------------------
   function botmove_if_active() {
     if (axutil.hit_endpoint('waiting')) { return true }
     if (activate_bot.botname == 'leela') {
-      $('#status').html( 'Leela is thinking...')
-      get_bot_move()
+      get_leela_move()
       return true
     }
     else if (activate_bot.botname == 'kroker') {
       get_kroker_move()
       return true
     }
+    else if (activate_bot.botname == 'bender') {
+      get_bender_move()
+      return true
+    }
+    else if (activate_bot.botname == 'fry') {
+      get_fry_move()
+      return true
+    }
     return false
   } // botmove_if_active()
 
-      // Get next move from the bot and show on board
-      //-------------------------------------------------
-      function get_bot_move( kroker_randomness) {
-        if (!kroker_randomness) {
-          kroker_randomness = 0.0
+  // Get next move from the bot and show on board
+  //-------------------------------------------------
+  function get_bot_move( randomness) {
+    if (!randomness) {
+      randomness = 0.0
+    }
+    axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record),
+      'config':{'randomness': randomness } },
+      (data) => {
+	      hover() // The board thinks the hover stone is actually there. Clear it.
+
+        var botprob = data.diagnostics.winprob; var botcol = 'Black'
+        if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
+
+        if (data.bot_move == 'pass') {
+          alert( 'The bot passes. Click on the Score button.')
         }
-        axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record),
-          'config':{'randomness': kroker_randomness } },
-          (data) => {
-	    hover() // The board thinks the hover stone is actually there. Clear it.
-
-            var botprob = data.diagnostics.winprob; var botcol = 'Black'
-            if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
-
-            if (data.bot_move == 'pass') {
-              alert( 'The bot passes. Click on the Score button.')
-            }
-            else if (data.bot_move == 'resign' || (g_record.length > 50 && botprob < 0.01) || botprob < 0.005 ) {
-              alert( 'The bot resigns. You beat the bot!')
-              $('#status').html( botcol + ' resigned')
-            }
-            else {
-              maybe_start_var()
-              var botCoord = string2jcoord( data.bot_move)
-            }
-            show_move( g_player, botCoord, 0.0, 'bot')
-            g_complete_record = g_record.slice()
-            replay_move_list( g_record)
-            show_movenum()
-            g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
-            get_prob()
-          })
-      } // get_bot_move()
-
-      //--------------------------------
-      function activate_bot( botname) {
-        activate_bot.botname = botname
-        if (botname == 'leela') {
-          $('#btn_kroker').css('background-color', '#CCCCCC')
-          $('#btn_leela').css('background-color', '#EEEEEE')
-        }
-        else if (botname == 'kroker') {
-          $('#btn_kroker').css('background-color', '#EEEEEE')
-          $('#btn_leela').css('background-color', '#CCCCCC')
+        else if (data.bot_move == 'resign' || (g_record.length > 50 && botprob < 0.01) || botprob < 0.005 ) {
+          alert( 'The bot resigns. You beat the bot!')
+          $('#status').html( botcol + ' resigned')
         }
         else {
-          axutil.hit_endpoint('cancel')
-          $('#btn_leela').css('background-color', '#CCCCCC')
+          maybe_start_var()
+          var botCoord = string2jcoord( data.bot_move)
+        }
+        show_move( g_player, botCoord, 0.0, 'bot')
+        g_complete_record = g_record.slice()
+        replay_move_list( g_record)
+        show_movenum()
+        g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
+        get_prob()
+      })
+  } // get_bot_move()
+
+  //--------------------------------
+  function activate_bot( botname) {
+    activate_bot.botname = botname
+    if (botname == 'leela') {
+      $('#btn_kroker').css('background-color', '#CCCCCC')
+      $('#btn_leela').css('background-color', '#EEEEEE')
+    }
+    else if (botname == 'kroker') {
+      $('#btn_kroker').css('background-color', '#EEEEEE')
+      $('#btn_leela').css('background-color', '#CCCCCC')
+    }
+    else {
+      axutil.hit_endpoint('cancel')
+      $('#btn_leela').css('background-color', '#CCCCCC')
       $('#btn_kroker').css('background-color', '#CCCCCC')
     }
   } // activate_bot()
@@ -478,10 +496,10 @@ function main( JGO, axutil) {
       if (handle_variation.var_backup) {
         g_complete_record = JSON.parse( JSON.stringify( handle_variation.var_backup))
         g_record = g_complete_record.slice( 0, handle_variation.var_pos)
-	// If there is only one more move, forget it.
-	if (g_record.length + 1 == g_complete_record.length) {
-	  g_complete_record.pop()
-	}
+	      // If there is only one more move, forget it.
+	      if (g_record.length + 1 == g_complete_record.length) {
+	        g_complete_record.pop()
+	      }
         goto_move( g_record.length)
         handle_variation.var_backup = null
         var_button_state('off')
