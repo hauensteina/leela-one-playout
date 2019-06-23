@@ -6,11 +6,13 @@
 
 'use strict'
 
-var LEELA_SERVER = ''
-var OPENING_RANDOMNESS = 0.33
-var KROKER_RANDOMNESS = 0.33
-var BENDER_RANDOMNESS = 0.15
-var FRY_RANDOMNESS = 0.115 // 0.125  // 0.10 plays nonsense 0.15 is strong
+const VERSION = '1.7'
+const LEELA_SERVER = ''
+const OPENING_RANDOMNESS = 0.33
+const FARNSWORTH_RANDOMNESS = 0.5 // 6D
+const BENDER_RANDOMNESS = 0.15 // 1D
+const FRY_RANDOMNESS = 0.115 // kyu
+
 
 //==============================
 function main( JGO, axutil) {
@@ -105,6 +107,8 @@ function main( JGO, axutil) {
     set_load_sgf_handler()
     var_button_state( 'off')
 
+    $('#btn_change').click( change_bot)
+
     $('#btn_clear_var').click( () => {
       if ($('#btn_clear_var').hasClass('disabled')) { return }
       handle_variation( 'clear')
@@ -115,26 +119,14 @@ function main( JGO, axutil) {
       handle_variation( 'accept')
     })
 
-    $('#btn_leela').click( () => {
+    $('#btn_play').click( () => {
       set_emoji()
       if (g_record.length == 0) {
         reset_game()
       }
       $('#histo').hide()
-      activate_bot( 'leela')
-      $('#status').html( 'Leela is thinking...')
-      get_bot_move()
-      return false
-    })
-
-    $('#btn_kroker').click( () => {
-      set_emoji()
-      if (g_record.length == 0) {
-        reset_game()
-      }
-      $('#histo').hide()
-      activate_bot( 'kroker')
-      get_kroker_move()
+      activate_bot( change_bot.bot)
+      botmove_if_active()
       return false
     })
 
@@ -198,8 +190,7 @@ function main( JGO, axutil) {
     // Prevent zoom on double tap
     $('#btn_clear_var').on('touchstart', prevent_zoom)
     $('#btn_accept_var').on('touchstart', prevent_zoom)
-    $('#btn_leela').on('touchstart', prevent_zoom)
-    $('#btn_kroker').on('touchstart', prevent_zoom)
+    $('#btn_play').on('touchstart', prevent_zoom)
     $('#btn_best').on('touchstart', prevent_zoom)
     $('#btn_save').on('touchstart', prevent_zoom)
     $('#btn_nnscore').on('touchstart', prevent_zoom)
@@ -211,7 +202,6 @@ function main( JGO, axutil) {
     $('#btn_fwd10').on('touchstart', prevent_zoom)
     $('#btn_first').on('touchstart', prevent_zoom)
     $('#btn_last').on('touchstart', prevent_zoom)
-    $('#btn_again').on('touchstart', prevent_zoom)
   } // set_btn_handlers()
 
   // Load Sgf button
@@ -238,11 +228,19 @@ function main( JGO, axutil) {
     }) // $('sgf-file')
   } // set_load_sgf_handler()
 
-  // Arrow key actions
+  // Key actions
   //------------------------
   function check_key(e) {
     e = e || window.event;
-    if (e.keyCode == '38') { // up arrow
+    //console.log(e.keyCode)
+    if (e.keyCode == '17') { // ctrl
+      check_key.ctrl_pressed = true
+      return
+    }
+    else if (check_key.ctrl_pressed && e.keyCode == '82') {  // ctrl-r
+      $('#status').html( VERSION)
+    }
+    else if (e.keyCode == '38') { // up arrow
     }
     else if (e.keyCode == '40') { // down arrow
     }
@@ -254,7 +252,9 @@ function main( JGO, axutil) {
       activate_bot('')
       goto_move( g_record.length + 1)
     }
+    check_key.ctrl_pressed = false
   } // check_key()
+  check_key.ctrl_pressed = false
 
   // Prevent double taps from zooming in on mobile devices.
   // Use like btn.addEventListener('touchstart', prevent_zoom)
@@ -274,6 +274,21 @@ function main( JGO, axutil) {
   // Bot Interaction
   //===================
 
+  //------------------------
+  function change_bot() {
+    var bots = ['leela', 'farnsworth', 'bender', 'fry']
+    var images = ['static/leela.png', 'static/farnsworth.png', 'static/bender.png', 'static/fry.png']
+    var names = ['Leela', 'Prof. Farnsworth', 'Bender', 'Fry']
+    var strengths = ['9P', '6D', 'Not bad', 'Oh well']
+    var idx = bots.findIndex( (x) => { return x == change_bot.bot })
+    idx++; idx %= bots.length
+    change_bot.bot = bots[idx]
+    $('#descr_bot').html( names[idx] + '<br> Strength: ' + strengths[idx] + '<br>')
+    $('#img_bot').attr( 'src', images[idx])
+    activate_bot( names[idx])
+  } // change_bot()
+  change_bot.bot = 'leela'
+
   //-----------------------------
   function get_leela_move() {
     $('#status').html( 'Leela is thinking...')
@@ -281,9 +296,9 @@ function main( JGO, axutil) {
   }
 
   //-----------------------------
-  function get_kroker_move() {
-    $('#status').html( 'Kroker is guessing...')
-    get_bot_move( KROKER_RANDOMNESS)
+  function get_farnsworth_move() {
+    $('#status').html( 'Farnsworth is guessing...')
+    get_bot_move( FARNSWORTH_RANDOMNESS)
   }
 
   //-----------------------------
@@ -294,7 +309,7 @@ function main( JGO, axutil) {
     } else {
       get_bot_move( BENDER_RANDOMNESS)
     }
-  } // get_fry_move()
+  }
 
   //-----------------------------
   function get_fry_move() {
@@ -313,8 +328,8 @@ function main( JGO, axutil) {
       get_leela_move()
       return true
     }
-    else if (activate_bot.botname == 'kroker') {
-      get_kroker_move()
+    else if (activate_bot.botname == 'farnsworth') {
+      get_farnsworth_move()
       return true
     }
     else if (activate_bot.botname == 'bender') {
@@ -365,18 +380,12 @@ function main( JGO, axutil) {
   //--------------------------------
   function activate_bot( botname) {
     activate_bot.botname = botname
-    if (botname == 'leela') {
-      $('#btn_kroker').css('background-color', '#CCCCCC')
-      $('#btn_leela').css('background-color', '#EEEEEE')
-    }
-    else if (botname == 'kroker') {
-      $('#btn_kroker').css('background-color', '#EEEEEE')
-      $('#btn_leela').css('background-color', '#CCCCCC')
+    if (botname) {
+      $('#btn_play').css('background-color', '#EEEEEE')
     }
     else {
       axutil.hit_endpoint('cancel')
-      $('#btn_leela').css('background-color', '#CCCCCC')
-      $('#btn_kroker').css('background-color', '#CCCCCC')
+      $('#btn_play').css('background-color', '#CCCCCC')
     }
   } // activate_bot()
   activate_bot.botname = ''
