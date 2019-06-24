@@ -25,7 +25,7 @@ function main( JGO, axutil) {
   var g_last_move = null // last move coordinate
   var g_record = []
   var g_complete_record = []
-  const opt_defaults = { show_emoji:false, show_prob:true }
+  const opt_defaults = { show_emoji:false, show_prob:false }
   localStorage.setItem( 'opt_defaults', JSON.stringify( opt_defaults))
   var g_opt = JSON.parse( localStorage.getItem( 'options'))
   g_opt = Object.assign( {}, opt_defaults, g_opt)
@@ -75,7 +75,9 @@ function main( JGO, axutil) {
             g_complete_record = g_record.slice()
             g_complete_record.push( {'mv':mstr, 'p':0.0, 'agent':'human'} )
             goto_move( g_complete_record.length)
-            get_prob( function() { botmove_if_active() }, true )
+            set_emoji()
+            const playing = true
+            get_prob( function() { botmove_if_active() }, g_opt.show_emoji, playing )
           }
         ) // click
 
@@ -400,7 +402,9 @@ function main( JGO, axutil) {
         replay_move_list( g_record)
         show_movenum()
         g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
-        get_prob()
+        const show_emoji = false
+        const playing = true
+        get_prob( function() {}, show_emoji, playing )
       })
   } // get_bot_move()
 
@@ -615,8 +619,8 @@ function main( JGO, axutil) {
   //======================
 
   // Get current winning probability.
-  //--------------------------------------------
-  function get_prob( completion, update_emo) {
+  //-----------------------------------------------------
+  function get_prob( completion, update_emo, playing) {
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT,
       {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'config':{'randomness': -1.0 } },
       (data) => {
@@ -625,14 +629,13 @@ function main( JGO, axutil) {
           g_record[ g_record.length - 1].p = p // Remember win prob of position
           g_complete_record[ g_record.length - 1].p = p
         }
-        show_prob( update_emo)
+        show_prob( update_emo, playing)
         if (completion) { completion(data) }
       })
   } // get_prob()
 
-  //---------------------------------
-  function show_prob( update_emo) {
-    if (!g_opt.show_prob) { $('#status').html(''); return }
+  //------------------------------------------
+  function show_prob( update_emo, playing) {
     var n = g_record.length - 1
     if (n >= 0) {
       var p = g_record[n].p
@@ -640,7 +643,11 @@ function main( JGO, axutil) {
         set_emoji(); $('#status').html('')
         return
       }
-      $('#status').html( 'P(B wins): ' + p.toFixed(4))
+      if (playing && !g_opt.show_prob) {
+        $('#status').html('')
+      } else {
+        $('#status').html( 'P(B wins): ' + p.toFixed(4))
+      }
       // Show emoji
       if (update_emo) { update_emoji() }
     } else {
@@ -673,7 +680,6 @@ function main( JGO, axutil) {
   //----------------------------------
   function set_emoji( delta_prob) {
     var emo_id = '#emo'
-    if (!g_opt.show_emoji) { $(emo_id).html( '&nbsp;'); return }
     if (typeof delta_prob == 'undefined') {
       $(emo_id).html( '&nbsp;')
       return

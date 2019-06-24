@@ -36,6 +36,10 @@
        margin-left:auto;
        margin-right:auto;
      }
+     .uncenter {
+       margin-left:0px;
+       margin-right:0px;
+     }
 
      .red-border { border-style:solid; border-color:red; }
      .green-border { border-style:solid; border-color:green; }
@@ -51,7 +55,14 @@
     <br>
     <div>
       <table class='center'>
-        <tr><td style='text-align:right;'>  <a href='static/about.html' style='font-size:18pt;text-align:right;color:green'> About</a>  &nbsp;&nbsp; </td></tr>
+        <tr class=''><td>
+          <span class='' style='float:left;width:50%;text-align:left;'>
+            &nbsp;&nbsp; <a href='static/settings.html' style='font-size:18pt;text-align:right;color:green'> Settings</a>
+          </span>
+          <span class='' style='float:left;width:50%;text-align:right;'>
+            <a href='static/about.html' style='font-size:18pt;text-align:right;color:green'> About</a>  &nbsp;&nbsp;
+          </span>
+        </td></tr>
         <tr><td>
           <div class='container-fluid'>
             <div class='row'>
@@ -164,7 +175,7 @@
     <script type='text/javascript' src='static/large/board.js'></script>
 
     <!-- Entry Point -->
-    <script type='text/javascript' src='static/main.js?v=1.20'></script>
+    <script type='text/javascript' src='static/main.js?v=1.21'></script>
     <script type='text/javascript'> main( JGO, new AhauxUtils( d3, $) ) </script>
 
   </body>
