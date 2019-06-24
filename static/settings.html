@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+
+<script type='text/javascript'>
+ /* Filename: leela-one-playout/settings.html
+  * Author: AHN
+  * Creation Date: Jun, 2019
+  */
+</script>
+
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <title>Settings</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+
+    <!--  CSS  -->
+    <style>
+     body {
+       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+       text-align: center;
+     }
+     .center {
+       margin-left:auto;
+       margin-right:auto;
+     }
+     .red-border { border-style:solid; border-color:red; }
+     .green-border { border-style:solid; border-color:green; }
+     .blue-border { border-style:solid; border-color:blue; }
+     .yellow-border { border-style:solid; border-color:yellow; }
+     .magenta-border { border-style:solid; border-color:magenta; }
+     .cyan-border { border-style:solid; border-color:cyan; }
+
+
+    </style>
+  </head>
+  <body style='background-color:#CCCCCC'>
+    <br>
+    <br>
+    <br>
+    <h1> Settings </h1>
+    <br>
+    <table class='center'>
+      <tr><td style='text-align:left'><input type='checkbox' id='opt_show_emoji'> Show emoji after move<br> </td></tr>
+      <tr><td style='text-align:left'><input type='checkbox' id='opt_show_prob'> Show probability <br> </td></tr>
+    </table>
+    <br>
+    <label id='btn_settings_done' class='btn btn-outline-dark' style='font-size:8pt;'>Done</label>
+
+    <script src='https://code.jquery.com/jquery-3.4.0.min.js'> </script>
+    <script src='js.cookie.js'></script>
+    <script type='text/javascript'>
+     'use strict'
+     var g_opt = {}
+     $( function() {
+       g_opt = JSON.parse( localStorage.getItem( 'options'))
+       const opt_defaults = JSON.parse( localStorage.getItem( 'opt_defaults'))
+       g_opt = Object.assign( {}, opt_defaults, g_opt)
+       if ('show_emoji' in g_opt) { $('#opt_show_emoji').prop('checked', g_opt.show_emoji)}
+       if ('show_prob'  in g_opt) { $('#opt_show_prob').prop('checked', g_opt.show_prob)}
+       $('#btn_settings_done').click( () => {
+         g_opt.show_emoji = $('#opt_show_emoji').prop('checked')
+         g_opt.show_prob = $('#opt_show_prob').prop('checked')
+         //var jsn = JSON.stringify( g_opt)
+         localStorage.setItem('options', JSON.stringify(g_opt))
+         history.go(-1) })
+     })
+    </script>
+  </body>
+</html>

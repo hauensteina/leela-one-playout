@@ -8,11 +8,6 @@
 
 const VERSION = '1.7'
 const LEELA_SERVER = ''
-const OPENING_RANDOMNESS = 0.33
-const FARNSWORTH_RANDOMNESS = 0.5 // 6D
-const BENDER_RANDOMNESS = 0.15 // 1D
-const FRY_RANDOMNESS = 0.115 // kyu
-
 
 //==============================
 function main( JGO, axutil) {
@@ -28,13 +23,19 @@ function main( JGO, axutil) {
   var g_player = null
   var g_ko = null // ko coordinate
   var g_last_move = null // last move coordinate
-  var g_record = null
-  var g_complete_record = null
+  var g_record = []
+  var g_complete_record = []
+  const opt_defaults = { show_emoji:false, show_prob:true }
+  localStorage.setItem( 'opt_defaults', JSON.stringify( opt_defaults))
+  var g_opt = JSON.parse( localStorage.getItem( 'options'))
+  g_opt = Object.assign( {}, opt_defaults, g_opt)
 
   set_btn_handlers()
   reset_game()
   setup_jgo()
   document.onkeydown = check_key
+  window.onbeforeunload = save_record
+  load_record()
 
   //================
   // UI Callbacks
@@ -289,37 +290,63 @@ function main( JGO, axutil) {
   } // change_bot()
   change_bot.bot = 'leela'
 
+  const OPENING_RANDOMNESS = 0.33
+  const FARNSWORTH_RANDOMNESS = 0.5 // 6D
+  const BENDER_RANDOMNESS = 0.15 // 1D
+  const FRY_RANDOMNESS = 0.115 // kyu
+
   //-----------------------------
   function get_leela_move() {
+    ga('send', 'event', 'play', 'leela')
     $('#status').html( 'Leela is thinking...')
     get_bot_move()
-  }
+  } // get_leela_move()
 
   //-----------------------------
   function get_farnsworth_move() {
+    ga('send', 'event', 'play', 'farnsworth')
     $('#status').html( 'Farnsworth is guessing...')
-    get_bot_move( FARNSWORTH_RANDOMNESS)
-  }
+    if (g_record.length < 15) {
+      get_bot_move( OPENING_RANDOMNESS)
+    }
+    else if (g_record.length < 140) {
+      get_bot_move( FARNSWORTH_RANDOMNESS)
+    }
+    else {
+      get_bot_move( FARNSWORTH_RANDOMNESS)
+    }
+  } // get_farnsworth_move()
 
   //-----------------------------
   function get_bender_move() {
+    ga('send', 'event', 'play', 'bender')
     $('#status').html( 'Bender is trying...')
     if (g_record.length < 15) {
       get_bot_move( OPENING_RANDOMNESS)
-    } else {
+    }
+    else if (g_record.length < 140) {
       get_bot_move( BENDER_RANDOMNESS)
     }
-  }
+    else {
+      get_bot_move( FARNSWORTH_RANDOMNESS)
+    }
+  } // get_bender_move()
+
 
   //-----------------------------
   function get_fry_move() {
+    ga('send', 'event', 'play', 'fry')
     $('#status').html( 'Fry is struggling...')
     if (g_record.length < 15) {
       get_bot_move( OPENING_RANDOMNESS)
-    } else {
+    }
+    else if (g_record.length < 140) {
       get_bot_move( FRY_RANDOMNESS)
     }
-  }
+    else {
+      get_bot_move( BENDER_RANDOMNESS)
+    }
+  } // get_fry_move()
 
   //--------------------------------
   function botmove_if_active() {
@@ -562,6 +589,27 @@ function main( JGO, axutil) {
     }
   } // var_button_state()
 
+  //===============================
+  // Saving and restoring state
+  //===============================
+
+  //--------------------------
+  function save_record() {
+    localStorage.setItem('record', JSON.stringify( g_record))
+    localStorage.setItem('complete_record', JSON.stringify( g_complete_record))
+  }
+
+  //--------------------------
+  function load_record() {
+    if (localStorage.getItem('record') === null) { return }
+    if (localStorage.getItem('complete_record') === null) { return }
+    if (localStorage.getItem('record') === 'null') { return }
+    if (localStorage.getItem('complete_record') === 'null') { return }
+    g_record = JSON.parse( localStorage.getItem('record'))
+    g_complete_record = JSON.parse( localStorage.getItem('complete_record'))
+    goto_move( g_record.length)
+  }
+
   //======================
   // Winning probability
   //======================
@@ -584,6 +632,7 @@ function main( JGO, axutil) {
 
   //---------------------------------
   function show_prob( update_emo) {
+    if (!g_opt.show_prob) { $('#status').html(''); return }
     var n = g_record.length - 1
     if (n >= 0) {
       var p = g_record[n].p
@@ -624,6 +673,7 @@ function main( JGO, axutil) {
   //----------------------------------
   function set_emoji( delta_prob) {
     var emo_id = '#emo'
+    if (!g_opt.show_emoji) { $(emo_id).html( '&nbsp;'); return }
     if (typeof delta_prob == 'undefined') {
       $(emo_id).html( '&nbsp;')
       return
