@@ -183,12 +183,12 @@ function main( JGO, axutil) {
       g_complete_record = g_record
     })
 
-    $('#btn_prev').click( () => { $('#histo').hide(); goto_move( g_record.length - 1); activate_bot('') })
-    $('#btn_next').click( () => { $('#histo').hide(); goto_move( g_record.length + 1); activate_bot('') })
-    $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); activate_bot('') })
-    $('#btn_fwd10').click( () => { $('#histo').hide(); goto_move( g_record.length + 10); activate_bot('') })
+    $('#btn_prev').click( () => { $('#histo').hide(); goto_move( g_record.length - 1); update_emoji(); activate_bot('') })
+    $('#btn_next').click( () => { $('#histo').hide(); goto_move( g_record.length + 1); update_emoji(); activate_bot('') })
+    $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); update_emoji(); activate_bot('') })
+    $('#btn_fwd10').click( () => { $('#histo').hide(); goto_move( g_record.length + 10); update_emoji(); activate_bot('') })
     $('#btn_first').click( () => { $('#histo').hide(); goto_first_move(); set_emoji(); activate_bot(''); $('#status').html( '&nbsp;') })
-    $('#btn_last').click( () => { $('#histo').hide(); goto_move( g_complete_record.length); activate_bot('') })
+    $('#btn_last').click( () => { $('#histo').hide(); goto_move( g_complete_record.length); update_emoji(); activate_bot('') })
 
     // Prevent zoom on double tap
     $('#btn_clear_var').on('touchstart', prevent_zoom)
@@ -477,7 +477,7 @@ function main( JGO, axutil) {
   function reset_game() {
     handle_variation( 'clear')
     goto_first_move()
-    set_emoji()
+    //set_emoji()
     g_complete_record = []
   } // reset_game()
 
@@ -509,7 +509,7 @@ function main( JGO, axutil) {
     replay_move_list( record)
     show_movenum()
     show_prob()
-    update_emoji()
+    //update_emoji()
   } // goto_move()
 
   //----------------------------
