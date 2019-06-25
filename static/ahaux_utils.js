@@ -206,6 +206,7 @@ class AhauxUtils
     var myfile = args
     var data = new FormData()
     data.append( 'file', myfile)
+    url += '?tt=' + Math.random() // prevent caching
     fetch( url,
       {
         method: 'POST',
