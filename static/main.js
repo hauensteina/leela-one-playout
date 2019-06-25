@@ -51,14 +51,14 @@ function main( JGO, axutil) {
         //----------------------------
         canvas.addListener('click',
           function(coord, ev) {
-            var jboard = g_jrecord.jboard
-            if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
-            if (axutil.hit_endpoint('waiting')) {
-              return
-            }
             if (score_position.active) {
               goto_move( g_record.length)
               score_position.active = false
+              return
+            }
+            var jboard = g_jrecord.jboard
+            if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
+            if (axutil.hit_endpoint('waiting')) {
               return
             }
             // clear hover away
