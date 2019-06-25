@@ -161,7 +161,7 @@ function main( JGO, axutil) {
 
     $('#btn_nnscore').click( () => {
       score_position( 'nnscore')
-      $('#histo').show()
+      //$('#histo').show()
       return false
     })
 

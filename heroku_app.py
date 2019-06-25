@@ -112,9 +112,11 @@ def sgf2list():
         return coords
 
     # Deal with handicap in the root node
+    handicap_setup_done = False
     if sgf.get_handicap() is not None and sgf.get_handicap() != 0:
         for setup in sgf.get_root().get_setup_stones():
             for idx, move in enumerate( setup):
+                handicap_setup_done = True
                 if idx > 0: moves.append( 'pass')
                 moves.append( move2coords( move))
 
@@ -128,7 +130,7 @@ def sgf2list():
             else:
                 moves.append( 'pass')
         # Deal with handicap stones as individual nodes
-        elif item.get_setup_stones()[0]:
+        elif item.get_setup_stones()[0] and not handicap_setup_done:
             move = list( item.get_setup_stones()[0])[0]
             if moves: moves.append( 'pass')
             moves.append( move2coords( move))
