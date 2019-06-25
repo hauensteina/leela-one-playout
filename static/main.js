@@ -6,7 +6,7 @@
 
 'use strict'
 
-const VERSION = '1.7'
+const VERSION = '2.0'
 const LEELA_SERVER = ''
 
 //==============================
