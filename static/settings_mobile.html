@@ -145,7 +145,7 @@
        $('#btn_settings_done').click( () => {
          g_settings.show_emoji = $('#opt_show_emoji').prop('checked')
          g_settings.show_prob = $('#opt_show_prob').prop('checked')
-         localStorage.setItem('settings', JSON.stringify(g_opt))
+         localStorage.setItem('settings', JSON.stringify(g_settings))
          history.go(-1) })
      })
     </script>
