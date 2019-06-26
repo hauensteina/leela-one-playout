@@ -25,10 +25,10 @@ function main( JGO, axutil, p_options) {
   var g_last_move = null // last move coordinate
   var g_record = []
   var g_complete_record = []
-  const opt_defaults = { show_emoji:false, show_prob:false }
-  localStorage.setItem( 'opt_defaults', JSON.stringify( opt_defaults))
-  var g_opt = JSON.parse( localStorage.getItem( 'options'))
-  g_opt = Object.assign( {}, opt_defaults, g_opt)
+  const settings_defaults = { show_emoji:false, show_prob:false }
+  localStorage.setItem( 'settings_defaults', JSON.stringify( settings_defaults))
+  var g_settings = JSON.parse( localStorage.getItem( 'settings'))
+  g_settings = Object.assign( {}, settings_defaults, g_settings)
 
   set_btn_handlers()
   reset_game()
@@ -77,7 +77,7 @@ function main( JGO, axutil, p_options) {
             goto_move( g_complete_record.length)
             set_emoji()
             const playing = true
-            get_prob( function() { botmove_if_active() }, g_opt.show_emoji, playing )
+            get_prob( function() { botmove_if_active() }, g_settings.show_emoji, playing )
           }
         ) // click
 
@@ -288,7 +288,7 @@ function main( JGO, axutil, p_options) {
     change_bot.bot = bots[idx]
     $('#descr_bot').html( names[idx] + '<br> Strength: ' + strengths[idx] + '<br>')
     $('#img_bot').attr( 'src', images[idx])
-    activate_bot( names[idx])
+    activate_bot()
   } // change_bot()
   change_bot.bot = 'leela'
 
@@ -645,7 +645,7 @@ function main( JGO, axutil, p_options) {
         set_emoji(); $('#status').html('')
         return
       }
-      if (playing && !g_opt.show_prob) {
+      if (playing && !g_settings.show_prob) {
         $('#status').html('')
       } else {
         $('#status').html( 'P(B wins): ' + p.toFixed(4))

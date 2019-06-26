@@ -135,17 +135,17 @@
     <script src='https://code.jquery.com/jquery-3.4.0.min.js'> </script>
     <script type='text/javascript'>
      'use strict'
-     var g_opt = {}
+     var g_settings = {}
      $( function() {
-       g_opt = JSON.parse( localStorage.getItem( 'options'))
-       const opt_defaults = JSON.parse( localStorage.getItem( 'opt_defaults'))
-       g_opt = Object.assign( {}, opt_defaults, g_opt)
-       if ('show_emoji' in g_opt) { $('#opt_show_emoji').prop('checked', g_opt.show_emoji)}
-       if ('show_prob'  in g_opt) { $('#opt_show_prob').prop('checked', g_opt.show_prob)}
+       g_settings = JSON.parse( localStorage.getItem( 'settings'))
+       const settings_defaults = JSON.parse( localStorage.getItem( 'settings_defaults'))
+       g_settings = Object.assign( {}, settings_defaults, g_settings)
+       if ('show_emoji' in g_settings) { $('#opt_show_emoji').prop('checked', g_settings.show_emoji)}
+       if ('show_prob'  in g_settings) { $('#opt_show_prob').prop('checked', g_settings.show_prob)}
        $('#btn_settings_done').click( () => {
-         g_opt.show_emoji = $('#opt_show_emoji').prop('checked')
-         g_opt.show_prob = $('#opt_show_prob').prop('checked')
-         localStorage.setItem('options', JSON.stringify(g_opt))
+         g_settings.show_emoji = $('#opt_show_emoji').prop('checked')
+         g_settings.show_prob = $('#opt_show_prob').prop('checked')
+         localStorage.setItem('settings', JSON.stringify(g_opt))
          history.go(-1) })
      })
     </script>
