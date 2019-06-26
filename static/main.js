@@ -6,11 +6,11 @@
 
 'use strict'
 
-const VERSION = '2.0'
+const VERSION = '2.1'
 const LEELA_SERVER = ''
 
-//==============================
-function main( JGO, axutil) {
+//=======================================
+function main( JGO, axutil, options) {
   $ = axutil.$
 
   const BOT = 'leela_gtp_bot'
@@ -412,11 +412,13 @@ function main( JGO, axutil) {
   function activate_bot( botname) {
     activate_bot.botname = botname
     if (botname) {
-      $('#btn_play').css('background-color', '#EEEEEE')
+      $('#btn_play').css('border-width', '3px')
+      $('#btn_play').css('border-color', '#FF0000')
     }
     else {
       axutil.hit_endpoint('cancel')
-      $('#btn_play').css('background-color', '#CCCCCC')
+      $('#btn_play').css('border-width', '1px')
+      $('#btn_play').css('border-color', '#343A40')
     }
   } // activate_bot()
   activate_bot.botname = ''
@@ -796,6 +798,7 @@ function main( JGO, axutil) {
   // Show a translucent hover stone
   //---------------------------------
   function hover( coord, col) {
+    if (options.mobile) { return }
     var hcol = col ? col: g_player
     var jboard = g_jrecord.jboard
     if (jboard.getType( coord) == JGO.WHITE || jboard.getType( coord) == JGO.BLACK) { return }

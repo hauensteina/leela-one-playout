@@ -51,6 +51,9 @@
      .magenta-border { border-style:solid; border-color:magenta; }
      .cyan-border { border-style:solid; border-color:cyan; }
 
+     /* Disable hover color change on buttons */
+     .btn:hover { background-color:#CCCCCC;  color:#343A40; }
+
     </style>
   </head>
   <body style='background-color:#CCCCCC'>
@@ -182,8 +185,8 @@
     <script type='text/javascript' src='static/large/board.js'></script>
 
     <!-- Entry Point -->
-    <script type='text/javascript' src='static/main.js?v=1.27'></script>
-    <script type='text/javascript'> main( JGO, new AhauxUtils( d3, $) ) </script>
+    <script type='text/javascript' src='static/main.js?v=1.28'></script>
+    <script type='text/javascript'> main( JGO, new AhauxUtils( d3, $), {mobile:true} ) </script>
 
   </body>
 </html>
