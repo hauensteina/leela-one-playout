@@ -8,6 +8,7 @@
 
 const VERSION = '2.1'
 const LEELA_SERVER = ''
+const BOTS = ['leela', 'farnsworth', 'bender', 'fry']
 
 //=======================================
 function main( JGO, axutil, p_options) {
@@ -32,12 +33,12 @@ function main( JGO, axutil, p_options) {
   setup_jgo()
   document.onkeydown = check_key
   if (p_options.mobile) {
-    window.onpagehide = save_record
+    window.onpagehide = save_state
   }
   else {
-    window.onbeforeunload = save_record
+    window.onbeforeunload = save_state
   }
-  load_record()
+  load_state()
 
   //================
   // UI Callbacks
@@ -112,7 +113,7 @@ function main( JGO, axutil, p_options) {
     set_load_sgf_handler()
     var_button_state( 'off')
 
-    $('#btn_change').click( change_bot)
+    $('#btn_change').click( () => { change_bot() })
 
     $('#btn_clear_var').click( () => {
       if ($('#btn_clear_var').hasClass('disabled')) { return }
@@ -296,14 +297,22 @@ function main( JGO, axutil, p_options) {
   // Bot Interaction
   //===================
 
-  //------------------------
-  function change_bot() {
-    var bots = ['leela', 'farnsworth', 'bender', 'fry']
-    var images = ['static/leela.png', 'static/farnsworth.png', 'static/bender.png', 'static/fry.png']
-    var names = ['Leela', 'Prof. Farnsworth', 'Bender', 'Fry']
-    var strengths = ['9P', '6D', 'Not bad', 'Oh well']
-    var idx = bots.findIndex( (x) => { return x == change_bot.bot })
-    idx++; idx %= bots.length
+  // Switch to the given bot. If called without bot, go to the next bot.
+  //----------------------------------------------------------------------
+  function change_bot( bot) {
+    const bots = BOTS
+    const images = ['static/leela.png', 'static/farnsworth.png', 'static/bender.png', 'static/fry.png']
+    const names = ['Leela', 'Prof. Farnsworth', 'Bender', 'Fry']
+    const strengths = ['9P', '6D', 'Not bad', 'Oh well']
+
+    var idx = 0
+    if (typeof bot == 'undefined') {
+      idx = bots.indexOf( change_bot.bot)
+      idx++; idx %= bots.length
+    }
+    else {
+      idx = bots.indexOf( bot)
+    }
     change_bot.bot = bots[idx]
     $('#descr_bot').html( names[idx] + '<br> Strength: ' + strengths[idx] + '<br>')
     $('#img_bot').attr( 'src', images[idx])
@@ -619,13 +628,14 @@ function main( JGO, axutil, p_options) {
   //===============================
 
   //--------------------------
-  function save_record() {
+  function save_state() {
     localStorage.setItem('record', JSON.stringify( g_record))
     localStorage.setItem('complete_record', JSON.stringify( g_complete_record))
+    localStorage.setItem('bot', change_bot.bot)
   }
 
   //--------------------------
-  function load_record() {
+  function load_state() {
     if (localStorage.getItem('record') === null) { return }
     if (localStorage.getItem('complete_record') === null) { return }
     if (localStorage.getItem('record') === 'null') { return }
@@ -633,6 +643,9 @@ function main( JGO, axutil, p_options) {
     g_record = JSON.parse( localStorage.getItem('record'))
     g_complete_record = JSON.parse( localStorage.getItem('complete_record'))
     goto_move( g_record.length)
+    var bot = localStorage.getItem('bot')
+    if (BOTS.indexOf( bot) < 0) { bot = BOTS[0] }
+    change_bot(bot)
   }
 
   //======================
