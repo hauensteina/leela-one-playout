@@ -31,7 +31,12 @@ function main( JGO, axutil, p_options) {
   reset_game()
   setup_jgo()
   document.onkeydown = check_key
-  window.onbeforeunload = save_record
+  if (p_options.mobile) {
+    window.onpagehide = save_record
+  }
+  else {
+    window.onbeforeunload = save_record
+  }
   load_record()
 
   //================
