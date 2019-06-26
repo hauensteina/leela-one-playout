@@ -171,6 +171,7 @@ function main( JGO, axutil, p_options) {
 
     $('#btn_undo').click( () => {
       $('#histo').hide()
+      axutil.hit_endpoint('cancel')
       var len = g_record.length
       if (len > 2 && g_record[len-1].agent == 'bot' && g_record[len-2].agent == 'human') {
 	      goto_move( g_record.length - 2)
