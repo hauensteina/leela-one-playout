@@ -10,7 +10,7 @@ const VERSION = '2.1'
 const LEELA_SERVER = ''
 
 //=======================================
-function main( JGO, axutil, options) {
+function main( JGO, axutil, p_options) {
   $ = axutil.$
 
   const BOT = 'leela_gtp_bot'
@@ -140,7 +140,7 @@ function main( JGO, axutil, options) {
         var botCoord = string2jcoord( data.bot_move)
         var jboard = g_jrecord.jboard
         if (botCoord != 'pass' && botCoord != 'resign') {
-          hover( botCoord, g_player)
+          hover( botCoord, g_player, {force:true})
           setTimeout( () => { hover() }, 1000)
         }
       })
@@ -797,8 +797,11 @@ function main( JGO, axutil, options) {
 
   // Show a translucent hover stone
   //---------------------------------
-  function hover( coord, col) {
-    if (options.mobile) { return }
+  function hover( coord, col, opts) {
+    opts = opts || {}
+    if (!'force' in opts) {
+      if (p_options.mobile) { return }
+    }
     var hcol = col ? col: g_player
     var jboard = g_jrecord.jboard
     if (jboard.getType( coord) == JGO.WHITE || jboard.getType( coord) == JGO.BLACK) { return }
