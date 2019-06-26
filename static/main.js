@@ -151,13 +151,16 @@ function main( JGO, axutil, p_options) {
 
     $('#btn_save').click( () => {
       var rec = moves_only(g_complete_record)
+      var probs = probs_only(g_complete_record)
+      for (var i=0; i < probs.length; i++) { probs[i] = probs[i].toFixed(2) }
       // Kludge to manage passes
       for (var i=0; i < rec.length; i++) {
         if (rec[i] == 'pass') { rec[i] = 'A0' }
       }
       var moves = rec.join('')
+      probs = probs.join(',')
       if (moves.length == 0) { return }
-      var url = '/save-sgf?q=' + Math.random + '&moves=' + moves
+      var url = '/save-sgf?q=' + Math.random() + '&moves=' + moves + '&probs=' + probs
       window.location.href = url
     })
 
@@ -224,6 +227,12 @@ function main( JGO, axutil, p_options) {
         var moves = res.moves
         set_emoji()
         replay_move_list( moves)
+	if ('probs' in res) {
+	  var probs = res.probs
+	  for (var i=0; i < moves.length; i++) {
+	    g_record[i].p = parseFloat( probs[i])
+	  }
+	}
         g_complete_record = g_record.slice()
         show_movenum()
         var komi = res.komi
@@ -766,6 +775,16 @@ function main( JGO, axutil, p_options) {
     }
     return res
   } // moves_only()
+
+  // Record has tuples (mv,p,agent). Turn into a list of p.
+  //----------------------------------------------------------
+  function probs_only( record) {
+    var res = []
+    for (var move_prob of record) {
+      res.push( move_prob.p)
+    }
+    return res
+  } // probs_only()
 
   //--------------------------------------
   function jcoord2string( jgo_coord) {

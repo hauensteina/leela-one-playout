@@ -117,8 +117,8 @@ def sgf2list():
         for setup in sgf.get_root().get_setup_stones():
             for idx, move in enumerate( setup):
                 handicap_setup_done = True
-                if idx > 0: moves.append( 'pass')
-                moves.append( move2coords( move))
+                if idx > 0: moves.append( {'mv':'pass', 'p':'0.00' } )
+                moves.append( {'mv':move2coords( move), 'p':'0.00' })
 
     # Nodes in the main sequence
     for item in sgf.main_sequence_iter():
@@ -126,16 +126,25 @@ def sgf2list():
         point = None
         if color is not None:
             if move_tuple is not None:
-                moves.append( move2coords( move_tuple))
+                p = '0.00'
+                props = item.get_raw_property_map()
+                props = { key.decode(): props[key] for key in props.keys() }
+                if 'C' in props:
+                    com = props['C'][0].decode()
+                    if com.startswith('P:'):
+                        p = com.split(':')[1]
+                moves.append( {'mv':move2coords( move_tuple), 'p':p })
             else:
-                moves.append( 'pass')
+                moves.append( {'mv':'pass', 'p':'0.00'})
         # Deal with handicap stones as individual nodes
         elif item.get_setup_stones()[0] and not handicap_setup_done:
             move = list( item.get_setup_stones()[0])[0]
-            if moves: moves.append( 'pass')
-            moves.append( move2coords( move))
+            if moves: moves.append( {'mv':'pass', 'p':'0.00'})
+            moves.append( {'mv':move2coords( move), 'p':'0.00' })
 
-    return jsonify( {'result': {'moves':moves, 'pb':player_black, 'pw':player_white,
+    probs = [mp['p'] for mp in moves]
+    moves = [mp['mv'] for mp in moves]
+    return jsonify( {'result': {'moves':moves, 'probs':probs, 'pb':player_black, 'pw':player_white,
                                 'winner':winner, 'komi':komi, 'fname':fname, 'RE':RE} } )
 
 @app.route('/save-sgf', methods=['GET'])
@@ -143,6 +152,8 @@ def sgf2list():
 # Moves come like 'Q16D4...' to shorten URL.
 #-------------------------------------------------------------
 def save_sgf():
+    probs = request.args.get( 'probs', [])
+    probs = probs.split(',')
     moves = request.args.get( 'moves')
     movearr = []
     m = ''
@@ -153,7 +164,7 @@ def save_sgf():
         else:
             m += c
     if m: movearr.append(m)
-    result = moves2sgf( movearr)
+    result = moves2sgf( movearr, probs)
     fname = uuid.uuid4().hex[:7] + '.sgf'
     fh = BytesIO( result.encode('utf8'))
     resp = send_file( fh, as_attachment=True, attachment_filename=fname)
@@ -174,7 +185,7 @@ def fwd_to_leela( endpoint, args):
 
 # Convert a list of moves like ['Q16',...] to sgf
 #---------------------------------------------------
-def moves2sgf( moves):
+def moves2sgf( moves, probs):
     sgf = '(;FF[4]SZ[19]\n'
     sgf += 'SO[leela-one-playout.herokuapp.com]\n'
     dtstr = datetime.now().strftime('%Y-%m-%d')
@@ -183,7 +194,7 @@ def moves2sgf( moves):
     movestr = ''
     result = ''
     color = 'B'
-    for move in moves:
+    for idx,move in enumerate(moves):
         othercol = 'W' if color == 'B' else 'B'
         if move == 'resign':
             result = 'RE[%s+R]' % othercol
@@ -197,6 +208,8 @@ def moves2sgf( moves):
             col_s = 'abcdefghijklmnopqrstuvwxy'[p.col - 1]
             row_s = 'abcdefghijklmnopqrstuvwxy'[19 - p.row]
             movestr += ';%s[%s%s]' % (color,col_s,row_s)
+            if idx < len(probs):
+                movestr += 'C[P:%s]' % probs[idx]
         color = othercol
 
     sgf += result
