@@ -25,11 +25,8 @@ function main( JGO, axutil, p_options) {
   var g_last_move = null // last move coordinate
   var g_record = []
   var g_complete_record = []
-  const settings_defaults = { show_emoji:false, show_prob:false }
-  localStorage.setItem( 'settings_defaults', JSON.stringify( settings_defaults))
-  var g_settings = JSON.parse( localStorage.getItem( 'settings'))
-  g_settings = Object.assign( {}, settings_defaults, g_settings)
 
+  settings()
   set_btn_handlers()
   reset_game()
   setup_jgo()
@@ -77,7 +74,7 @@ function main( JGO, axutil, p_options) {
             goto_move( g_complete_record.length)
             set_emoji()
             const playing = true
-            get_prob( function() { botmove_if_active() }, g_settings.show_emoji, playing )
+            get_prob( function() { botmove_if_active() }, settings('show_emoji'), playing )
           }
         ) // click
 
@@ -183,8 +180,8 @@ function main( JGO, axutil, p_options) {
       g_complete_record = g_record
     })
 
-    $('#btn_prev').click( () => { $('#histo').hide(); goto_move( g_record.length - 1); update_emoji(); activate_bot('') })
-    $('#btn_next').click( () => { $('#histo').hide(); goto_move( g_record.length + 1); update_emoji(); activate_bot('') })
+    $('#btn_prev').click( btn_prev)
+    $('#btn_next').click( btn_next)
     $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); update_emoji(); activate_bot('') })
     $('#btn_fwd10').click( () => { $('#histo').hide(); goto_move( g_record.length + 10); update_emoji(); activate_bot('') })
     $('#btn_first').click( () => { $('#histo').hide(); goto_first_move(); set_emoji(); activate_bot(''); $('#status').html( '&nbsp;') })
@@ -231,6 +228,15 @@ function main( JGO, axutil, p_options) {
     }) // $('sgf-file')
   } // set_load_sgf_handler()
 
+  //-------------------------
+  function btn_prev() {
+    $('#histo').hide(); goto_move( g_record.length - 1); update_emoji(); activate_bot('')
+  }
+  //-------------------------
+  function btn_next() {
+    $('#histo').hide(); goto_move( g_record.length + 1); update_emoji(); activate_bot('')
+  }
+
   // Key actions
   //------------------------
   function check_key(e) {
@@ -248,12 +254,10 @@ function main( JGO, axutil, p_options) {
     else if (e.keyCode == '40') { // down arrow
     }
     else if (e.keyCode == '37') { // left arrow
-      activate_bot('')
-      goto_move( g_record.length - 1)
+      btn_prev()
     }
     else if (e.keyCode == '39') { // right arrow
-      activate_bot('')
-      goto_move( g_record.length + 1)
+      btn_next()
     }
     check_key.ctrl_pressed = false
   } // check_key()
@@ -645,7 +649,7 @@ function main( JGO, axutil, p_options) {
         set_emoji(); $('#status').html('')
         return
       }
-      if (playing && !g_settings.show_prob) {
+      if (playing && !settings('show_prob')) {
         $('#status').html('')
       } else {
         $('#status').html( 'P(B wins): ' + p.toFixed(4))
@@ -660,6 +664,7 @@ function main( JGO, axutil, p_options) {
   //--------------------------
   function update_emoji() {
     var n = g_record.length - 1
+    if (n < 0) { return }
     var p = g_record[n].p
     if (p == 0) { set_emoji(); return }
     if (n > 0) {
@@ -822,5 +827,28 @@ function main( JGO, axutil, p_options) {
     }
   } // hover()
   hover.coord = null
+
+  // Get a value from the settings screen via localStorage
+  //--------------------------------------------------------
+  function settings( key, value) {
+    const settings_defaults = { show_emoji:false, show_prob:false }
+    var settings = JSON.parse( localStorage.getItem( 'settings'))
+    if (!settings) {
+      localStorage.setItem( 'settings', JSON.stringify( settings_defaults))
+      settings = JSON.parse( localStorage.getItem( 'settings'))
+    }
+    // init
+    if (typeof key == 'undefined') { return }
+    // getter
+    else if (typeof value == 'undefined') {
+      var res = settings[key] || ''
+      return res
+    }
+    // setter
+    else {
+      settings[key] = value
+      localStorage.setItem( 'settings', JSON.stringify( settings))
+    }
+  } // settings()
 
 } // function main()

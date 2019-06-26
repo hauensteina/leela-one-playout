@@ -135,17 +135,14 @@
     <script src='https://code.jquery.com/jquery-3.4.0.min.js'> </script>
     <script type='text/javascript'>
      'use strict'
-     var g_settings = {}
      $( function() {
-       g_settings = JSON.parse( localStorage.getItem( 'settings'))
-       const settings_defaults = JSON.parse( localStorage.getItem( 'settings_defaults'))
-       g_settings = Object.assign( {}, settings_defaults, g_settings)
-       if ('show_emoji' in g_settings) { $('#opt_show_emoji').prop('checked', g_settings.show_emoji)}
-       if ('show_prob'  in g_settings) { $('#opt_show_prob').prop('checked', g_settings.show_prob)}
+       var settings = JSON.parse( localStorage.getItem( 'settings'))
+       if ('show_emoji' in settings) { $('#opt_show_emoji').prop('checked', settings.show_emoji)}
+       if ('show_prob'  in settings) { $('#opt_show_prob').prop('checked', settings.show_prob)}
        $('#btn_settings_done').click( () => {
-         g_settings.show_emoji = $('#opt_show_emoji').prop('checked')
-         g_settings.show_prob = $('#opt_show_prob').prop('checked')
-         localStorage.setItem('settings', JSON.stringify(g_settings))
+         settings.show_emoji = $('#opt_show_emoji').prop('checked')
+         settings.show_prob = $('#opt_show_prob').prop('checked')
+         localStorage.setItem('settings', JSON.stringify(settings))
          history.go(-1) })
      })
     </script>
