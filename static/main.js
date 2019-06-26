@@ -667,7 +667,7 @@ function main( JGO, axutil, p_options) {
       if (playing && !settings('show_prob')) {
         $('#status').html('')
       } else {
-        $('#status').html( 'P(B wins): ' + p.toFixed(4))
+        $('#status').html( 'P(B wins): ' + p.toFixed(2))
       }
       // Show emoji
       if (update_emo) { update_emoji() }
