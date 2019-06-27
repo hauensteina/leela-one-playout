@@ -569,6 +569,7 @@ function main( JGO, axutil, p_options) {
 	        g_complete_record.pop()
 	      }
         goto_move( g_record.length)
+        update_emoji(); activate_bot('')
         handle_variation.var_backup = null
         var_button_state('off')
         $('#status').html( 'Variation deleted')
