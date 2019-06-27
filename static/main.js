@@ -17,7 +17,6 @@ function main( JGO, axutil, p_options) {
   const BOT = 'leela_gtp_bot'
   const BOARD_SIZE = 19
   const COLNAMES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T']
-  const AUTOPLAY_MOVE_DUR_MS = 1000
 
   var g_jrecord = new JGO.Record(BOARD_SIZE)
   var g_jsetup = new JGO.Setup(g_jrecord.jboard, JGO.BOARD.largeWalnut)
@@ -50,61 +49,61 @@ function main( JGO, axutil, p_options) {
     // Add mouse event listeners for the board
     //------------------------------------------
     g_jsetup.create('board',
-      function(canvas) {
-        //----------------------------
-        canvas.addListener('click',
-          function(coord, ev) {
-            if (score_position.active) {
-              goto_move( g_record.length)
-              score_position.active = false
-              return
-            }
-            var jboard = g_jrecord.jboard
-            if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
-            if (axutil.hit_endpoint('waiting')) {
-              return
-            }
-            // clear hover away
-	          hover()
+		  function(canvas) {
+		    //----------------------------
+		    canvas.addListener('click',
+					function(coord, ev) {
+					  if (score_position.active) {
+					    goto_move( g_record.length)
+					    score_position.active = false
+					    return
+					  }
+					  var jboard = g_jrecord.jboard
+					  if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
+					  if (axutil.hit_endpoint('waiting')) {
+					    return
+					  }
+					  // clear hover away
+					  hover()
 
-            // Click on empty board resets everything
-            if (g_record.length == 0) {
-              reset_game()
-            }
+					  // Click on empty board resets everything
+					  if (g_record.length == 0) {
+					    reset_game()
+					  }
 
-            // Add the new move
-            maybe_start_var()
-            var mstr = jcoord2string( coord)
-            g_complete_record = g_record.slice()
-            g_complete_record.push( {'mv':mstr, 'p':0.0, 'agent':'human'} )
-            goto_move( g_complete_record.length)
-            set_emoji()
-            const playing = true
-            get_prob( function() { botmove_if_active() }, settings('show_emoji'), playing )
-          }
-        ) // click
+					  // Add the new move
+					  maybe_start_var()
+					  var mstr = jcoord2string( coord)
+					  g_complete_record = g_record.slice()
+					  g_complete_record.push( {'mv':mstr, 'p':0.0, 'agent':'human'} )
+					  goto_move( g_complete_record.length)
+					  set_emoji()
+					  const playing = true
+					  get_prob( function() { botmove_if_active() }, settings('show_emoji'), playing )
+					}
+				) // click
 
-        //------------------------------
-        canvas.addListener('mousemove',
-          function(coord, ev) {
-            var jboard = g_jrecord.jboard
-            if (coord.i == -1 || coord.j == -1)
-              return
-            if (coord == hover.coord)
-              return
+		    //------------------------------
+		    canvas.addListener('mousemove',
+					function(coord, ev) {
+					  var jboard = g_jrecord.jboard
+					  if (coord.i == -1 || coord.j == -1)
+					    return
+					  if (coord == hover.coord)
+					    return
 
-	          hover( coord, g_player)
-	        }
-        ) // mousemove
+					  hover( coord, g_player)
+					}
+				) // mousemove
 
-        //----------------------------
-        canvas.addListener('mouseout',
-          function(ev) {
-	          hover()
-          }
-        ) // mouseout
-      } // function(canvas)
-    ) // create board
+		    //----------------------------
+		    canvas.addListener('mouseout',
+					function(ev) {
+					  hover()
+					}
+				) // mouseout
+		  } // function(canvas)
+		) // create board
   } // setup_jgo()
 
   // Set button callbacks
@@ -228,12 +227,12 @@ function main( JGO, axutil, p_options) {
         var moves = res.moves
         set_emoji()
         replay_move_list( moves)
-	if ('probs' in res) {
-	  var probs = res.probs
-	  for (var i=0; i < moves.length; i++) {
-	    g_record[i].p = parseFloat( probs[i])
-	  }
-	}
+	      if ('probs' in res) {
+	        var probs = res.probs
+	        for (var i=0; i < moves.length; i++) {
+	          g_record[i].p = parseFloat( probs[i])
+	        }
+	      }
         g_complete_record = g_record.slice()
         show_movenum()
         var komi = res.komi
@@ -362,7 +361,6 @@ function main( JGO, axutil, p_options) {
     }
   } // get_bender_move()
 
-
   //-----------------------------
   function get_fry_move() {
     //ga('send', 'event', 'play', 'fry')
@@ -407,33 +405,33 @@ function main( JGO, axutil, p_options) {
       randomness = 0.0
     }
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record),
-      'config':{'randomness': randomness } },
-      (data) => {
-	      hover() // The board thinks the hover stone is actually there. Clear it.
+			'config':{'randomness': randomness } },
+			(data) => {
+			  hover() // The board thinks the hover stone is actually there. Clear it.
 
-        var botprob = data.diagnostics.winprob; var botcol = 'Black'
-        if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
+			  var botprob = data.diagnostics.winprob; var botcol = 'Black'
+			  if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
 
-        if (data.bot_move == 'pass') {
-          alert( 'The bot passes. Click on the Score button.')
-        }
-        else if (data.bot_move == 'resign' || (g_record.length > 50 && botprob < 0.01) || botprob < 0.005 ) {
-          alert( 'The bot resigns. You beat the bot!')
-          $('#status').html( botcol + ' resigned')
-        }
-        else {
-          maybe_start_var()
-          var botCoord = string2jcoord( data.bot_move)
-        }
-        show_move( g_player, botCoord, 0.0, 'bot')
-        g_complete_record = g_record.slice()
-        replay_move_list( g_record)
-        show_movenum()
-        g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
-        const show_emoji = false
-        const playing = true
-        get_prob( function() {}, show_emoji, playing )
-      })
+			  if (data.bot_move == 'pass') {
+			    alert( 'The bot passes. Click on the Score button.')
+			  }
+			  else if (data.bot_move == 'resign' || (g_record.length > 50 && botprob < 0.01) || botprob < 0.005 ) {
+			    alert( 'The bot resigns. You beat the bot!')
+			    $('#status').html( botcol + ' resigned')
+			  }
+			  else {
+			    maybe_start_var()
+			    var botCoord = string2jcoord( data.bot_move)
+			  }
+			  show_move( g_player, botCoord, 0.0, 'bot')
+			  g_complete_record = g_record.slice()
+			  replay_move_list( g_record)
+			  show_movenum()
+			  g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
+			  const show_emoji = false
+			  const playing = true
+			  get_prob( function() {}, show_emoji, playing )
+			})
   } // get_bot_move()
 
   //--------------------------------
@@ -656,16 +654,16 @@ function main( JGO, axutil, p_options) {
   //-----------------------------------------------------
   function get_prob( completion, update_emo, playing) {
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT,
-      {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'config':{'randomness': -1.0 } },
-      (data) => {
-        if (g_record.length) {
-          var p = parseFloat(data.diagnostics.winprob)
-          g_record[ g_record.length - 1].p = p // Remember win prob of position
-          g_complete_record[ g_record.length - 1].p = p
-        }
-        show_prob( update_emo, playing)
-        if (completion) { completion(data) }
-      })
+			{'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'config':{'randomness': -1.0 } },
+			(data) => {
+			  if (g_record.length) {
+			    var p = parseFloat(data.diagnostics.winprob)
+			    g_record[ g_record.length - 1].p = p // Remember win prob of position
+			    g_complete_record[ g_record.length - 1].p = p
+			  }
+			  show_prob( update_emo, playing)
+			  if (completion) { completion(data) }
+			})
   } // get_prob()
 
   //------------------------------------------
@@ -740,38 +738,38 @@ function main( JGO, axutil, p_options) {
   function score_position( endpoint)
   {
     axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record)},
-      (data) => {
-        plot_histo(data, (surepoints) => {
-          if (surepoints < 120) {
-            alert( 'Too early to score. Sorry.')
-            return
-          }
-          score_position.active = true
-          var node = g_jrecord.createNode( true)
-          for (var bpoint of data.territory.black_points) {
-            var coord = rc2jcoord( bpoint[0], bpoint[1])
-            if (node.jboard.stones [coord.i] [coord.j] != 1) {
-              node.setMark( rc2jcoord( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
-            }
-          }
-          for (var wpoint of data.territory.white_points) {
-            var coord = rc2jcoord( wpoint[0], wpoint[1])
-            if (node.jboard.stones [coord.i] [coord.j] != 2) {
-              node.setMark( rc2jcoord( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
-            }
-          }
-          for (var dpoint of data.territory.dame_points) {
-            node.setMark( rc2jcoord( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
-          }
-          var black_points = data.result[0]
-          var white_points = data.result[1]
-          var diff = Math.abs( black_points - white_points)
-          var rstr = `W+${diff} <br>(before komi and handicap)`
-          if (black_points >= white_points) { rstr = `B+${diff}  <br>(before komi and handicap)` }
-          $('#status').html( `B:${black_points} &nbsp; W:${white_points} &nbsp; ${rstr}`)
-        }) // plot_histo()
-      } // (data) =>
-    ) // hit_endpoint()
+			(data) => {
+			  plot_histo(data, (surepoints) => {
+			    if (surepoints < 120) {
+			      alert( 'Too early to score. Sorry.')
+			      return
+			    }
+			    score_position.active = true
+			    var node = g_jrecord.createNode( true)
+			    for (var bpoint of data.territory.black_points) {
+			      var coord = rc2jcoord( bpoint[0], bpoint[1])
+			      if (node.jboard.stones [coord.i] [coord.j] != 1) {
+				      node.setMark( rc2jcoord( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
+			      }
+			    }
+			    for (var wpoint of data.territory.white_points) {
+			      var coord = rc2jcoord( wpoint[0], wpoint[1])
+			      if (node.jboard.stones [coord.i] [coord.j] != 2) {
+				      node.setMark( rc2jcoord( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
+			      }
+			    }
+			    for (var dpoint of data.territory.dame_points) {
+			      node.setMark( rc2jcoord( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
+			    }
+			    var black_points = data.result[0]
+			    var white_points = data.result[1]
+			    var diff = Math.abs( black_points - white_points)
+			    var rstr = `W+${diff} <br>(before komi and handicap)`
+			    if (black_points >= white_points) { rstr = `B+${diff}  <br>(before komi and handicap)` }
+			    $('#status').html( `B:${black_points} &nbsp; W:${white_points} &nbsp; ${rstr}`)
+			  }) // plot_histo()
+			} // (data) =>
+		) // hit_endpoint()
   } // score_position()
   score_position.active = false
 
@@ -859,8 +857,8 @@ function main( JGO, axutil, p_options) {
       }
     }
     else if (hover.coord) {
-	    jboard.setType( hover.coord, col == JGO.CLEAR)
-	    hover.coord = null
+      jboard.setType( hover.coord, col == JGO.CLEAR)
+      hover.coord = null
       replay_move_list( g_record) // remove artifacts
     }
   } // hover()
