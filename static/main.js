@@ -842,8 +842,8 @@ function main( JGO, axutil, p_options) {
   //---------------------------------
   function hover( coord, col, opts) {
     opts = opts || {}
-    if (!'force' in opts) {
-      if (p_options.mobile) { return }
+    if (!opts.force) {
+      if (p_options.mobile && col) { return }
     }
     var hcol = col ? col: g_player
     var jboard = g_jrecord.jboard
