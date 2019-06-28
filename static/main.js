@@ -30,14 +30,22 @@ function main( JGO, axutil, p_options) {
   set_btn_handlers()
   reset_game()
   setup_jgo()
+  load_state()
   document.onkeydown = check_key
+
   if (p_options.mobile) {
     window.onpagehide = save_state
   }
   else {
     window.onbeforeunload = save_state
   }
-  load_state()
+
+  // Save game record once a minute
+  function statesaver() {
+    save_state();
+    setTimeout(statesaver, 60000)
+  }
+  statesaver()
 
   //================
   // UI Callbacks
