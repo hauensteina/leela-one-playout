@@ -6,6 +6,7 @@
 
 'use strict'
 
+const DEBUG = false
 const VERSION = '2.1'
 const LEELA_SERVER = ''
 const BOTS = ['leela', 'farnsworth', 'bender', 'fry']
@@ -93,14 +94,20 @@ function main( JGO, axutil, p_options) {
 
 		    //------------------------------
 		    canvas.addListener('mousemove',
-					function(coord, ev) {
+					function( coord, ev) {
 					  var jboard = g_jrecord.jboard
 					  if (coord.i == -1 || coord.j == -1)
 					    return
 					  if (coord == hover.coord)
 					    return
 
-					  hover( coord, g_player)
+            if (DEBUG && score_position.active) {
+              var idx = jcoord2idx( coord)
+              $('#status').html( score_position.white_probs[idx])
+            }
+            else {
+					    hover( coord, g_player)
+            }
 					}
 				) // mousemove
 
@@ -749,6 +756,7 @@ function main( JGO, axutil, p_options) {
     axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record)},
 			(data) => {
 			  plot_histo(data, (surepoints) => {
+          score_position.white_probs = data.white_probs
 			    if (surepoints < 120) {
 			      alert( 'Too early to score. Sorry.')
 			      return
@@ -781,6 +789,18 @@ function main( JGO, axutil, p_options) {
 		) // hit_endpoint()
   } // score_position()
   score_position.active = false
+  score_position.white_probs = []
+
+  // Plot histogram of territory probabilities
+  //---------------------------------------------
+  function plot_histo( data, completion) {
+    var wp = data.white_probs
+    axutil.hit_endpoint( '/histo', [wp,20,0,1], (res) => {
+      var surepoints = res[0][1] + res[res.length-1][1]
+      axutil.barchart( '#histo', res, 240)
+      completion( surepoints)
+    })
+  } // plot_histo()
 
   //===============
   // Converters
@@ -825,25 +845,22 @@ function main( JGO, axutil, p_options) {
   } // string2jcoord()
 
   // Turn a server (row, col) into a JGO coordinate
-  //-------------------------------------------------------
+  //--------------------------------------------------
   function rc2jcoord( row, col) {
     return new JGO.Coordinate( col - 1, BOARD_SIZE - row)
   } // rc2jcoord()
 
+  // Turn a jgo coord into a linear array index
+  //----------------------------------------------
+  function jcoord2idx( jcoord) {
+    if (jcoord == 'pass' || jcoord == 'resign') { return -1 }
+    var idx = (BOARD_SIZE - jcoord.j - 1) * BOARD_SIZE + jcoord.i
+    return idx
+  } // jcoord2idx()
+
   //=======
   // Misc
   //=======
-
-  // Plot histogram of territory probabilities
-  //---------------------------------------------
-  function plot_histo( data, completion) {
-    var wp = data.white_probs
-    axutil.hit_endpoint( '/histo', [wp,20,0,1], (res) => {
-      var surepoints = res[0][1] + res[res.length-1][1]
-      axutil.barchart( '#histo', res, 240)
-      completion( surepoints)
-    })
-  } // plot_histo()
 
   // Show a translucent hover stone
   //---------------------------------
