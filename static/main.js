@@ -374,6 +374,7 @@ function main( JGO, axutil, p_options) {
   //--------------------------------
   function botmove_if_active() {
     if (axutil.hit_endpoint('waiting')) { return true }
+    if (activate_bot.state == 'off') { return true }
     if (change_bot.botname == 'leela') {
       get_leela_move()
       return true
