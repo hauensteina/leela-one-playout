@@ -650,6 +650,9 @@ function main( JGO, axutil, p_options) {
 
   //--------------------------
   function load_state() {
+    var bot = localStorage.getItem('bot')
+    if (BOTS.indexOf( bot) < 0) { bot = BOTS[0] }
+    change_bot(bot)
     if (localStorage.getItem('record') === null) { return }
     if (localStorage.getItem('complete_record') === null) { return }
     if (localStorage.getItem('record') === 'null') { return }
@@ -657,9 +660,6 @@ function main( JGO, axutil, p_options) {
     g_record = JSON.parse( localStorage.getItem('record'))
     g_complete_record = JSON.parse( localStorage.getItem('complete_record'))
     goto_move( g_record.length)
-    var bot = localStorage.getItem('bot')
-    if (BOTS.indexOf( bot) < 0) { bot = BOTS[0] }
-    change_bot(bot)
   }
 
   //======================
