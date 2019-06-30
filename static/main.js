@@ -27,26 +27,6 @@ function main( JGO, axutil, p_options) {
   var g_record = []
   var g_complete_record = []
 
-  settings()
-  set_btn_handlers()
-  reset_game()
-  setup_jgo()
-  load_state()
-  document.onkeydown = check_key
-
-  if (p_options.mobile) {
-    window.onpagehide = save_state
-  }
-  else {
-    window.onbeforeunload = save_state
-  }
-
-  // Save game record once a minute
-  function statesaver() {
-    save_state();
-    setTimeout(statesaver, 60000)
-  }
-  statesaver()
 
   //================
   // UI Callbacks
@@ -145,7 +125,7 @@ function main( JGO, axutil, p_options) {
         reset_game()
       }
       $('#histo').hide()
-      activate_bot( change_bot.bot)
+      activate_bot( 'on')
       botmove_if_active()
       return false
     })
@@ -206,10 +186,10 @@ function main( JGO, axutil, p_options) {
 
     $('#btn_prev').click( btn_prev)
     $('#btn_next').click( btn_next)
-    $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); update_emoji(); activate_bot('') })
-    $('#btn_fwd10').click( () => { $('#histo').hide(); goto_move( g_record.length + 10); update_emoji(); activate_bot('') })
-    $('#btn_first').click( () => { $('#histo').hide(); goto_first_move(); set_emoji(); activate_bot(''); $('#status').html( '&nbsp;') })
-    $('#btn_last').click( () => { $('#histo').hide(); goto_move( g_complete_record.length); update_emoji(); activate_bot('') })
+    $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); update_emoji(); activate_bot('off') })
+    $('#btn_fwd10').click( () => { $('#histo').hide(); goto_move( g_record.length + 10); update_emoji(); activate_bot('off') })
+    $('#btn_first').click( () => { $('#histo').hide(); goto_first_move(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
+    $('#btn_last').click( () => { $('#histo').hide(); goto_move( g_complete_record.length); update_emoji(); activate_bot('off') })
 
     // Prevent zoom on double tap
     $('#btn_clear_var').on('touchstart', prevent_zoom)
@@ -260,11 +240,11 @@ function main( JGO, axutil, p_options) {
 
   //-------------------------
   function btn_prev() {
-    $('#histo').hide(); goto_move( g_record.length - 1); update_emoji(); activate_bot('')
+    $('#histo').hide(); goto_move( g_record.length - 1); update_emoji(); activate_bot('off')
   }
   //-------------------------
   function btn_next() {
-    $('#histo').hide(); goto_move( g_record.length + 1); update_emoji(); activate_bot('')
+    $('#histo').hide(); goto_move( g_record.length + 1); update_emoji(); activate_bot('off')
   }
 
   // Key actions
@@ -321,18 +301,18 @@ function main( JGO, axutil, p_options) {
 
     var idx = 0
     if (typeof bot == 'undefined') {
-      idx = bots.indexOf( change_bot.bot)
+      idx = bots.indexOf( change_bot.botname)
       idx++; idx %= bots.length
     }
     else {
       idx = bots.indexOf( bot)
     }
-    change_bot.bot = bots[idx]
+    change_bot.botname = bots[idx]
     $('#descr_bot').html( names[idx] + '<br> Strength: ' + strengths[idx] + '<br>')
     $('#img_bot').attr( 'src', images[idx])
-    activate_bot()
+    activate_bot('off')
   } // change_bot()
-  change_bot.bot = 'leela'
+  change_bot.botname = 'leela'
 
   const OPENING_RANDOMNESS = 0.33
   const FARNSWORTH_RANDOMNESS = 0.5 // 6D
@@ -394,19 +374,19 @@ function main( JGO, axutil, p_options) {
   //--------------------------------
   function botmove_if_active() {
     if (axutil.hit_endpoint('waiting')) { return true }
-    if (activate_bot.botname == 'leela') {
+    if (change_bot.botname == 'leela') {
       get_leela_move()
       return true
     }
-    else if (activate_bot.botname == 'farnsworth') {
+    else if (change_bot.botname == 'farnsworth') {
       get_farnsworth_move()
       return true
     }
-    else if (activate_bot.botname == 'bender') {
+    else if (change_bot.botname == 'bender') {
       get_bender_move()
       return true
     }
-    else if (activate_bot.botname == 'fry') {
+    else if (change_bot.botname == 'fry') {
       get_fry_move()
       return true
     }
@@ -449,10 +429,10 @@ function main( JGO, axutil, p_options) {
 			})
   } // get_bot_move()
 
-  //--------------------------------
-  function activate_bot( botname) {
-    activate_bot.botname = botname
-    if (botname) {
+  //-----------------------------------
+  function activate_bot( on_or_off) {
+    activate_bot.state = on_or_off
+    if (on_or_off == 'on') {
       $('#btn_play').css('border-width', '3px')
       $('#btn_play').css('border-color', '#FF0000')
     }
@@ -462,7 +442,7 @@ function main( JGO, axutil, p_options) {
       $('#btn_play').css('border-color', '#343A40')
     }
   } // activate_bot()
-  activate_bot.botname = ''
+  activate_bot.state = 'off'
 
   //========
   // Moves
@@ -584,7 +564,7 @@ function main( JGO, axutil, p_options) {
 	        g_complete_record.pop()
 	      }
         goto_move( g_record.length)
-        update_emoji(); activate_bot('')
+        update_emoji(); activate_bot('off')
         handle_variation.var_backup = null
         var_button_state('off')
         $('#status').html( 'Variation deleted')
@@ -645,7 +625,7 @@ function main( JGO, axutil, p_options) {
   function save_state() {
     localStorage.setItem('record', JSON.stringify( g_record))
     localStorage.setItem('complete_record', JSON.stringify( g_complete_record))
-    localStorage.setItem('bot', change_bot.bot)
+    localStorage.setItem('bot', change_bot.botname)
   }
 
   //--------------------------
@@ -912,5 +892,26 @@ function main( JGO, axutil, p_options) {
       localStorage.setItem( 'settings', JSON.stringify( settings))
     }
   } // settings()
+
+  settings()
+  set_btn_handlers()
+  reset_game()
+  setup_jgo()
+  load_state()
+  document.onkeydown = check_key
+
+  if (p_options.mobile) {
+    window.onpagehide = save_state
+  }
+  else {
+    window.onbeforeunload = save_state
+  }
+
+  // Save game record once a minute
+  function statesaver() {
+    save_state();
+    setTimeout(statesaver, 60000)
+  }
+  statesaver()
 
 } // function main()
