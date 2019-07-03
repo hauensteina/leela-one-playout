@@ -7,7 +7,7 @@
 'use strict'
 
 const DEBUG = false
-const VERSION = '2.1'
+const VERSION = '2.3'
 const LEELA_SERVER = ''
 const BOTS = ['leela', 'farnsworth', 'bender', 'fry']
 
@@ -315,7 +315,8 @@ function main( JGO, axutil, p_options) {
   change_bot.botname = 'leela'
 
   const OPENING_RANDOMNESS = 0.33
-  const FARNSWORTH_RANDOMNESS = 0.5 // 6D
+  const FARNSWORTH_RANDOMNESS = 0 // 6D
+  const FARNSWORTH_PLAYOUTS = 32
   const BENDER_RANDOMNESS = 0.15 // 1D
   const FRY_RANDOMNESS = 0.115 // kyu
 
@@ -329,15 +330,16 @@ function main( JGO, axutil, p_options) {
   //-----------------------------
   function get_farnsworth_move() {
     //ga('send', 'event', 'play', 'farnsworth')
-    $('#status').html( 'Farnsworth is guessing...')
+
+    $('#status').html( 'Farnsworth is guessing... ')
     if (g_record.length < 15) {
-      get_bot_move( OPENING_RANDOMNESS)
+      get_bot_move( FARNSWORTH_RANDOMNESS, FARNSWORTH_PLAYOUTS)
     }
     else if (g_record.length < 140) {
-      get_bot_move( FARNSWORTH_RANDOMNESS)
+      get_bot_move( FARNSWORTH_RANDOMNESS, FARNSWORTH_PLAYOUTS)
     }
     else {
-      get_bot_move( FARNSWORTH_RANDOMNESS)
+      get_bot_move( FARNSWORTH_RANDOMNESS, FARNSWORTH_PLAYOUTS)
     }
   } // get_farnsworth_move()
 
@@ -396,12 +398,11 @@ function main( JGO, axutil, p_options) {
 
   // Get next move from the bot and show on board
   //-------------------------------------------------
-  function get_bot_move( randomness) {
-    if (!randomness) {
-      randomness = 0.0
-    }
+  function get_bot_move( randomness, playouts) {
+    randomness = randomness || 0.0
+    playouts = playouts || 0.0
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record),
-			'config':{'randomness': randomness } },
+			'config':{'randomness': randomness, 'playouts':playouts } },
 			(data) => {
 			  hover() // The board thinks the hover stone is actually there. Clear it.
 
