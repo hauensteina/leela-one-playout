@@ -625,10 +625,12 @@ function main( JGO, axutil, p_options) {
 
   //--------------------------
   function save_state() {
-    localStorage.setItem('record', JSON.stringify( g_record))
-    localStorage.setItem('complete_record', JSON.stringify( g_complete_record))
-    localStorage.setItem('bot', change_bot.botname)
-  }
+    if (var_button_state() == 'off') { // don't save if in variation
+      localStorage.setItem('record', JSON.stringify( g_record))
+      localStorage.setItem('complete_record', JSON.stringify( g_complete_record))
+      localStorage.setItem('bot', change_bot.botname)
+    }
+  } // save_state()
 
   //--------------------------
   function load_state() {
