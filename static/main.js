@@ -413,7 +413,12 @@ function main( JGO, axutil, p_options) {
 			  if (data.bot_move == 'pass') {
 			    alert( 'The bot passes. Click on the Score button.')
 			  }
-			  else if (data.bot_move == 'resign' || (handi < 4 && g_record.length > 50 && botprob < 0.01) || (handi < 4 && botprob < 0.005)) {
+			  else if (data.bot_move == 'resign' ||
+          (handi < 3 && g_record.length > 50 && botprob < 0.01) ||
+          (handi < 3 && botprob < 0.005) ||
+          (botprob < 0.0005)
+        )
+        {
 			    alert( 'The bot resigns. You beat the bot!')
 			    $('#status').html( botcol + ' resigned')
 			  }
