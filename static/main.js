@@ -416,7 +416,7 @@ function main( JGO, axutil, p_options) {
 			  else if (data.bot_move == 'resign' ||
           (handi < 3 && g_record.length > 50 && botprob < 0.01) ||
           (handi < 3 && botprob < 0.005) ||
-          (botprob < 0.0005)
+          (botprob < 0.001)
         )
         {
 			    alert( 'The bot resigns. You beat the bot!')
