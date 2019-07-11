@@ -322,14 +322,14 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_leela_move() {
-    //ga('send', 'event', 'play', 'leela')
+    gtag('play', 'leela')
     $('#status').html( 'Leela is thinking...')
     get_bot_move()
   } // get_leela_move()
 
   //-----------------------------
   function get_farnsworth_move() {
-    //ga('send', 'event', 'play', 'farnsworth')
+    gtag('play', 'farnsworth')
 
     $('#status').html( 'Farnsworth is guessing... ')
     if (g_record.length < 15) {
@@ -345,7 +345,7 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_bender_move() {
-    //ga('send', 'event', 'play', 'bender')
+    gtag('play', 'bender')
     $('#status').html( 'Bender is trying...')
     if (g_record.length < 15) {
       get_bot_move( OPENING_RANDOMNESS)
@@ -360,7 +360,7 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_fry_move() {
-    //ga('send', 'event', 'play', 'fry')
+    gtag('play', 'fry')
     $('#status').html( 'Fry is struggling...')
     if (g_record.length < 15) {
       get_bot_move( OPENING_RANDOMNESS)
