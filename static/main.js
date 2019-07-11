@@ -320,18 +320,26 @@ function main( JGO, axutil, p_options) {
   const BENDER_RANDOMNESS = 0.15 // 1D
   const FRY_RANDOMNESS = 0.115 // kyu
 
+  //---------------------------
+  function log_event( bot) {
+    if (handle_variation.var_backup) {
+      gtag('event', 'analyze', { 'event_category': bot, 'event_label': 'label', 'value':1} );
+    }
+    else {
+      gtag('event', 'play', { 'event_category': bot, 'event_label': 'label', 'value':1} );
+    }
+  } // log_event()
+
   //-----------------------------
   function get_leela_move() {
-    gtag('event', 'play', { 'event_category': 'leela', 'event_label': 'label', 'value':1} );
-
+    log_event( 'leela')
     $('#status').html( 'Leela is thinking...')
     get_bot_move()
   } // get_leela_move()
 
   //-----------------------------
   function get_farnsworth_move() {
-    gtag('event', 'play', { 'event_category': 'farnsworth', 'event_label': 'label', 'value':1} );
-
+    log_event( 'farnsworth')
     $('#status').html( 'Farnsworth is guessing... ')
     if (g_record.length < 15) {
       get_bot_move( FARNSWORTH_RANDOMNESS, FARNSWORTH_PLAYOUTS)
@@ -346,8 +354,7 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_bender_move() {
-    gtag('event', 'play', { 'event_category': 'bender', 'event_label': 'label', 'value':1} );
-
+    log_event( 'bender')
     $('#status').html( 'Bender is trying...')
     if (g_record.length < 15) {
       get_bot_move( OPENING_RANDOMNESS)
@@ -362,8 +369,7 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_fry_move() {
-    gtag('event', 'play', { 'event_category': 'fry', 'event_label': 'label', 'value':1} );
-
+    log_event( 'fry')
     $('#status').html( 'Fry is struggling...')
     if (g_record.length < 15) {
       get_bot_move( OPENING_RANDOMNESS)
