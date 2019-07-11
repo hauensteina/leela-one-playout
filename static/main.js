@@ -323,10 +323,10 @@ function main( JGO, axutil, p_options) {
   //---------------------------
   function log_event( bot) {
     if (handle_variation.var_backup) {
-      gtag('event', 'analyze', { 'event_category': bot, 'event_label': 'label', 'value':1} );
+      gtag('event', 'play', { 'event_category': bot + '_a', 'event_label': 'label', 'value':1} );
     }
     else {
-      gtag('event', 'play', { 'event_category': bot, 'event_label': 'label', 'value':1} );
+      gtag('event', 'play', { 'event_category': bot + '_p', 'event_label': 'label', 'value':1} );
     }
   } // log_event()
 
