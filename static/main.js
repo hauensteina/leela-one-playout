@@ -322,7 +322,7 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_leela_move() {
-    gtag('event', 'play', { 'event_category': 'leela'} );
+    gtag('event', 'play', { 'event_category': 'leela', 'event_label': 'label', 'value':1} );
 
     $('#status').html( 'Leela is thinking...')
     get_bot_move()
@@ -330,7 +330,7 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_farnsworth_move() {
-    gtag('event', 'play', { 'event_category': 'farnsworth'} );
+    gtag('event', 'play', { 'event_category': 'farnsworth', 'event_label': 'label', 'value':1} );
 
     $('#status').html( 'Farnsworth is guessing... ')
     if (g_record.length < 15) {
@@ -346,7 +346,7 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_bender_move() {
-    gtag('event', 'play', { 'event_category': 'bender'} );
+    gtag('event', 'play', { 'event_category': 'bender', 'event_label': 'label', 'value':1} );
 
     $('#status').html( 'Bender is trying...')
     if (g_record.length < 15) {
@@ -362,7 +362,7 @@ function main( JGO, axutil, p_options) {
 
   //-----------------------------
   function get_fry_move() {
-    gtag('event', 'play', { 'event_category': 'fry'} );
+    gtag('event', 'play', { 'event_category': 'fry', 'event_label': 'label', 'value':1} );
 
     $('#status').html( 'Fry is struggling...')
     if (g_record.length < 15) {
