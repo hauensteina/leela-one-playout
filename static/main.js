@@ -318,7 +318,7 @@ function main( JGO, axutil, p_options) {
   const FARNSWORTH_RANDOMNESS = 0 // 6D
   const FARNSWORTH_PLAYOUTS = 32
   const BENDER_RANDOMNESS = 0.15 // 1D
-  const FRY_RANDOMNESS = 0.12 // kyu
+  const FRY_RANDOMNESS = 0.13 // kyu
 
   //---------------------------
   function log_event( bot) {
