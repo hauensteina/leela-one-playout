@@ -9,7 +9,7 @@
 const DEBUG = false
 const VERSION = '2.3'
 const LEELA_SERVER = ''
-const BOTS = ['leela', 'farnsworth', 'bender', 'fry']
+const BOTS = ['fry', 'bender', 'farnsworth', 'leela']
 
 //=======================================
 function main( JGO, axutil, p_options) {
@@ -312,7 +312,7 @@ function main( JGO, axutil, p_options) {
     $('#img_bot').attr( 'src', images[idx])
     activate_bot('off')
   } // change_bot()
-  change_bot.botname = 'leela'
+  change_bot.botname = 'fry'
 
   const OPENING_RANDOMNESS = 0.33
   const FARNSWORTH_RANDOMNESS = 0 // 6D
@@ -756,7 +756,7 @@ function main( JGO, axutil, p_options) {
 			(data) => {
 			  plot_histo(data, (surepoints) => {
           score_position.white_probs = data.white_probs
-			    if (surepoints < 120) {
+			    if (surepoints < 100) {
 			      alert( 'Too early to score. Sorry.')
 			      return
 			    }
