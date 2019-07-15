@@ -423,14 +423,16 @@ function main( JGO, axutil, p_options) {
 			  if (data.bot_move == 'pass') {
 			    alert( 'The bot passes. Click on the Score button.')
 			  }
-			  else if (data.bot_move == 'resign' ||
-          (handi < 3 && g_record.length > 50 && botprob < 0.01) ||
-          (handi < 3 && botprob < 0.005) ||
-          (botprob < 0.001)
+			  else if ( (!handle_variation.var_backup) && ( // do not resign in variation
+          data.bot_move == 'resign' ||
+            (handi < 3 && g_record.length > 50 && botprob < 0.01) ||
+            (handi < 3 && botprob < 0.005) ||
+            (botprob < 0.001))
         )
         {
 			    alert( 'The bot resigns. You beat the bot!')
 			    $('#status').html( botcol + ' resigned')
+          return
 			  }
 			  else {
 			    maybe_start_var()
