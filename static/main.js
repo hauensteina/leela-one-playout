@@ -26,7 +26,7 @@ function main( JGO, axutil, p_options) {
   var g_last_move = null // last move coordinate
   var g_record = []
   var g_complete_record = []
-  var g_click_coord_buffer = null // buffer one click for user experience
+  var g_play_btn_buffer = false // buffer one play btn click
 
   //================
   // UI Callbacks
@@ -42,7 +42,6 @@ function main( JGO, axutil, p_options) {
 		var jboard = g_jrecord.jboard
 		if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
 		if (axutil.hit_endpoint('waiting')) {
-      g_click_coord_buffer = coord
 			return
 		}
 		// clear hover away
@@ -387,7 +386,7 @@ function main( JGO, axutil, p_options) {
 
   //--------------------------------
   function botmove_if_active() {
-    if (axutil.hit_endpoint('waiting')) { return true }
+    if (axutil.hit_endpoint('waiting')) { g_play_btn_buffer = true; return true }
     if (activate_bot.state == 'off') { return true }
     if (change_bot.botname == 'leela') {
       get_leela_move()
@@ -683,10 +682,9 @@ function main( JGO, axutil, p_options) {
 			  }
 			  show_prob( update_emo, playing)
 			  if (completion) { completion(data) }
-        if (g_click_coord_buffer) { // user clicked while waiting, do it now
-          console.log( 'click buff')
-          board_click_callback( g_click_coord_buffer)
-          g_click_coord_buffer = null
+        if (g_play_btn_buffer) { // Buffered play button click
+          g_play_btn_buffer = false
+          botmove_if_active()
         }
 			})
   } // get_prob()
