@@ -336,7 +336,9 @@ function main( JGO, axutil, p_options) {
   function get_leela_move() {
     log_event( 'leela')
     $('#status').html( 'Leela is thinking...')
-    get_bot_move()
+    var randomness = 0.0
+    if (g_record.length < g_complete_record.length) { randomness = -1.0 } // No randomness if analyzing
+    get_bot_move( randomness, 0)
   } // get_leela_move()
 
   //-----------------------------
@@ -593,6 +595,7 @@ function main( JGO, axutil, p_options) {
     }
     else if (action == 'accept') { // Forget saved game record and replace it with the variation
       handle_variation.var_backup = null
+      g_complete_record = g_record
       var_button_state( 'off')
       $('#status').html( 'Variation accepted')
     }
