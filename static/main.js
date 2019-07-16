@@ -26,11 +26,43 @@ function main( JGO, axutil, p_options) {
   var g_last_move = null // last move coordinate
   var g_record = []
   var g_complete_record = []
-
+  var g_click_coord_buffer = null // buffer one click for user experience
 
   //================
   // UI Callbacks
   //================
+
+  //----------------------------------------
+  function board_click_callback( coord) {
+		if (score_position.active) {
+			goto_move( g_record.length)
+			score_position.active = false
+			return
+		}
+		var jboard = g_jrecord.jboard
+		if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
+		if (axutil.hit_endpoint('waiting')) {
+      g_click_coord_buffer = coord
+			return
+		}
+		// clear hover away
+		hover()
+
+		// Click on empty board resets everything
+		if (g_record.length == 0) {
+			reset_game()
+		}
+
+		// Add the new move
+		maybe_start_var()
+		var mstr = jcoord2string( coord)
+		g_complete_record = g_record.slice()
+		g_complete_record.push( {'mv':mstr, 'p':0.0, 'agent':'human'} )
+		goto_move( g_complete_record.length)
+		set_emoji()
+		const playing = true
+		get_prob( function() { botmove_if_active() }, settings('show_emoji'), playing )
+  } // board_click_callback()
 
   //-------------------------
   function setup_jgo() {
@@ -40,37 +72,7 @@ function main( JGO, axutil, p_options) {
     g_jsetup.create('board',
 		  function(canvas) {
 		    //----------------------------
-		    canvas.addListener('click',
-					function(coord, ev) {
-					  if (score_position.active) {
-					    goto_move( g_record.length)
-					    score_position.active = false
-					    return
-					  }
-					  var jboard = g_jrecord.jboard
-					  if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
-					  if (axutil.hit_endpoint('waiting')) {
-					    return
-					  }
-					  // clear hover away
-					  hover()
-
-					  // Click on empty board resets everything
-					  if (g_record.length == 0) {
-					    reset_game()
-					  }
-
-					  // Add the new move
-					  maybe_start_var()
-					  var mstr = jcoord2string( coord)
-					  g_complete_record = g_record.slice()
-					  g_complete_record.push( {'mv':mstr, 'p':0.0, 'agent':'human'} )
-					  goto_move( g_complete_record.length)
-					  set_emoji()
-					  const playing = true
-					  get_prob( function() { botmove_if_active() }, settings('show_emoji'), playing )
-					}
-				) // click
+		    canvas.addListener('click', function(coord, ev) { board_click_callback( coord) } );
 
 		    //------------------------------
 		    canvas.addListener('mousemove',
@@ -425,9 +427,9 @@ function main( JGO, axutil, p_options) {
 			  }
 			  else if ( (!handle_variation.var_backup) && ( // do not resign in variation
           data.bot_move == 'resign' ||
-            (handi < 3 && g_record.length > 50 && botprob < 0.01) ||
-            (handi < 3 && botprob < 0.005) ||
-            (botprob < 0.001))
+          (handi < 3 && g_record.length > 50 && botprob < 0.01) ||
+          (handi < 3 && botprob < 0.005) ||
+          (botprob < 0.001))
         )
         {
 			    alert( 'The bot resigns. You beat the bot!')
@@ -681,6 +683,11 @@ function main( JGO, axutil, p_options) {
 			  }
 			  show_prob( update_emo, playing)
 			  if (completion) { completion(data) }
+        if (g_click_coord_buffer) { // user clicked while waiting, do it now
+          console.log( 'click buff')
+          board_click_callback( g_click_coord_buffer)
+          g_click_coord_buffer = null
+        }
 			})
   } // get_prob()
 
