@@ -337,7 +337,7 @@ function main( JGO, axutil, p_options) {
     log_event( 'leela')
     $('#status').html( 'Leela is thinking...')
     var randomness = 0.0
-    if (g_record.length < g_complete_record.length) { randomness = -1.0 } // No randomness if analyzing
+    if (g_record.length < g_complete_record.length || handle_variation.var_backup) { randomness = -1.0 } // No randomness if analyzing
     get_bot_move( randomness, 0)
   } // get_leela_move()
 
