@@ -27,6 +27,7 @@ function main( JGO, axutil, p_options) {
   var g_record = []
   var g_complete_record = []
   var g_play_btn_buffer = false // buffer one play btn click
+  var g_click_coord_buffer = null // buffer one board click
 
   //================
   // UI Callbacks
@@ -41,7 +42,8 @@ function main( JGO, axutil, p_options) {
 		}
 		var jboard = g_jrecord.jboard
 		if ((jboard.getType(coord) == JGO.BLACK) || (jboard.getType(coord) == JGO.WHITE)) { return }
-		if (axutil.hit_endpoint('waiting')) {
+    if (axutil.hit_endpoint('waiting')) {
+      g_click_coord_buffer = coord
 			return
 		}
 		// clear hover away
@@ -686,9 +688,13 @@ function main( JGO, axutil, p_options) {
 			  show_prob( update_emo, playing)
 			  if (completion) { completion(data) }
         if (g_play_btn_buffer) { // Buffered play button click
-          g_play_btn_buffer = false
           botmove_if_active()
         }
+        if (g_click_coord_buffer) { // user clicked while waiting, do it now
+          board_click_callback( g_click_coord_buffer)
+        }
+        g_play_btn_buffer = false
+        g_click_coord_buffer = null
 			})
   } // get_prob()
 
