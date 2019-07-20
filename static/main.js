@@ -773,7 +773,7 @@ function main( JGO, axutil, p_options) {
 			(data) => {
 			  plot_histo(data, (surepoints) => {
           score_position.white_probs = data.white_probs
-			    if (surepoints < 100) {
+			    if (surepoints < 70) {
 			      alert( 'Too early to score. Sorry.')
 			      return
 			    }
