@@ -769,7 +769,7 @@ function main( JGO, axutil, p_options) {
   //----------------------------------------------------------------
   function score_position( endpoint)
   {
-    axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record)},
+    axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'tt':Math.random() },
 			(data) => {
 			  plot_histo(data, (surepoints) => {
           score_position.white_probs = data.white_probs
