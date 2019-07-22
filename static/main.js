@@ -773,7 +773,7 @@ function main( JGO, axutil, p_options) {
 			(data) => {
 			  plot_histo(data, (surepoints) => {
           score_position.white_probs = data.white_probs
-			    if (surepoints < 70) {
+			    if (surepoints < 250) {
 			      alert( 'Too early to score. Sorry.')
 			      return
 			    }
@@ -812,7 +812,8 @@ function main( JGO, axutil, p_options) {
   function plot_histo( data, completion) {
     var wp = data.white_probs
     axutil.hit_endpoint( '/histo', [wp,20,0,1], (res) => {
-      var surepoints = res[0][1] + res[res.length-1][1]
+      //var surepoints = res[0][1] + res[res.length-1][1]
+      var surepoints = BOARD_SIZE * BOARD_SIZE - data.dame
       axutil.barchart( '#histo', res, 240)
       completion( surepoints)
     })
