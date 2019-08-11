@@ -193,8 +193,10 @@ function main( JGO, axutil, p_options) {
     $('#btn_fwd10').click( () => { $('#histo').hide(); goto_move( g_record.length + 10); update_emoji(); activate_bot('off') })
     $('#btn_first').click( () => { $('#histo').hide(); goto_first_move(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
     $('#btn_last').click( () => { $('#histo').hide(); goto_move( g_complete_record.length); update_emoji(); activate_bot('off') })
+    $('#btn_new').click( () => { $('#histo').hide(); reset_game(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
 
     // Prevent zoom on double tap
+    $('#btn_change').on('touchstart', prevent_zoom)
     $('#btn_clear_var').on('touchstart', prevent_zoom)
     $('#btn_accept_var').on('touchstart', prevent_zoom)
     $('#btn_play').on('touchstart', prevent_zoom)
@@ -209,6 +211,7 @@ function main( JGO, axutil, p_options) {
     $('#btn_fwd10').on('touchstart', prevent_zoom)
     $('#btn_first').on('touchstart', prevent_zoom)
     $('#btn_last').on('touchstart', prevent_zoom)
+    $('#btn_new').on('touchstart', prevent_zoom)
   } // set_btn_handlers()
 
   // Load Sgf button
@@ -524,9 +527,10 @@ function main( JGO, axutil, p_options) {
   //-----------------------
   function reset_game() {
     handle_variation( 'clear')
-    goto_first_move()
     //set_emoji()
     g_complete_record = []
+    g_record = []
+    goto_first_move()
   } // reset_game()
 
   // Replay game from empty board.
