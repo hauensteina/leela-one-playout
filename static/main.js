@@ -29,6 +29,8 @@ function main( JGO, axutil, p_options) {
   var g_play_btn_buffer = false // buffer one play btn click
   var g_click_coord_buffer = null // buffer one board click
 
+  //$('#opt_auto').prop('checked', true)
+
   //================
   // UI Callbacks
   //================
@@ -131,6 +133,13 @@ function main( JGO, axutil, p_options) {
       activate_bot( 'on')
       botmove_if_active()
       return false
+    })
+
+    // Autoplay slider
+    $('#opt_auto').click( () => {
+      var state = $('#opt_auto').prop('checked')
+      if (state) { activate_bot('on') }
+      else { activate_bot('off') }
     })
 
     $('#btn_best').click( () => {
@@ -461,11 +470,13 @@ function main( JGO, axutil, p_options) {
   function activate_bot( on_or_off) {
     activate_bot.state = on_or_off
     if (on_or_off == 'on') {
+      $('#opt_auto').prop('checked', true)
       $('#btn_play').css('border-width', '3px')
       $('#btn_play').css('border-color', '#FF0000')
     }
     else {
       axutil.hit_endpoint('cancel')
+      $('#opt_auto').prop('checked', false)
       $('#btn_play').css('border-width', '1px')
       $('#btn_play').css('border-color', '#343A40')
     }
