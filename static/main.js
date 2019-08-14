@@ -444,6 +444,7 @@ function main( JGO, axutil, p_options) {
           data.bot_move == 'resign' ||
           (handi < 3 && g_record.length > 50 && botprob < 0.01) ||
           (handi < 3 && botprob < 0.005) ||
+          (handi < 2 && botprob < 0.02) ||
           (botprob < 0.001))
         )
         {
