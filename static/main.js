@@ -274,6 +274,17 @@ function main( JGO, axutil, p_options) {
     else if (check_key.ctrl_pressed && e.keyCode == '82') {  // ctrl-r
       $('#status').html( VERSION)
     }
+    else if (check_key.ctrl_pressed && e.keyCode == '65') {  // ctrl-a
+      if (check_key.waiting) { return }
+      check_key.waiting = true
+      btn_next()
+      $('#status').html( 'thinking...')
+      get_prob( (data) => {
+        update_emoji()
+        check_key.waiting = false
+      })
+      return
+    }
     else if (e.keyCode == '38') { // up arrow
     }
     else if (e.keyCode == '40') { // down arrow
@@ -287,6 +298,7 @@ function main( JGO, axutil, p_options) {
     check_key.ctrl_pressed = false
   } // check_key()
   check_key.ctrl_pressed = false
+  check_key.waiting = false
 
   // Prevent double taps from zooming in on mobile devices.
   // Use like btn.addEventListener('touchstart', prevent_zoom)
