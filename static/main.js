@@ -259,8 +259,22 @@ function main( JGO, axutil, p_options) {
   }
   //-------------------------
   function btn_next() {
-    $('#histo').hide(); goto_move( g_record.length + 1); update_emoji(); activate_bot('off')
-  }
+    if (btn_next.waiting) { return }
+    $('#histo').hide()
+    goto_move( g_record.length + 1)
+    if (g_record[ g_record.length - 1].p == 0) {
+      btn_next.waiting = true
+      get_prob( (data) => {
+        update_emoji()
+        activate_bot('off')
+        btn_next.waiting = false
+      })
+      return
+    }
+    update_emoji()
+    activate_bot('off')
+  } // btn_next()
+  btn_next.waiting = false
 
   // Key actions
   //------------------------
@@ -273,17 +287,6 @@ function main( JGO, axutil, p_options) {
     }
     else if (check_key.ctrl_pressed && e.keyCode == '82') {  // ctrl-r
       $('#status').html( VERSION)
-    }
-    else if (check_key.ctrl_pressed && e.keyCode == '65') {  // ctrl-a
-      if (check_key.waiting) { return }
-      check_key.waiting = true
-      btn_next()
-      $('#status').html( 'thinking...')
-      get_prob( (data) => {
-        update_emoji()
-        check_key.waiting = false
-      })
-      return
     }
     else if (e.keyCode == '38') { // up arrow
     }
@@ -298,7 +301,6 @@ function main( JGO, axutil, p_options) {
     check_key.ctrl_pressed = false
   } // check_key()
   check_key.ctrl_pressed = false
-  check_key.waiting = false
 
   // Prevent double taps from zooming in on mobile devices.
   // Use like btn.addEventListener('touchstart', prevent_zoom)
