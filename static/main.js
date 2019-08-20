@@ -345,6 +345,7 @@ function main( JGO, axutil, p_options) {
   change_bot.botname = 'fry'
 
   const OPENING_RANDOMNESS = 0.33
+  const ENDGAME_RANDOMNESS = 0.0
   const FARNSWORTH_RANDOMNESS = 0 // 6D
   const FARNSWORTH_PLAYOUTS = 32
   const BENDER_RANDOMNESS = 0.15 // 1D
@@ -395,7 +396,7 @@ function main( JGO, axutil, p_options) {
       get_bot_move( BENDER_RANDOMNESS)
     }
     else {
-      get_bot_move( FARNSWORTH_RANDOMNESS)
+      get_bot_move( ENDGAME_RANDOMNESS, 1)
     }
   } // get_bender_move()
 
@@ -410,7 +411,7 @@ function main( JGO, axutil, p_options) {
       get_bot_move( FRY_RANDOMNESS)
     }
     else {
-      get_bot_move( FARNSWORTH_RANDOMNESS)
+      get_bot_move( ENDGAME_RANDOMNESS, 1)
     }
   } // get_fry_move()
 
