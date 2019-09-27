@@ -259,7 +259,7 @@ function main( JGO, axutil, p_options) {
   }
   //-------------------------
   function btn_next() {
-    if (btn_next.waiting) { return }
+    if (btn_next.waiting) { btn_next.buffered = true; return }
     $('#histo').hide()
     goto_move( g_record.length + 1)
     if (g_record[ g_record.length - 1].p == 0) {
@@ -268,6 +268,10 @@ function main( JGO, axutil, p_options) {
         update_emoji()
         activate_bot('off')
         btn_next.waiting = false
+        if (btn_next.buffered) {
+          btn_next.buffered = false
+          btn_next()
+        }
       })
       return
     }
@@ -275,6 +279,7 @@ function main( JGO, axutil, p_options) {
     activate_bot('off')
   } // btn_next()
   btn_next.waiting = false
+  btn_next.buffered = false
 
   // Key actions
   //------------------------

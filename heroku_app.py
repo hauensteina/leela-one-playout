@@ -133,6 +133,8 @@ def sgf2list():
                     com = props['C'][0].decode()
                     if com.startswith('P:'):
                         p = com.split(':')[1]
+                turn = 'w' if len(moves) % 2 else 'b'
+                if color != turn: moves.append( {'mv':'pass', 'p':'0.00'})
                 moves.append( {'mv':move2coords( move_tuple), 'p':p })
             else:
                 moves.append( {'mv':'pass', 'p':'0.00'})
