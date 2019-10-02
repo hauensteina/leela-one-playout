@@ -133,9 +133,10 @@
           </span>
         </td></tr>
         <tr><td> &nbsp; </td></tr>
-        <tr class=''><td>
+        <tr class=''> <td>
           <span class='' style='float:left;width:50%;text-align:left;'>
-            &nbsp;&nbsp; <a href='static/settings_mobile.html' style='font-size:30pt;text-align:right;color:green'> Settings</a>
+            &nbsp;&nbsp;
+            <!-- <a href='static/settings_mobile.html' style='font-size:30pt;text-align:right;color:green'> Settings</a> -->
           </span>
           <span class='' style='float:left;width:50%;text-align:right;'>
             <a href='static/about_mobile.html' style='font-size:30pt;text-align:right;color:green'> About</a>  &nbsp;&nbsp;
@@ -155,10 +156,13 @@
                 <div>
                   <label id='btn_change' class='btn btn-outline-dark' style='font-size:20pt'>Change</label>
                 </div>
+                <div>
+                  <a href='static/settings_mobile.html' style='font-size:30pt;text-align:right;color:green'>Settings</a>
+                </div>
               </div>
               <div class='col-4' style='font-size:30pt;margin:auto'>
                 Play Go Against Leela<br>
-                <a id='settings' href='static/help_mobile.html' style='font-size:30pt;text-align:right;color:green'> Help</a>
+                <a id='help' href='static/help_mobile.html' style='font-size:24pt;text-align:right;color:red'>READ THE MANUAL</a>
               </div>
               <div class='col-4' style='font-size:24pt;margin:auto'> &nbsp; </div>
             </div>
@@ -211,9 +215,9 @@
             &nbsp;&nbsp;
             <label id='btn_next' class='btn btn-outline-dark' style='font-size:40pt'>Next</label>
             &nbsp;&nbsp; &nbsp;&nbsp;
-            <label id='btn_clear_var' class='btn btn-danger' style='color:green;font-size:40pt'>V-&nbsp;</label>
+            <label id='btn_clear_var' class='btn btn-success' style='font-size:40pt'>V-&nbsp;</label>
             &nbsp;&nbsp;
-            <label id='btn_accept_var' class='btn btn-success' style='color:red;font-size:40pt'>V+</label>
+            <label id='btn_accept_var' class='btn btn-danger' style='font-size:40pt'>V+</label>
           </div>
         </td></tr>
         <!-- More Nav Buttons -->
@@ -270,7 +274,7 @@
     <script type='text/javascript' src='static/large/board.js'></script>
 
     <!-- Entry Point -->
-    <script type='text/javascript' src='static/main.js?v=1.86'></script>
+    <script type='text/javascript' src='static/main.js?v=1.87'></script>
     <script type='text/javascript'>
      $(function () {
        main( JGO, new AhauxUtils( d3, $), {mobile:true} )

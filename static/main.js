@@ -666,17 +666,17 @@ function main( JGO, axutil, p_options) {
     }
     if (state == 'on') {
       $('#btn_clear_var').removeClass('disabled')
-      $('#btn_clear_var').addClass('btn-danger')
+      $('#btn_clear_var').addClass('btn-success')
       $('#btn_accept_var').removeClass('disabled')
-      $('#btn_accept_var').addClass('btn-success')
+      $('#btn_accept_var').addClass('btn-danger')
       $('#btn_clear_var').css('color', 'black');
       $('#btn_accept_var').css('color', 'black');
     }
     else {
       $('#btn_clear_var').addClass('disabled')
-      $('#btn_clear_var').removeClass('btn-danger')
+      $('#btn_clear_var').removeClass('btn-success')
       $('#btn_accept_var').addClass('disabled')
-      $('#btn_accept_var').removeClass('btn-success')
+      $('#btn_accept_var').removeClass('btn-danger')
       $('#btn_clear_var').css('color', 'black');
       $('#btn_accept_var').css('color', 'black');
     }
