@@ -8,13 +8,34 @@
 //=====================
 class AhauxUtils
 {
+
+  // Compare two dot separated numerical version strings
+  //-------------------------------------------------------
+  compversions( v1, v2) {
+    var parts1 = v1.split('.').map( Number)
+    var parts2 = v2.split('.').map( Number)
+    if (parts2.length < parts1.length) {
+      [parts1, parts2] = [parts2, parts1]
+    }
+
+    function comp( acc, curr, index) {
+      if (acc != 0) { return acc }
+      if (parts1[index] < parts2[index]) { return -1 }
+      if (parts1[index] > parts2[index]) { return 1 }
+      return 0
+    }
+
+    var res = parts1.reduce( comp, 0)
+    return res
+  }
+
   // We need d3 and jquery
   //-------------------------
   constructor( d3, $) {
-    if (d3.version < '5.9.2') {
+    if (this.compversions( d3.version, '5.9.2') < 0) {
       console.log( 'WARNING: AhauxUtils: d3 version ' + d3.version + ' is below 5.9.2. Things might break.')
     }
-    if ($.prototype.jquery < '3.4.0') {
+    if (this.compversions( $.prototype.jquery, '3.4.0') < 0) {
       console.log( 'WARNING: AhauxUtils: jquery version ' + $.prototype.jquery + ' is below 3.4.0. Things might break.')
     }
     this.d3 = d3
