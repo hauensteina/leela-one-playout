@@ -353,11 +353,12 @@ function main( JGO, axutil, p_options) {
   change_bot.botname = 'fry'
 
   const OPENING_RANDOMNESS = 0.33
-  const ENDGAME_RANDOMNESS = 0.0
+  const ENDGAME_RANDOMNESS = 0
   const FARNSWORTH_RANDOMNESS = 0 // 6D
   const FARNSWORTH_PLAYOUTS = 32
-  const BENDER_RANDOMNESS = 0.15 // 1D
-  const FRY_RANDOMNESS = 0.12 // 0.13 // kyu
+  const BENDER_RANDOMNESS = 0 // 0.15
+  const BENDER_PLAYOUTS = 1
+  const FRY_RANDOMNESS = 0.15 // 0.12 // 0.13 // kyu
 
   //---------------------------
   function log_event( bot) {
@@ -382,30 +383,14 @@ function main( JGO, axutil, p_options) {
   function get_farnsworth_move() {
     log_event( 'farnsworth')
     $('#status').html( 'Farnsworth is guessing... ')
-    if (g_record.length < 15) {
-      get_bot_move( FARNSWORTH_RANDOMNESS, FARNSWORTH_PLAYOUTS)
-    }
-    else if (g_record.length < 140) {
-      get_bot_move( FARNSWORTH_RANDOMNESS, FARNSWORTH_PLAYOUTS)
-    }
-    else {
-      get_bot_move( FARNSWORTH_RANDOMNESS, FARNSWORTH_PLAYOUTS)
-    }
+    get_bot_move( FARNSWORTH_RANDOMNESS, FARNSWORTH_PLAYOUTS)
   } // get_farnsworth_move()
 
   //-----------------------------
   function get_bender_move() {
     log_event( 'bender')
     $('#status').html( 'Bender is trying...')
-    if (g_record.length < 15) {
-      get_bot_move( OPENING_RANDOMNESS)
-    }
-    else if (g_record.length < 140) {
-      get_bot_move( BENDER_RANDOMNESS)
-    }
-    else {
-      get_bot_move( ENDGAME_RANDOMNESS, 1)
-    }
+    get_bot_move( BENDER_RANDOMNESS, BENDER_PLAYOUTS)
   } // get_bender_move()
 
   //-----------------------------
