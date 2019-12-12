@@ -390,7 +390,12 @@ function main( JGO, axutil, p_options) {
   function get_bender_move() {
     log_event( 'bender')
     $('#status').html( 'Bender is trying...')
-    get_bot_move( BENDER_RANDOMNESS, BENDER_PLAYOUTS)
+    if (g_record.length < 15) {
+      get_bot_move( OPENING_RANDOMNESS)
+    }
+    else {
+      get_bot_move( BENDER_RANDOMNESS, BENDER_PLAYOUTS)
+    }
   } // get_bender_move()
 
   //-----------------------------
