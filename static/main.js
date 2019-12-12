@@ -7,7 +7,7 @@
 'use strict'
 
 const DEBUG = false
-const VERSION = '2.3'
+const VERSION = '2019-12-12'
 const LEELA_SERVER = ''
 const BOTS = ['fry', 'bender', 'farnsworth', 'leela']
 
