@@ -983,4 +983,6 @@ function main( JGO, axutil, p_options) {
   }
   statesaver()
 
+  $('#histo').hide()
+
 } // function main()
