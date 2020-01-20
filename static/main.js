@@ -9,6 +9,7 @@
 const DEBUG = false
 const VERSION = '2019-12-12'
 const LEELA_SERVER = ''
+const KATAGO_SERVER = ''
 const BOTS = ['fry', 'bender', 'farnsworth', 'leela']
 
 //=======================================
@@ -16,6 +17,7 @@ function main( JGO, axutil, p_options) {
   $ = axutil.$
 
   const BOT = 'leela_gtp_bot'
+  const KATABOT = 'katago_gtp_bot'
   const BOARD_SIZE = 19
   const COLNAMES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T']
 
@@ -797,47 +799,72 @@ function main( JGO, axutil, p_options) {
   // Scoring
   //==========
 
-  // Score the current position. Endpoint is 'score' or 'nnscore'.
-  //----------------------------------------------------------------
-  function score_position( endpoint)
-  {
-    axutil.hit_endpoint( LEELA_SERVER + endpoint, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'tt':Math.random() },
+  // Score the current position with katago.
+  //-------------------------------------------
+  function score_position() {
+    const POINT_THRESH = 0.7
+    axutil.hit_endpoint( KATAGO_SERVER + '/katascore/' + KATABOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'tt':Math.random() },
 			(data) => {
-			  plot_histo(data, (surepoints) => {
-          score_position.white_probs = data.white_probs
-			    if (surepoints < 250) {
-			      alert( 'Too early to score. Sorry.')
-			      return
-			    }
-			    score_position.active = true
-			    var node = g_jrecord.createNode( true)
-			    for (var bpoint of data.territory.black_points) {
-			      var coord = rc2jcoord( bpoint[0], bpoint[1])
-			      if (node.jboard.stones [coord.i] [coord.j] != 1) {
-				      node.setMark( rc2jcoord( bpoint[0], bpoint[1]), JGO.MARK.BLACK_TERRITORY)
-			      }
-			    }
-			    for (var wpoint of data.territory.white_points) {
-			      var coord = rc2jcoord( wpoint[0], wpoint[1])
-			      if (node.jboard.stones [coord.i] [coord.j] != 2) {
-				      node.setMark( rc2jcoord( wpoint[0], wpoint[1]), JGO.MARK.WHITE_TERRITORY)
-			      }
-			    }
-			    for (var dpoint of data.territory.dame_points) {
-			      node.setMark( rc2jcoord( dpoint[0], dpoint[1]), JGO.MARK.TRIANGLE)
-			    }
-			    var black_points = data.result[0]
-			    var white_points = data.result[1]
-			    var diff = Math.abs( black_points - white_points)
-			    var rstr = `W+${diff} <br>(before komi and handicap)`
-			    if (black_points >= white_points) { rstr = `B+${diff}  <br>(before komi and handicap)` }
-			    $('#status').html( `B:${black_points} &nbsp; W:${white_points} &nbsp; ${rstr}`)
-			  }) // plot_histo()
+        score_position.probs = data.probs
+			  score_position.active = true
+        var bsum = 0
+        var wsum = 0
+        for (const [idx, prob] of data.probs.entries()) {
+          if (prob < 0) {
+            wsum += Math.abs(prob)
+          }
+          else {
+            bsum += Math.abs(prob)
+          }
+        } // for
+        wsum = Math.trunc( wsum + 0.5)
+        bsum = Math.trunc( bsum + 0.5)
+        draw_estimate( data.probs)
+        //wsum += g_handi
+        //wsum += g_komi
+			  var diff = Math.abs( bsum - wsum)
+			  var rstr = `W+${diff} <br>(before komi and handicap)`
+			  if (bsum >= wsum) { rstr = `B+${diff}  <br>(before komi and handicap)` }
+			  $('#status').html( `B:${bsum} &nbsp; W:${wsum} &nbsp; ${rstr}`)
 			} // (data) =>
 		) // hit_endpoint()
   } // score_position()
   score_position.active = false
-  score_position.white_probs = []
+  score_position.probs = []
+
+  // Draw black and white squares with alpha representing certainty
+  //------------------------------------------------------------------
+  function draw_score( probs, thresh) {
+    var node = g_jrecord.createNode( true)
+    for (const [idx, prob] of probs.entries()) {
+      var row = BOARD_SIZE - Math.trunc( idx / BOARD_SIZE)
+      var col = (idx % BOARD_SIZE) + 1
+			var coord = rc2jcoord( row, col)
+      if (prob < -thresh) { // white
+				node.setMark( coord, JGO.MARK.WHITE_TERRITORY)
+      } // for
+      else if (prob > thresh) { // black
+				node.setMark( coord, JGO.MARK.BLACK_TERRITORY)
+      } // for
+    } // for
+  } // draw_score()
+
+  // Draw black and white squares with alpha representing certainty
+  //------------------------------------------------------------------
+  function draw_estimate( probs) {
+    var node = g_jrecord.createNode( true)
+    for (const [idx, prob] of probs.entries()) {
+      var row = BOARD_SIZE - Math.trunc( idx / BOARD_SIZE)
+      var col = (idx % BOARD_SIZE) + 1
+			var coord = rc2jcoord( row, col)
+      if (prob < 0) { // white
+        node.setMark( coord, 'WP:' + Math.trunc(Math.abs(prob)*100))
+      } // for
+      else { // black
+        node.setMark( coord, 'BP:' + Math.trunc(Math.abs(prob)*100))
+      } // for
+    } // for
+  } // draw_estimate()
 
   // Plot histogram of territory probabilities
   //---------------------------------------------

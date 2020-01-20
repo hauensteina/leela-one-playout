@@ -40,6 +40,7 @@ app.config['DEBUG'] = os.getenv("DEBUG", False)
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 LEELA_SERVER = 'https://ahaux.com/leela_server/'
+KATAGO_SERVER = 'https://ahaux.com/katago_server/'
 
 #--------------
 # Endpoints
@@ -62,6 +63,15 @@ def select_move( bot_name):
     endpoint = 'select-move/' + bot_name
     args = request.json
     res = fwd_to_leela( endpoint, args)
+    return jsonify( res)
+
+@app.route('/katascore/<bot_name>', methods=['POST'])
+# Forward score to the katago server
+#------------------------------------------
+def katascore( bot_name):
+    endpoint = 'score/' + bot_name
+    args = request.json
+    res = fwd_to_katago( endpoint, args)
     return jsonify( res)
 
 @app.route('/nnscore', methods=['POST'])
@@ -181,6 +191,14 @@ def save_sgf():
 #----------------------------------------
 def fwd_to_leela( endpoint, args):
     url = LEELA_SERVER + endpoint
+    resp = requests.post( url, json=args)
+    res = resp.json()
+    return res
+
+# Forward request to katago server
+#----------------------------------------
+def fwd_to_katago( endpoint, args):
+    url = KATAGO_SERVER + endpoint
     resp = requests.post( url, json=args)
     res = resp.json()
     return res
