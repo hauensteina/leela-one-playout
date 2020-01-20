@@ -29,6 +29,7 @@ function main( JGO, axutil, p_options) {
   var g_record = []
   var g_complete_record = []
   var g_play_btn_buffer = false // buffer one play btn click
+  var g_best_btn_buffer = false // buffer one best btn click
   var g_click_coord_buffer = null // buffer one board click
 
   //$('#opt_auto').prop('checked', true)
@@ -108,6 +109,22 @@ function main( JGO, axutil, p_options) {
 		) // create board
   } // setup_jgo()
 
+  //----------------------------
+  function btn_best_click() {
+    if (axutil.hit_endpoint('waiting')) { g_best_btn_buffer = true; return true }
+    $('#histo').hide()
+    $('#status').html( 'thinking...')
+    get_prob( (data) => {
+      var botCoord = string2jcoord( data.bot_move)
+      var jboard = g_jrecord.jboard
+      if (botCoord != 'pass' && botCoord != 'resign') {
+        hover( botCoord, g_player, {force:true})
+        setTimeout( () => { hover() }, 1000)
+      }
+    })
+    return false
+  } // btn_best_click
+
   // Set button callbacks
   //------------------------------
   function set_btn_handlers() {
@@ -145,17 +162,7 @@ function main( JGO, axutil, p_options) {
     })
 
     $('#btn_best').click( () => {
-      $('#histo').hide()
-      $('#status').html( 'thinking...')
-      get_prob( (data) => {
-        var botCoord = string2jcoord( data.bot_move)
-        var jboard = g_jrecord.jboard
-        if (botCoord != 'pass' && botCoord != 'resign') {
-          hover( botCoord, g_player, {force:true})
-          setTimeout( () => { hover() }, 1000)
-        }
-      })
-      return false
+      return btn_best_click()
     })
 
     $('#btn_save').click( () => {
@@ -724,10 +731,14 @@ function main( JGO, axutil, p_options) {
         if (g_play_btn_buffer) { // Buffered play button click
           botmove_if_active()
         }
+        if (g_best_btn_buffer) { // Buffered best button click
+          btn_best_click()
+        }
         if (g_click_coord_buffer) { // user clicked while waiting, do it now
           board_click_callback( g_click_coord_buffer)
         }
         g_play_btn_buffer = false
+        g_best_btn_buffer = false
         g_click_coord_buffer = null
 			})
   } // get_prob()
