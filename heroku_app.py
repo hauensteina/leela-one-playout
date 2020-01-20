@@ -192,6 +192,7 @@ def moves2sgf( moves, probs):
     sgf += 'SO[leela-one-playout.herokuapp.com]\n'
     dtstr = datetime.now().strftime('%Y-%m-%d')
     sgf += 'DT[%s]\n' % dtstr
+    sgf += 'KM[7.5]\n'
 
     movestr = ''
     result = ''
