@@ -202,16 +202,16 @@ class AhauxUtils
     ).then( (resp) => {
       resp.json().then( (resp) => {
         if (!this.hit_endpoint.waiting) {
-	  console.log( 'not waiting')
+	        console.log( 'not waiting')
           return
         }
-        if ('request_id' in resp) {
-	  //console.log( 'req id: ' + resp.request_id + ' ' + this.hit_endpoint.request_id)
+        if (resp.request_id) {
+	        //console.log( 'req id: ' + resp.request_id + ' ' + this.hit_endpoint.request_id)
           if (resp.request_id != this.hit_endpoint.request_id) {
-	    return
-	  }
-	}
-	this.hit_endpoint.waiting = false
+	          return
+	        }
+	      }
+	      this.hit_endpoint.waiting = false
         completion( resp)
       }) }
     ).catch(
