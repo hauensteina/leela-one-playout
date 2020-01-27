@@ -138,11 +138,6 @@ function main( JGO, axutil, p_options) {
       handle_variation( 'clear')
     })
 
-    $('#btn_accept_var').click( () => {
-      if ($('#btn_accept_var').hasClass('disabled')) { return }
-      handle_variation( 'accept')
-    })
-
     $('#btn_play').click( () => {
       set_emoji()
       if (g_record.length == 0) {
@@ -225,7 +220,7 @@ function main( JGO, axutil, p_options) {
     $('#btn_prev').on('touchstart', prevent_zoom)
     $('#btn_next').on('touchstart', prevent_zoom)
     $('#btn_clear_var').on('touchstart', prevent_zoom)
-    $('#btn_accept_var').on('touchstart', prevent_zoom)
+    /* $('#btn_accept_var').on('touchstart', prevent_zoom) */
     $('#btn_first').on('touchstart', prevent_zoom)
     $('#btn_back10').on('touchstart', prevent_zoom)
     $('#btn_fwd10').on('touchstart', prevent_zoom)
@@ -304,6 +299,9 @@ function main( JGO, axutil, p_options) {
     }
     else if (check_key.ctrl_pressed && e.keyCode == '82') {  // ctrl-r
       $('#status').html( VERSION)
+    }
+    else if (check_key.ctrl_pressed && e.keyCode == '65') {  // ctrl-a accept var
+      handle_variation( 'accept')
     }
     else if (e.keyCode == '38') { // up arrow
     }
@@ -515,7 +513,7 @@ function main( JGO, axutil, p_options) {
 
   // Show a move on the board and append it to g_record
   //------------------------------------------------------
-  function show_move(player, coord, prob, agent) {
+  function show_move( player, coord, prob, agent) {
     if (coord == 'pass' || coord == 'resign') {
       g_ko = false
       g_record.push( { 'mv':coord, 'p':prob, 'agent':agent } )
@@ -637,6 +635,7 @@ function main( JGO, axutil, p_options) {
       }
     }
     else if (action == 'accept') { // Forget saved game record and replace it with the variation
+      if (var_button_state() == 'off') { return }
       handle_variation.var_backup = null
       g_complete_record = g_record
       var_button_state( 'off')
@@ -669,18 +668,18 @@ function main( JGO, axutil, p_options) {
     if (state == 'on') {
       $('#btn_clear_var').removeClass('disabled')
       $('#btn_clear_var').addClass('btn-success')
-      $('#btn_accept_var').removeClass('disabled')
-      $('#btn_accept_var').addClass('btn-danger')
+      /* $('#btn_accept_var').removeClass('disabled')
+       * $('#btn_accept_var').addClass('btn-danger') */
       $('#btn_clear_var').css('color', 'black');
-      $('#btn_accept_var').css('color', 'black');
+      /* $('#btn_accept_var').css('color', 'black'); */
     }
     else {
       $('#btn_clear_var').addClass('disabled')
       $('#btn_clear_var').removeClass('btn-success')
-      $('#btn_accept_var').addClass('disabled')
-      $('#btn_accept_var').removeClass('btn-danger')
+      /* $('#btn_accept_var').addClass('disabled')
+       * $('#btn_accept_var').removeClass('btn-danger') */
       $('#btn_clear_var').css('color', 'black');
-      $('#btn_accept_var').css('color', 'black');
+      /* $('#btn_accept_var').css('color', 'black'); */
     }
   } // var_button_state()
 
