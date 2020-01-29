@@ -149,20 +149,22 @@
                 </div>
                 <div class='row'>
                   <div class='col-6 text-left'>
-                    <!-- <a id='settings' href='static/settings.html' style='font-size:9pt;text-align:right;color:green'> Settings</a> --> </div>
+                    <span id='lb_komi' style='font-size:9pt'>&nbsp;</span>
+                  </div>
                   <div class='col-6 text-right'> <a href='static/about.html' style='font-size:9pt;text-align:right;color:green'> About</a> </div>
                 </div>
                 <div class='row'>
-                  <div class='col-12 text-center'> Play Go Against Leela (0a054a9) </div>
+                  <div class='col-12 text-center'>
+                    <label id='btn_new'  class='btn btn-outline-dark' data-toggle='modal' data-target='#handiModal'
+                           style='font-size:11pt'>
+                      New Game
+                    </label>
+                  </div>
                 </div>
+                <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:11pt;'>Score</label>
                 <div class='row'>
                   <div class='col-12 text-center'>
                     <a id='help' href='static/help.html' style='font-size:12pt;text-align:right;color:red'>READ THE MANUAL</a>
-                    <!-- <a id='help' href='static/help.html' style='font-size:12pt;text-align:right;color:red'>RECENT CHANGES</a> -->
-                    <!-- <div style='color:red'>
-                         LEELA IS DOWN.<br>
-                         NO ELECTRICITY IN SAN MATEO, CA, USA
-                         </div> -->
                   </div>
                 </div>
                 <div class='row'>
@@ -240,7 +242,6 @@
               <div class='col-12'>
                 <label id='btn_undo' class='btn btn-outline-dark' style='font-size:11pt;'>Undo</label>
                 <label id='btn_pass' class='btn btn-outline-dark' style='font-size:11pt;'>Pass</label>
-                <label id='btn_nnscore' class='btn btn-outline-dark' style='font-size:11pt;'>Score</label>
               </div>
             </div>
             <div class='row' style='font-size:5pt'>
@@ -270,7 +271,6 @@
             <div class='row'>
               <div class='col-12'>
                 <label id='btn_save' class='btn btn-outline-dark' style='font-size:11pt;'>Save sgf</label>
-                <label id='btn_new' class='btn btn-outline-dark' style='font-size:11pt;'>New Game</label>
               </div>
             </div>
             <div class='row'>
@@ -298,7 +298,45 @@
         </td>                     <!--right-->
       </tr></table>
 
-    <!-- ---------- -->
+    <!-- Modal dialog to pick handicap -->
+      <div class='modal fade' id='handiModal' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+        <div class='modal-dialog' role='document'>
+          <div class='modal-content'>
+            <div class='modal-header'>
+              <h5 class='modal-title' id='komi_handi_heading'>New Game</h5>
+              <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                <span aria-hidden='true'>&times;</span>
+              </button>
+            </div>
+            <div class='modal-body'>
+              <table>
+                <tr><td>Handicap</td></tr>
+                <tr>
+                  <td>
+                    <div class='dropdown'>
+                      <button class='btn btn-secondary dropdown-toggle' type='button' id='handi_menu'
+                              data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                        Handicap
+                      </button>
+                      <div class='dropdown-menu' aria-labelledby='handi_menu'>
+                        <a id='handi_0' class='dropdown-item'>0</a>
+                        <a id='handi_2' class='dropdown-item'>2</a>
+                        <a id='handi_3' class='dropdown-item'>3</a>
+                        <a id='handi_4' class='dropdown-item'>4</a>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class='modal-footer'>
+              <button id='game_start_save' type='button' class='btn btn-primary' data-dismiss='modal'>Go!</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- -->
       <!-- Javascript -->
       <!-- ---------- -->
 
