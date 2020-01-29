@@ -56,6 +56,11 @@ def entry_point():
 def entry_point_mobile():
     return app.send_static_file( 'index_mobile.html')
 
+@app.route('/favicon.ico')
+#-------------------------------
+def favicon():
+    return app.send_static_file( 'favicon.ico')
+
 @app.route('/select-move/<bot_name>', methods=['POST'])
 # Forward select-move to the leela server
 #------------------------------------------
