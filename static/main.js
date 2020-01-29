@@ -449,13 +449,14 @@ function main( JGO, axutil, p_options) {
     var handi = 1 + g_record.slice(0,17).filter( function(x) { return x.mv == 'pass'}).length
     randomness = randomness || 0.0
     playouts = playouts || 0.0
+    var cached_player = g_player
     axutil.hit_endpoint( LEELA_SERVER + '/select-move/' + BOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record),
 			'config':{'randomness': randomness, 'playouts':playouts } },
 			(data) => {
 			  hover() // The board thinks the hover stone is actually there. Clear it.
 
 			  var botprob = data.diagnostics.winprob; var botcol = 'Black'
-			  if (g_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
+			  if (cached_player == JGO.WHITE) { botprob = 1.0 - botprob; botcol = 'White' }
 
 			  if (data.bot_move == 'pass') {
 			    alert( 'The bot passes. Click on the Score button.')
@@ -479,11 +480,11 @@ function main( JGO, axutil, p_options) {
 			    maybe_start_var()
 			    var botCoord = string2jcoord( data.bot_move)
 			  }
-			  show_move( g_player, botCoord, 0.0, 'bot')
+			  show_move( cached_player, botCoord, 0.0, 'bot')
 			  g_complete_record = g_record.slice()
 			  replay_move_list( g_record)
 			  show_movenum()
-			  g_player =  (g_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
+			  g_player =  (cached_player == JGO.BLACK) ? JGO.WHITE : JGO.BLACK
 			  const show_emoji = false
 			  const playing = true
 			  get_prob( function() {}, show_emoji, playing )
