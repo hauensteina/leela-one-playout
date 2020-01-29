@@ -12,6 +12,12 @@ const LEELA_SERVER = ''
 const KATAGO_SERVER = ''
 const BOTS = ['fry', 'bender', 'farnsworth', 'leela']
 
+const HANDISTONES = ['',''
+  ,['D4','Q16']
+  ,['D4','Q16','Q4']
+  ,['D4','Q16','Q4','D16']
+]
+
 //=======================================
 function main( JGO, axutil, p_options) {
   $ = axutil.$
@@ -31,12 +37,29 @@ function main( JGO, axutil, p_options) {
   var g_play_btn_buffer = false // buffer one play btn click
   var g_best_btn_buffer = false // buffer one best btn click
   var g_click_coord_buffer = null // buffer one board click
-
-  //$('#opt_auto').prop('checked', true)
+  var g_handi = 0
 
   //================
   // UI Callbacks
   //================
+  //-----------------------------------
+  function set_dropdown_handlers() {
+    $('#handi_menu').html(g_handi)
+    $('#handi_0').click( function() { $('#handi_menu').html('0'); })
+    $('#handi_1').click( function() { $('#handi_menu').html('1'); })
+    $('#handi_2').click( function() { $('#handi_menu').html('2'); })
+    $('#handi_3').click( function() { $('#handi_menu').html('3'); })
+    $('#handi_4').click( function() { $('#handi_menu').html('4'); })
+
+    $('#game_start_save').click( function() {
+      g_handi = parseInt( $('#handi_menu').html())
+      reset_game();
+      set_emoji();
+      activate_bot( 'on')
+      if (g_handi > 1) { botmove_if_active() }
+      $('#status').html( '&nbsp;')
+    })
+  } // set_dropdown_handlers()
 
   //----------------------------------------
   function board_click_callback( coord) {
@@ -563,10 +586,18 @@ function main( JGO, axutil, p_options) {
   //-----------------------
   function reset_game() {
     handle_variation( 'clear')
-    //set_emoji()
     g_complete_record = []
     g_record = []
     goto_first_move()
+    if (g_handi < 2) { return }
+    var hstones =  HANDISTONES[g_handi]
+    for (const [idx,s] of hstones.entries()) {
+      if (idx > 0) {
+        g_complete_record.push( {'mv':'pass', 'p':0.001, 'agent':''} )
+      }
+      g_complete_record.push( {'mv':s, 'p':0.001, 'agent':''} )
+    }
+    goto_move(1000)
   } // reset_game()
 
   // Replay game from empty board.
@@ -671,15 +702,19 @@ function main( JGO, axutil, p_options) {
       $('#btn_clear_var').addClass('btn-success')
       /* $('#btn_accept_var').removeClass('disabled')
        * $('#btn_accept_var').addClass('btn-danger') */
-      $('#btn_clear_var').css('color', 'black');
+      $('#btn_clear_var').css('color', 'black')
       /* $('#btn_accept_var').css('color', 'black'); */
+      //$('#btn_clear_var').show()
+      $('#btn_clear_var').css('visibility', 'visible');
     }
     else {
       $('#btn_clear_var').addClass('disabled')
       $('#btn_clear_var').removeClass('btn-success')
       /* $('#btn_accept_var').addClass('disabled')
        * $('#btn_accept_var').removeClass('btn-danger') */
-      $('#btn_clear_var').css('color', 'black');
+      $('#btn_clear_var').css('color', 'black')
+      //$('#btn_clear_var').hide()
+      $('#btn_clear_var').css('visibility', 'hidden');
       /* $('#btn_accept_var').css('color', 'black'); */
     }
   } // var_button_state()
@@ -1003,6 +1038,7 @@ function main( JGO, axutil, p_options) {
 
   settings()
   set_btn_handlers()
+  set_dropdown_handlers()
   reset_game()
   setup_jgo()
   load_state()
