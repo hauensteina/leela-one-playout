@@ -363,9 +363,9 @@ function main( JGO, axutil, p_options) {
   function change_bot( bot) {
     const bots = BOTS
 
-    const images = ['static/fry.png', 'static/bender.png', 'static/farnsworth.png', 'static/leela.png']
-    const names = ['Fry', 'Bender', 'Prof. Farnsworth', 'Leela']
-    const strengths = ['Oh well', 'Not bad', '6D', '9P']
+    const images = ['static/leela.png','static/fry.png', 'static/bender.png', 'static/farnsworth.png']
+    const names = ['Leela','Fry', 'Bender', 'Prof. Farnsworth']
+    const strengths = ['9P', 'Oh well', 'Not bad', '6D' ]
 
     var idx = 0
     if (typeof bot == 'undefined') {
