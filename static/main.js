@@ -705,7 +705,7 @@ function main( JGO, axutil, p_options) {
       $('#btn_clear_var').css('color', 'black')
       /* $('#btn_accept_var').css('color', 'black'); */
       //$('#btn_clear_var').show()
-      $('#btn_clear_var').css('visibility', 'visible');
+      //$('#btn_clear_var').css('visibility', 'visible');
     }
     else {
       $('#btn_clear_var').addClass('disabled')
@@ -714,7 +714,7 @@ function main( JGO, axutil, p_options) {
        * $('#btn_accept_var').removeClass('btn-danger') */
       $('#btn_clear_var').css('color', 'black')
       //$('#btn_clear_var').hide()
-      $('#btn_clear_var').css('visibility', 'hidden');
+      //$('#btn_clear_var').css('visibility', 'hidden');
       /* $('#btn_accept_var').css('color', 'black'); */
     }
   } // var_button_state()
