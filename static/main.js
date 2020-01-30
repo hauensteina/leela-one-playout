@@ -380,7 +380,7 @@ function main( JGO, axutil, p_options) {
     $('#img_bot').attr( 'src', images[idx])
     activate_bot('off')
   } // change_bot()
-  change_bot.botname = 'fry'
+  change_bot.botname = 'leela'
 
   const OPENING_RANDOMNESS = 0.33
   const ENDGAME_RANDOMNESS = 0
