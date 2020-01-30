@@ -10,7 +10,7 @@ const DEBUG = false
 const VERSION = '2019-12-12'
 const LEELA_SERVER = ''
 const KATAGO_SERVER = ''
-const BOTS = ['fry', 'bender', 'farnsworth', 'leela']
+const BOTS = ['leela', 'fry', 'bender', 'farnsworth' ]
 
 const HANDISTONES = ['',''
   ,['D4','Q16']
@@ -736,7 +736,7 @@ function main( JGO, axutil, p_options) {
   function load_state() {
     var bot = localStorage.getItem('bot')
     if (BOTS.indexOf( bot) < 0) { bot = BOTS[0] }
-    change_bot(bot)
+    //change_bot(bot)
     if (localStorage.getItem('record') === null) { return }
     if (localStorage.getItem('complete_record') === null) { return }
     if (localStorage.getItem('record') === 'null') { return }
