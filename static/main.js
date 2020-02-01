@@ -50,6 +50,7 @@ function main( JGO, axutil, p_options) {
     $('#handi_2').click( function() { $('#handi_menu').html('2'); })
     $('#handi_3').click( function() { $('#handi_menu').html('3'); })
     $('#handi_4').click( function() { $('#handi_menu').html('4'); })
+    $('#lb_komi').html( 'Komi: 7.5')
 
     $('#game_start_save').click( function() {
       g_handi = parseInt( $('#handi_menu').html())
@@ -860,6 +861,8 @@ function main( JGO, axutil, p_options) {
     const POINT_THRESH = 0.7
     axutil.hit_endpoint( KATAGO_SERVER + '/katascore/' + KATABOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'tt':Math.random() },
 			(data) => {
+        var score = parseFloat(data.diagnostics.score)
+        score = Math.trunc( Math.abs(score) * 2 + 0.5) * Math.sign(score) / 2.0
         score_position.probs = data.probs
 			  score_position.active = true
         var bsum = 0
@@ -880,7 +883,14 @@ function main( JGO, axutil, p_options) {
 			  var diff = Math.abs( bsum - wsum)
 			  var rstr = `W+${diff} <br>(before komi and handicap)`
 			  if (bsum >= wsum) { rstr = `B+${diff}  <br>(before komi and handicap)` }
-			  $('#status').html( `B:${bsum} &nbsp; W:${wsum} &nbsp; ${rstr}`)
+			  //$('#status').html( `B:${bsum} &nbsp; W:${wsum} &nbsp; ${rstr}`)
+        var scorestr = '&nbsp;&nbsp;B+'
+        if (score < 0) {
+          scorestr = '&nbsp;&nbsp;W+'
+        }
+        scorestr += Math.abs(score)
+        scorestr += '<br>(after komi and handicap)'
+			  $('#status').html( scorestr)
 			} // (data) =>
 		) // hit_endpoint()
   } // score_position()
