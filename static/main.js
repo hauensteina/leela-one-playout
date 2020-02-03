@@ -374,7 +374,7 @@ function main( JGO, axutil, p_options) {
     const bots = BOTS
 
     const images = ['static/leela.png','static/fry.png', 'static/bender.png', 'static/farnsworth.png']
-    const names = ['Leela','Fry', 'Bender', 'Prof. Farnsworth']
+    const names = ['Leela 0a054a9','Fry', 'Bender', 'Prof. Farnsworth']
     const strengths = ['9P', 'Oh well', 'Not bad', '6D' ]
 
     var idx = 0
