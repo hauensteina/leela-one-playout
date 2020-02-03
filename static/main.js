@@ -1060,6 +1060,7 @@ function main( JGO, axutil, p_options) {
   reset_game()
   setup_jgo()
   load_state()
+  change_bot('leela')
   document.onkeydown = check_key
 
   if (p_options.mobile) {
