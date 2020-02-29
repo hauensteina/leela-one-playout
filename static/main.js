@@ -146,7 +146,6 @@ function main( JGO, axutil, p_options) {
   //----------------------------
   function btn_best_click() {
     if (axutil.hit_endpoint('waiting')) { g_best_btn_buffer = true; return true }
-    $('#histo').hide()
     $('#status').html( 'thinking...')
     get_prob( (data) => {
       var botCoord = string2jcoord( data.bot_move)
@@ -177,7 +176,6 @@ function main( JGO, axutil, p_options) {
       if (g_record.length == 0) {
         reset_game()
       }
-      $('#histo').hide()
       activate_bot( 'on')
       botmove_if_active()
       return false
@@ -211,7 +209,6 @@ function main( JGO, axutil, p_options) {
 
     $('#btn_nnscore').click( () => {
       score_position( 'nnscore')
-      //$('#histo').show()
       return false
     })
 
@@ -223,7 +220,6 @@ function main( JGO, axutil, p_options) {
     })
 
     $('#btn_undo').click( () => {
-      $('#histo').hide()
       axutil.hit_endpoint('cancel')
       var len = g_record.length
       if (len > 2 && g_record[len-1].agent == 'bot' && g_record[len-2].agent == 'human') {
@@ -239,11 +235,11 @@ function main( JGO, axutil, p_options) {
 
     $('#btn_prev').click( btn_prev)
     $('#btn_next').click( btn_next)
-    $('#btn_back10').click( () => { $('#histo').hide(); goto_move( g_record.length - 10); update_emoji(); activate_bot('off') })
-    $('#btn_fwd10').click( () => { $('#histo').hide(); goto_move( g_record.length + 10); update_emoji(); activate_bot('off') })
-    $('#btn_first').click( () => { $('#histo').hide(); goto_first_move(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
-    $('#btn_last').click( () => { $('#histo').hide(); goto_move( g_complete_record.length); update_emoji(); activate_bot('off') })
-    $('#btn_new').click( () => { $('#histo').hide(); reset_game(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
+    $('#btn_back10').click( () => { goto_move( g_record.length - 10); update_emoji(); activate_bot('off') })
+    $('#btn_fwd10').click( () => { goto_move( g_record.length + 10); update_emoji(); activate_bot('off') })
+    $('#btn_first').click( () => { goto_first_move(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
+    $('#btn_last').click( () => { goto_move( g_complete_record.length); update_emoji(); activate_bot('off') })
+    $('#btn_new').click( () => { reset_game(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
 
     // Prevent zoom on double tap
     $('#btn_change').on('touchstart', prevent_zoom)
@@ -298,13 +294,15 @@ function main( JGO, axutil, p_options) {
 
   //-------------------------
   function btn_prev() {
-    $('#histo').hide(); goto_move( g_record.length - 1); update_emoji(); activate_bot('off')
+    goto_move( g_record.length - 1); update_emoji(); activate_bot('off')
   }
   //-------------------------
   function btn_next() {
     if (btn_next.waiting) { btn_next.buffered = true; return }
-    $('#histo').hide()
     goto_move( g_record.length + 1)
+    if (g_record.length < 20  && g_record[ g_record.length - 1].mv == 'pass') {
+      goto_move( g_record.length + 1)
+    }
     if (g_record[ g_record.length - 1].p == 0) {
       btn_next.waiting = true
       get_prob( (data) => {
@@ -935,18 +933,6 @@ function main( JGO, axutil, p_options) {
     } // for
   } // draw_estimate()
 
-  // Plot histogram of territory probabilities
-  //---------------------------------------------
-  function plot_histo( data, completion) {
-    var wp = data.white_probs
-    axutil.hit_endpoint( '/histo', [wp,20,0,1], (res) => {
-      //var surepoints = res[0][1] + res[res.length-1][1]
-      var surepoints = BOARD_SIZE * BOARD_SIZE - data.dame
-      axutil.barchart( '#histo', res, 240)
-      completion( surepoints)
-    })
-  } // plot_histo()
-
   //===============
   // Converters
   //===============
@@ -1086,7 +1072,5 @@ function main( JGO, axutil, p_options) {
     setTimeout(statesaver, 60000)
   }
   statesaver()
-
-  $('#histo').hide()
 
 } // function main()
