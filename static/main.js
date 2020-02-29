@@ -11,6 +11,7 @@ const VERSION = '2019-12-12'
 const LEELA_SERVER = ''
 const KATAGO_SERVER = ''
 const BOTS = ['leela', 'fry', 'bender', 'farnsworth' ]
+const NIL_P = 0.0001
 
 const HANDISTONES = ['',''
   ,['D4','Q16']
@@ -605,9 +606,9 @@ function main( JGO, axutil, p_options) {
     var hstones =  HANDISTONES[g_handi]
     for (const [idx,s] of hstones.entries()) {
       if (idx > 0) {
-        g_complete_record.push( {'mv':'pass', 'p':0.001, 'agent':''} )
+        g_complete_record.push( {'mv':'pass', 'p':NIL_P, 'agent':''} )
       }
-      g_complete_record.push( {'mv':s, 'p':0.001, 'agent':''} )
+      g_complete_record.push( {'mv':s, 'p':NIL_P, 'agent':''} )
     }
     goto_move(1000)
   } // reset_game()
@@ -819,6 +820,7 @@ function main( JGO, axutil, p_options) {
     if (n > 0) {
       if (g_record[n].mv == 'pass') {  set_emoji(); return }
       if (g_record[n-1].mv == 'pass') {  set_emoji(); return }
+      if (g_record[n-1].p == NIL_P) {  set_emoji(); return }
       var pp = g_record[n-1].p
       if (n % 2) { // we are white
         p = 1.0 - p; pp = 1.0 - pp
