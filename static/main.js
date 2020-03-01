@@ -151,12 +151,22 @@ function main( JGO, axutil, p_options) {
       var botCoord = string2jcoord( data.bot_move)
       var jboard = g_jrecord.jboard
       if (botCoord != 'pass' && botCoord != 'resign') {
-        hover( botCoord, turn(), {force:true})
-        setTimeout( () => { hover() }, 1000)
-      }
+        blink( botCoord, turn(), 750, 3)      }
     })
     return false
   } // btn_best_click
+
+  // Blink a translucent stone
+  //------------------------------------------
+  function blink( coord, color, ms, times) {
+    if (times == 0) { return }
+    var ttimes = times-1
+    hover( coord, color, {force:true})
+    setTimeout( () => {
+      hover()
+      setTimeout( () => { blink( coord, color, ms, ttimes) }, ms )
+    }, ms)
+  } // blink()
 
   // Set button callbacks
   //------------------------------
