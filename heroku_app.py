@@ -100,15 +100,22 @@ def histo():
     res = list(zip( centers, counts))
     return jsonify( res)
 
+#--------------------------------
+def get_sgf_tag( sgfstr, tag):
+    rexp = r'.*' + tag + r'\[([^\[]*)\].*'
+    res = re.sub(rexp, r'\1', sgfstr.decode('utf8'),flags=re.DOTALL)
+    return res
+
 @app.route('/sgf2list', methods=['POST'])
 # Convert sgf main var to coordinate list of moves
 #----------------------------------------------------
 def sgf2list():
     f = request.files['file']
     sgfstr = f.read()
-    RE = re.sub(r'.*RE\[([^\[]*)\].*', r'\1', sgfstr.decode('utf8'),flags=re.DOTALL)
+    RE = get_sgf_tag( sgfstr, 'RE')
     if len(RE) > 10:
         RE = ''
+    DT = get_sgf_tag( sgfstr, 'DT')
     sgf = Sgf_game.from_string( sgfstr)
     player_white = sgf.get_player_name('w')
     player_black = sgf.get_player_name('b')
@@ -162,13 +169,19 @@ def sgf2list():
     probs = [mp['p'] for mp in moves]
     moves = [mp['mv'] for mp in moves]
     return jsonify( {'result': {'moves':moves, 'probs':probs, 'pb':player_black, 'pw':player_white,
-                                'winner':winner, 'komi':komi, 'fname':fname, 'RE':RE} } )
+                                'winner':winner, 'komi':komi, 'fname':fname, 'RE':RE, 'DT':DT} } )
 
 @app.route('/save-sgf', methods=['GET'])
 # Convert moves to sgf and return as file attachment.
 # Moves come like 'Q16D4...' to shorten URL.
 #-------------------------------------------------------------
 def save_sgf():
+    pb = request.args.get( 'pb')
+    pw = request.args.get( 'pw')
+    km = request.args.get( 'km')
+    re = request.args.get( 're')
+    dt = request.args.get( 'dt')
+    meta = { 'pb':pb, 'pw':pw, 'km':km, 're':re, 'dt':dt }
     probs = request.args.get( 'probs', [])
     probs = probs.split(',')
     moves = request.args.get( 'moves')
@@ -181,7 +194,7 @@ def save_sgf():
         else:
             m += c
     if m: movearr.append(m)
-    result = moves2sgf( movearr, probs)
+    result = moves2sgf( movearr, probs, meta)
     fname = uuid.uuid4().hex[:7] + '.sgf'
     fh = BytesIO( result.encode('utf8'))
     resp = send_file( fh, as_attachment=True, attachment_filename=fname)
@@ -210,12 +223,20 @@ def fwd_to_katago( endpoint, args):
 
 # Convert a list of moves like ['Q16',...] to sgf
 #---------------------------------------------------
-def moves2sgf( moves, probs):
+def moves2sgf( moves, probs, meta):
+    meta = { k : ('' if v == 'undefined' else v) for (k,v) in meta.items() }
     sgf = '(;FF[4]SZ[19]\n'
     sgf += 'SO[leela-one-playout.herokuapp.com]\n'
-    dtstr = datetime.now().strftime('%Y-%m-%d')
+    dtstr = meta['dt']
+    if not dtstr: dtstr = datetime.now().strftime('%Y-%m-%d')
+    km = meta['km']
+    if not km: km = '7.5'
+
+    sgf += 'PB[%s]\n' % meta['pb']
+    sgf += 'PW[%s]\n' % meta['pw']
+    sgf += 'RE[%s]\n' % meta['re']
+    sgf += 'KM[%s]\n' % km
     sgf += 'DT[%s]\n' % dtstr
-    sgf += 'KM[7.5]\n'
 
     movestr = ''
     result = ''

@@ -213,7 +213,16 @@ function main( JGO, axutil, p_options) {
       var moves = rec.join('')
       probs = probs.join(',')
       if (moves.length == 0) { return }
-      var url = '/save-sgf?q=' + Math.random() + '&moves=' + moves + '&probs=' + probs
+      var meta = set_load_sgf_handler.loaded_game
+      if (!meta) { meta = {} }
+      var url = '/save-sgf?q=' + Math.random() +
+        '&moves=' + encodeURIComponent(moves) +
+        '&probs=' + encodeURIComponent(probs) +
+        '&pb=' + encodeURIComponent(meta.pb) +
+        '&pw=' + encodeURIComponent(meta.pw) +
+        '&km=' + encodeURIComponent(meta.komi) +
+        '&re=' + encodeURIComponent(meta.RE) +
+        '&dt=' + encodeURIComponent(meta.DT)
       window.location.href = url
     })
 
@@ -293,14 +302,23 @@ function main( JGO, axutil, p_options) {
 	      }
         g_complete_record = g_record.slice()
         show_movenum()
-        var komi = res.komi
-        // Game Info
-        $('#game_info').html( `B:${res.pb} &nbsp;&nbsp; W:${res.pw} &nbsp;&nbsp; Result:${res.RE} &nbsp;&nbsp; Komi:${komi}`)
-        $('#fname').html( res.fname)
+        show_game_info( res)
         $('#status').html( '')
+        set_load_sgf_handler.loaded_game = res
       })
     }) // $('sgf-file')
   } // set_load_sgf_handler()
+
+  //-----------------------------------------
+  function show_game_info( loaded_game) {
+    if (loaded_game) {
+      $('#game_info').html( `B:${loaded_game.pb} &nbsp;&nbsp; W:${loaded_game.pw} &nbsp;&nbsp; Result:${loaded_game.RE}`)
+      $('#fname').html( loaded_game.fname)
+    } else {
+      $('#game_info').html('')
+      $('#fname').html('')
+    }
+  } // show_game_info()
 
   //-------------------------
   function btn_prev() {
@@ -607,6 +625,8 @@ function main( JGO, axutil, p_options) {
   //-----------------------
   function reset_game() {
     handle_variation( 'clear')
+    set_load_sgf_handler.loaded_game = null
+    show_game_info( set_load_sgf_handler.loaded_game)
     g_complete_record = []
     g_record = []
     goto_first_move()
@@ -749,6 +769,7 @@ function main( JGO, axutil, p_options) {
       localStorage.setItem('record', JSON.stringify( g_record))
       localStorage.setItem('complete_record', JSON.stringify( g_complete_record))
       localStorage.setItem('bot', change_bot.botname)
+      localStorage.setItem('loaded_game', JSON.stringify( set_load_sgf_handler.loaded_game))
     }
   } // save_state()
 
@@ -761,6 +782,8 @@ function main( JGO, axutil, p_options) {
     if (localStorage.getItem('complete_record') === null) { return }
     if (localStorage.getItem('record') === 'null') { return }
     if (localStorage.getItem('complete_record') === 'null') { return }
+    set_load_sgf_handler.loaded_game = JSON.parse( localStorage.getItem( 'loaded_game'))
+    show_game_info( set_load_sgf_handler.loaded_game)
     g_record = JSON.parse( localStorage.getItem('record'))
     g_complete_record = JSON.parse( localStorage.getItem('complete_record'))
     goto_move( g_record.length)
@@ -1076,10 +1099,10 @@ function main( JGO, axutil, p_options) {
     window.onbeforeunload = save_state
   }
 
-  // Save game record once a minute
+  // Save game record once a sec
   function statesaver() {
     save_state();
-    setTimeout(statesaver, 60000)
+    setTimeout(statesaver, 1000)
   }
   statesaver()
 
