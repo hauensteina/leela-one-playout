@@ -146,7 +146,7 @@ function main( JGO, axutil, p_options) {
   //----------------------------
   function btn_best_click() {
     if (axutil.hit_endpoint('waiting')) { g_best_btn_buffer = true; return true }
-    $('#status').html( 'thinking...')
+    $('#status').html( 'Thinking...')
     get_prob( (data) => {
       var botCoord = string2jcoord( data.bot_move)
       var jboard = g_jrecord.jboard
@@ -897,6 +897,7 @@ function main( JGO, axutil, p_options) {
   //-------------------------------------------
   function score_position() {
     const POINT_THRESH = 0.7
+    $('#status').html( 'Scoring...')
     axutil.hit_endpoint( KATAGO_SERVER + '/katascore/' + KATABOT, {'board_size': BOARD_SIZE, 'moves': moves_only(g_record), 'tt':Math.random() },
 			(data) => {
         var score = parseFloat(data.diagnostics.score)
