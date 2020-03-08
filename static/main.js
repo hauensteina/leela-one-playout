@@ -305,6 +305,7 @@ function main( JGO, axutil, p_options) {
         show_game_info( res)
         $('#status').html( '')
         set_load_sgf_handler.loaded_game = res
+        $('#sgf-file').val('') // reset to make sure it triggers again
       })
     }) // $('sgf-file')
   } // set_load_sgf_handler()
