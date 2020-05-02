@@ -259,7 +259,7 @@ function main( JGO, axutil, p_options) {
     $('#btn_fwd10').click( () => { goto_move( g_record.length + 10); update_emoji(); activate_bot('off') })
     $('#btn_first').click( () => { goto_first_move(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
     $('#btn_last').click( () => { goto_move( g_complete_record.length); update_emoji(); activate_bot('off') })
-    $('#btn_new').click( () => { reset_game(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
+    $('#btn_new').click( () => {} )
 
     // Prevent zoom on double tap
     $('#btn_change').on('touchstart', prevent_zoom)
