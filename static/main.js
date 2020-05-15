@@ -259,7 +259,7 @@ function main( JGO, axutil, p_options) {
     $('#btn_fwd10').click( () => { goto_move( g_record.length + 10); update_emoji(); activate_bot('off') })
     $('#btn_first').click( () => { goto_first_move(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
     $('#btn_last').click( () => { goto_move( g_complete_record.length); update_emoji(); activate_bot('off') })
-    $('#btn_new').click( () => { reset_game(); set_emoji(); activate_bot('off'); $('#status').html( '&nbsp;') })
+    $('#btn_new').click( () => {} )
 
     // Prevent zoom on double tap
     $('#btn_change').on('touchstart', prevent_zoom)
@@ -406,7 +406,7 @@ function main( JGO, axutil, p_options) {
     const bots = BOTS
 
     const images = ['static/leela.png','static/fry.png', 'static/bender.png', 'static/farnsworth.png']
-    const names = ['Leela 98ae4712','Fry', 'Bender', 'Prof. Farnsworth']
+    const names = ['Leela 25134cb','Fry', 'Bender', 'Prof. Farnsworth']
     const strengths = ['9P', 'Oh well', 'Not bad', '6D' ]
 
     var idx = 0
