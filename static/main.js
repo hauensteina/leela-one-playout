@@ -270,6 +270,7 @@ function main( JGO, axutil, p_options) {
       if (e.target.className.includes('btn-primary')) { return }
       if (e.target.className.includes('close')) { return }
       if (e.target.className.includes('dropdown')) { return }
+      if (e.target.className.includes('slider round')) { return }
       e.preventDefault()})
     // Links should still work
     $('a').on('touchend',(e)=>{
