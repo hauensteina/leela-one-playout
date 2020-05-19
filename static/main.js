@@ -262,15 +262,7 @@ function main( JGO, axutil, p_options) {
     $('#btn_new').click( () => {} )
 
     // Prevent zoom on double tap
-    $('td').on('touchend',(e)=>{
-      console.log('td end')
-      if (e.target.localName == 'canvas') { return }
-      e.preventDefault()})
-    $('tr').on('touchend',(e)=>{
-      console.log('tr')
-      if (e.target.localName == 'canvas') { return }
-      e.preventDefault()})
-    $('div').on('touchend',(e)=>{
+    $('div,tr,td').on('touchend',(e)=>{
       console.log('div')
       if (e.target.localName == 'canvas') { return }
       if (e.target.className.includes('btn')) { return }
