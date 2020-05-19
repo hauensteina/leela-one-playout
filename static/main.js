@@ -262,22 +262,28 @@ function main( JGO, axutil, p_options) {
     $('#btn_new').click( () => {} )
 
     // Prevent zoom on double tap
-    $('#btn_change').on('touchstart', prevent_zoom)
-    $('#btn_play').on('touchstart', prevent_zoom)
-    $('#btn_undo').on('touchstart', prevent_zoom)
-    $('#btn_best').on('touchstart', prevent_zoom)
-    $('#btn_pass').on('touchstart', prevent_zoom)
-    $('#btn_prev').on('touchstart', prevent_zoom)
-    $('#btn_next').on('touchstart', prevent_zoom)
-    $('#btn_clear_var').on('touchstart', prevent_zoom)
-    /* $('#btn_accept_var').on('touchstart', prevent_zoom) */
-    $('#btn_first').on('touchstart', prevent_zoom)
-    $('#btn_back10').on('touchstart', prevent_zoom)
-    $('#btn_fwd10').on('touchstart', prevent_zoom)
-    $('#btn_last').on('touchstart', prevent_zoom)
-    $('#btn_nnscore').on('touchstart', prevent_zoom)
-    $('#btn_save').on('touchstart', prevent_zoom)
-    $('#btn_new').on('touchstart', prevent_zoom)
+    $('td').on('touchend',(e)=>{
+      console.log('td end')
+      if (e.target.localName == 'canvas') { return }
+      e.preventDefault()})
+    $('tr').on('touchend',(e)=>{
+      console.log('tr')
+      if (e.target.localName == 'canvas') { return }
+      e.preventDefault()})
+    $('div').on('touchend',(e)=>{
+      console.log('div')
+      if (e.target.localName == 'canvas') { return }
+      if (e.target.className.includes('btn')) { return }
+      if (e.target.className.includes('close')) { return }
+      e.preventDefault()})
+    // Links should still work
+    $('a').on('touchend',(e)=>{
+      console.log('a')
+      e.preventDefault()
+      e.target.click()})
+
+    $('[id^=btn_]').on('touchstart',(e)=>{e.preventDefault();e.target.click()})
+
   } // set_btn_handlers()
 
   // Load Sgf button
@@ -382,19 +388,7 @@ function main( JGO, axutil, p_options) {
   } // check_key()
   check_key.ctrl_pressed = false
 
-  // Prevent double taps from zooming in on mobile devices.
-  // Use like btn.addEventListener('touchstart', prevent_zoom)
-  //------------------------------------------------------------
-  function prevent_zoom(e) {
-    //var t2 = e.timeStamp
-    //var t1 = e.currentTarget.dataset.lastTouch || t2
-    //var dt = t2 - t1
-    //var fingers = e.touches.length
-    //e.currentTarget.dataset.lastTouch = t2
-    //if (!dt || dt > 500 || fingers > 1) return
-    e.preventDefault()
-    e.target.click()
-  } // prevent_zoom()
+
 
   //===================
   // Bot Interaction
