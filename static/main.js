@@ -267,7 +267,9 @@ function main( JGO, axutil, p_options) {
         console.log('div')
       if (e.target.localName == 'canvas') { return }
       if (e.target.className.includes('btn-file')) { return }
+      if (e.target.className.includes('btn-primary')) { return }
       if (e.target.className.includes('close')) { return }
+      if (e.target.className.includes('dropdown')) { return }
       e.preventDefault()})
     // Links should still work
     $('a').on('touchend',(e)=>{
