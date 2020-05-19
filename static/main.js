@@ -262,10 +262,11 @@ function main( JGO, axutil, p_options) {
     $('#btn_new').click( () => {} )
 
     // Prevent zoom on double tap
-    $('div,tr,td').on('touchend',(e)=>{
-      console.log('div')
+    //$('div,tr,td').on('touchend',(e)=>{
+    $('*').on('touchend',(e)=>{
+        console.log('div')
       if (e.target.localName == 'canvas') { return }
-      if (e.target.className.includes('btn')) { return }
+      if (e.target.className.includes('btn-file')) { return }
       if (e.target.className.includes('close')) { return }
       e.preventDefault()})
     // Links should still work
