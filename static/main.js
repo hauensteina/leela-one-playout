@@ -76,7 +76,6 @@ function main( JGO, axutil, p_options) {
   function board_click_callback( coord) {
 		if (score_position.active) {
 			goto_move( g_record.length)
-			score_position.active = false
 			return
 		}
 		var jboard = g_jrecord.jboard
@@ -129,7 +128,10 @@ function main( JGO, axutil, p_options) {
             }
             else {
 					    hover( coord, turn())
-            }
+              if (score_position.active) {
+                draw_estimate( score_position.probs)
+              }
+            } // else
 					}
 				) // mousemove
 
@@ -137,6 +139,9 @@ function main( JGO, axutil, p_options) {
 		    canvas.addListener('mouseout',
 					function(ev) {
 					  hover()
+            if (score_position.active) {
+              draw_estimate( score_position.probs)
+            }
 					}
 				) // mouseout
 		  } // function(canvas)
@@ -227,6 +232,10 @@ function main( JGO, axutil, p_options) {
     })
 
     $('#btn_nnscore').click( () => {
+      if (score_position.active) {
+			  goto_move( g_record.length)
+			  return
+		  }
       score_position( 'nnscore')
       return false
     })
@@ -654,6 +663,7 @@ function main( JGO, axutil, p_options) {
   // Replay and show game up to move n
   //-------------------------------------
   function goto_move( n) {
+    score_position.active = false
     var totmoves = g_complete_record.length
     if (n > totmoves) { n = totmoves }
     if (n < 1) { goto_first_move(); set_emoji(); return }
@@ -892,8 +902,8 @@ function main( JGO, axutil, p_options) {
 			(data) => {
         var score = parseFloat(data.diagnostics.score)
         score = Math.trunc( Math.abs(score) * 2 + 0.5) * Math.sign(score) / 2.0
-        score_position.probs = data.probs
 			  score_position.active = true
+        score_position.probs = data.probs
         var bsum = 0
         var wsum = 0
         for (const [idx, prob] of data.probs.entries()) {
@@ -907,12 +917,9 @@ function main( JGO, axutil, p_options) {
         wsum = Math.trunc( wsum + 0.5)
         bsum = Math.trunc( bsum + 0.5)
         draw_estimate( data.probs)
-        //wsum += g_handi
-        //wsum += g_komi
 			  var diff = Math.abs( bsum - wsum)
 			  var rstr = `W+${diff} <br>(before komi and handicap)`
 			  if (bsum >= wsum) { rstr = `B+${diff}  <br>(before komi and handicap)` }
-			  //$('#status').html( `B:${bsum} &nbsp; W:${wsum} &nbsp; ${rstr}`)
         var scorestr = '&nbsp;&nbsp;B+'
         if (score < 0) {
           scorestr = '&nbsp;&nbsp;W+'
