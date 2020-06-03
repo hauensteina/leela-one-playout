@@ -42,7 +42,7 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 #LEELA_SERVER = 'https://ahaux.com/leela_server/'
 #KATAGO_SERVER = 'https://ahaux.com/katago_server/'
 LEELA_SERVER = 'http://www.ahaux.com/leela_server/'
-KATAGO_SERVER = 'https//www.ahaux.com/katago_server/'
+KATAGO_SERVER = 'http://www.ahaux.com/katago_server/'
 
 #--------------
 # Endpoints
