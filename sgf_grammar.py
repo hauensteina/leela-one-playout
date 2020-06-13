@@ -36,7 +36,7 @@ _tokenise_re = re.compile(r"""
 (?:
     \[ (?P<V> [^\\\]]* (?: \\. [^\\\]]* )* ) \]   # PropValue
     |
-    (?P<I> [A-Z]{1,8} )                           # PropIdent
+    (?P<I> [A-Z]{1,16} )                           # PropIdent
     |
     (?P<D> [;()] )                                # delimiter
 )
