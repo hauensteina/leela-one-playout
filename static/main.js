@@ -74,6 +74,8 @@ function main( JGO, axutil, p_options) {
 
   //----------------------------------------
   function board_click_callback( coord) {
+    if (coord.i < 0 || coord.i > 18) { return }
+    if (coord.j < 0 || coord.j > 18) { return }
 		if (score_position.active) {
 			goto_move( g_record.length)
 			return
