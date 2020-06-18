@@ -7,7 +7,7 @@
 'use strict'
 
 const DEBUG = false
-const VERSION = '2019-12-12'
+const VERSION = '2020-06-17'
 const LEELA_SERVER = ''
 const KATAGO_SERVER = ''
 const BOTS = ['leela', 'fry', 'bender', 'farnsworth' ]
@@ -608,10 +608,10 @@ function main( JGO, axutil, p_options) {
       g_ko = play.ko
     }
     else {
-      var tstr = player + coord
-      var node = g_jrecord.getCurrentNode()
-      node.setMark( coord, JGO.MARK.SQUARE)
-      alert( 'Illegal move: ' + play.errorMsg + ' ' + tstr)
+      /* var tstr = player + coord
+       * var node = g_jrecord.getCurrentNode()
+       * node.setMark( coord, JGO.MARK.SQUARE)
+       * alert( 'Illegal move: ' + play.errorMsg + ' ' + tstr) */
     }
   } // show_move()
 
